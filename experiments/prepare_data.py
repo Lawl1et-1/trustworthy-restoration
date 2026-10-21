@@ -11,6 +11,7 @@ import io
 import json
 import pathlib
 import tarfile
+from concurrent.futures import ProcessPoolExecutor
 
 import nibabel as nib
 import numpy as np
@@ -43,33 +44,83 @@ def _pick_slices(fg_area):
     return ok[np.linspace(0, len(ok) - 1, SLICES_PER_VOL).round().astype(int)]
 
 
-def prepare_msd(tar_path, out):
-    tf = tarfile.open(tar_path, "r:")
-    members = {m.name: m for m in tf.getmembers() if m.name.endswith(".nii.gz") and "/._" not in m.name}
-    meta = json.loads(tf.extractfile([m for m in tf.getmembers() if m.name.endswith("dataset.json")][0]).read())
+_TAR = {}
+
+
+def _open_tar(path):
+    """One open archive and member index per process (workers each open their own)."""
+    if path not in _TAR:
+        tf = tarfile.open(path, "r:")
+        _TAR[path] = (tf, {m.name: m for m in tf.getmembers()})
+    return _TAR[path]
+
+
+def _msd_volume(args):
+    tar_path, name = args
+    tf, members = _open_tar(tar_path)
+    vol = np.asarray(_nifti(tf, members[name]).dataobj[..., MSD_T2], dtype=np.float32)  # (240,240,155)
+    lab = np.asarray(_nifti(tf, members[name.replace("imagesTr", "labelsTr")]).dataobj) > 0
+    fg = vol > 0
+    scale = np.percentile(vol[fg], 99.8)
+    out = []
+    for z in _pick_slices(fg.sum((0, 1))):
+        out.append((resize(_square(np.rot90(vol[:, :, z])), (SIZE, SIZE), anti_aliasing=True, preserve_range=True) / scale,
+                    resize(_square(np.rot90(lab[:, :, z]).astype(np.float32)), (SIZE, SIZE), order=0) > 0.5,
+                    resize(_square(np.rot90(fg[:, :, z]).astype(np.float32)), (SIZE, SIZE), order=0) > 0.5,
+                    pathlib.Path(name).name.split(".")[0]))
+    return out
+
+
+def prepare_msd(tar_path, out, workers=6):
+    tf, members = _open_tar(tar_path)
+    # the archive also holds macOS "._" resource-fork files, e.g. "._dataset.json" before "dataset.json"
+    meta = json.loads(tf.extractfile([m for m in members.values() if pathlib.PurePosixPath(m.name).name == "dataset.json"][0]).read())
     assert meta["modality"]["3"].upper().startswith("T2"), meta["modality"]
+    names = sorted(n for n in members if "/imagesTr/" in n and n.endswith(".nii.gz") and "/._" not in n)
     imgs, labs, fgs, pids = [], [], [], []
-    names = sorted(n for n in members if "/imagesTr/" in n)
-    for i, name in enumerate(names):
-        vol = np.asarray(_nifti(tf, members[name]).dataobj[..., MSD_T2], dtype=np.float32)  # (240,240,155)
-        lab = np.asarray(_nifti(tf, members[name.replace("imagesTr", "labelsTr")]).dataobj) > 0
-        fg = vol > 0
-        scale = np.percentile(vol[fg], 99.8)
-        for z in _pick_slices(fg.sum((0, 1))):
-            im = np.rot90(vol[:, :, z])
-            imgs.append(resize(_square(im), (SIZE, SIZE), anti_aliasing=True, preserve_range=True) / scale)
-            labs.append(resize(_square(np.rot90(lab[:, :, z]).astype(np.float32)), (SIZE, SIZE), order=0) > 0.5)
-            fgs.append(resize(_square(np.rot90(fg[:, :, z]).astype(np.float32)), (SIZE, SIZE), order=0) > 0.5)
-            pids.append(pathlib.Path(name).name.split(".")[0])
-        if i % 50 == 0:
-            print(f"msd {i}/{len(names)}", flush=True)
+    # volumes are independent; pool.map keeps the sorted order, so the output is identical to a serial run
+    with ProcessPoolExecutor(workers) as pool:
+        for i, slices in enumerate(pool.map(_msd_volume, [(tar_path, n) for n in names], chunksize=4)):
+            for im, lb, fg, pid in slices:
+                imgs.append(im); labs.append(lb); fgs.append(fg); pids.append(pid)
+            if i % 50 == 0:
+                print(f"msd {i}/{len(names)}", flush=True)
     np.savez_compressed(out, images=np.clip(np.stack(imgs), 0, 1).astype(np.float32), labels=np.stack(labs),
                         fg=np.stack(fgs), pid=np.array(pids), site=np.array(["msd"] * len(pids)))
     print("wrote", out, len(pids), "slices from", len(names), "volumes")
 
 
+IXI_BRAIN_FRAC = 0.45  # skip the lowest 45 % of the head's axial extent (jaw, neck, skull base)
+
+
+def ixi_head_mask(vol):
+    """Head mask, slice by slice: threshold at half Otsu, close, fill holes, keep the largest component.
+
+    The first version (Otsu, 3D opening and fill_holes on the whole volume) traced internal tissue edges
+    instead of the head outline: dark T2 tissue fell below Otsu, and 3D hole filling fails because the
+    interior connects to the outside through the open top and bottom of the slab (LOG.md, M2).
+    """
+    thr = 0.5 * threshold_otsu(vol)
+    out = np.zeros(vol.shape, bool)
+    for z in range(vol.shape[2]):
+        m = ndimage.binary_fill_holes(ndimage.binary_closing(vol[:, :, z] > thr, iterations=3))
+        lab, n = ndimage.label(m)
+        if n:
+            out[:, :, z] = lab == (np.argmax(np.bincount(lab.ravel())[1:]) + 1)
+    return out
+
+
+def _pick_ixi_slices(fg_area):
+    """Brain-level slices, comparable to MSD: drop the lowest IXI_BRAIN_FRAC of the head's axial extent,
+    then use the same >= 50 % max-area rule as MSD."""
+    zs = np.nonzero(fg_area > 0)[0]
+    lo = zs[0] + int(IXI_BRAIN_FRAC * (zs[-1] - zs[0]))
+    area = np.where(np.arange(len(fg_area)) >= lo, fg_area, 0)
+    return _pick_slices(area)
+
+
 def prepare_ixi(tar_path, out, per_site):
-    """IXI is not skull-stripped; the evaluation region is an Otsu foreground with holes filled."""
+    """IXI is healthy subjects and not skull-stripped; the evaluation region is the head mask."""
     tf = tarfile.open(tar_path, "r:")
     members = sorted((m for m in tf.getmembers() if m.name.endswith(".nii.gz")), key=lambda m: m.name)
     counts, imgs, labs, fgs, pids, sites = {}, [], [], [], [], []
@@ -79,10 +130,9 @@ def prepare_ixi(tar_path, out, per_site):
             continue
         img = nib.as_closest_canonical(_nifti(tf, m))  # RAS: axis 2 is axial
         vol = np.asarray(img.dataobj, dtype=np.float32)
-        thr = threshold_otsu(vol)
-        fg = ndimage.binary_fill_holes(ndimage.binary_opening(vol > thr, iterations=2))
+        fg = ixi_head_mask(vol)
         scale = np.percentile(vol[fg], 99.8)
-        for z in _pick_slices(fg.sum((0, 1))):
+        for z in _pick_ixi_slices(fg.sum((0, 1))):
             imgs.append(resize(_square(np.rot90(vol[:, :, z])), (SIZE, SIZE), anti_aliasing=True, preserve_range=True) / scale)
             fgs.append(resize(_square(np.rot90(fg[:, :, z]).astype(np.float32)), (SIZE, SIZE), order=0) > 0.5)
             labs.append(np.zeros((SIZE, SIZE), bool))

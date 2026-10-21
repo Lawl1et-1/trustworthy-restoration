@@ -100,6 +100,6 @@ CLASSICAL = {"mri": ["zero_filled", "tv", "wavelet"], "denoise": ["noisy", "tv",
 # Wide enough that the tuned value is interior for every severity; run_task.py logs a warning when the
 # chosen weight sits on the edge of its grid.
 WEIGHT_GRID = {"tv": [0.0025, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32],
-               "wavelet": [0.0025, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32],
+               "wavelet": [0.0025, 0.005, 0.01, 0.02, 0.04, 0.08, 0.16, 0.32, 0.64, 1.28],
                "bm3d": [0.02, 0.03, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3],
                "zero_filled": [0], "noisy": [0], "masked": [0], "biharmonic": [0]}

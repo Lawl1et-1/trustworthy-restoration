@@ -32,6 +32,7 @@ STAGES = {
         ("-m", "pytest", "-q", "tests"),
         ("-m", "experiments.run_task", "--config", "configs/full_phantom.yaml"),
         ("-m", "experiments.run_task", "--config", "configs/full_msd.yaml"),
+        ("-m", "experiments.m2_tables"),
     ],
     "test": [("-m", "pytest", "-q", "tests")],
     "data": [("-m", "experiments.prepare_data", "--msd", "data/raw/msd/Task01_BrainTumour.tar",

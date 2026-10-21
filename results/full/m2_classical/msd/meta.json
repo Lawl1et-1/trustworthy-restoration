@@ -1,0 +1,78 @@
+{
+ "config": {
+  "profile": "full",
+  "data": {
+   "name": "msd",
+   "path": "data/processed/msd_t2_128.npz"
+  },
+  "ood": [
+   {
+    "name": "ixi",
+    "path": "data/processed/ixi_t2_128.npz",
+    "tag": "ixi"
+   }
+  ],
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "ood_seeds": [
+   0
+  ],
+  "tune_val_slices": 32,
+  "tasks": {
+   "denoise_s0.03": {
+    "type": "denoise",
+    "sigma": 0.03
+   },
+   "denoise_s0.06": {
+    "type": "denoise",
+    "sigma": 0.06
+   },
+   "denoise_s0.10": {
+    "type": "denoise",
+    "sigma": 0.1
+   },
+   "denoise_s0.15": {
+    "type": "denoise",
+    "sigma": 0.15
+   },
+   "mri_R2": {
+    "type": "mri",
+    "R": 2,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "mri_R4": {
+    "type": "mri",
+    "R": 4,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "mri_R8": {
+    "type": "mri",
+    "R": 8,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "inpaint_mixed": {
+    "type": "inpaint",
+    "mask": "mixed",
+    "sigma": 0.01
+   }
+  }
+ },
+ "git": "f798939",
+ "python": "3.12.9",
+ "torch": "2.11.0+cu126",
+ "numpy": "2.2.4",
+ "workers": 7,
+ "wall_seconds": 9098.1,
+ "n_slices": {
+  "train": 2320,
+  "val": 392,
+  "cal": 576,
+  "test": 584
+ }
+}

@@ -10,7 +10,7 @@ Protocol
   * Outputs are clipped to [0, 1] before scoring (intensities are in [0, 1] by construction).
   * CIs: per image, metrics are averaged over seeds; then a patient-level bootstrap.
 
-Writes results/<profile>/m2_classical/<dataset>/{per_image.csv, summary.csv, tuned_weights.json, meta.json}.
+Writes results/<profile>/m2_classical/<dataset>/{per_image.csv.gz, summary.csv, tuned_weights.json, meta.json}.
 """
 import os
 
@@ -169,13 +169,13 @@ def main(cfg_path, workers):
                 except FileNotFoundError as e:
                     print("skip OOD:", e, flush=True)
                     continue
-                evaluate(pool, od, "ood", tasks, cfg["seeds"], weights, rows, o.get("tag", o["name"]))
+                evaluate(pool, od, "ood", tasks, cfg.get("ood_seeds", cfg["seeds"]), weights, rows, o.get("tag", o["name"]))
     finally:
         if pool:
             pool.shutdown()
 
     df = pd.DataFrame(rows)
-    df.to_csv(out_dir / "per_image.csv", index=False)
+    df.to_csv(out_dir / "per_image.csv.gz", index=False)  # gzip: the MSD table is ~14 MB as plain CSV
     summ = summarise(df)
     summ.to_csv(out_dir / "summary.csv", index=False)
     (out_dir / "tuned_weights.json").write_text(json.dumps({"weights": weights, "val_psnr_curves": curves}, indent=1))

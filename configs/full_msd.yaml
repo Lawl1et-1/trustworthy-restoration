@@ -4,6 +4,9 @@ data: {name: msd, path: data/processed/msd_t2_128.npz}
 ood:
   - {name: ixi, path: data/processed/ixi_t2_128.npz, tag: ixi}
 seeds: [0, 1, 2]
+# one seed on IXI: classical methods are not trained, so OOD only tests whether tuned weights transfer;
+# 3 seeds would add ~2.5 h of BM3D on ~960 IXI slices
+ood_seeds: [0]
 tune_val_slices: 32
 tasks:
   denoise_s0.03: {type: denoise, sigma: 0.03}

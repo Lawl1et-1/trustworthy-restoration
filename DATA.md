@@ -18,10 +18,12 @@ own "patient". This is the only dataset with exact ground truth for erased and f
 | Source | AWS Open Data registry, <https://registry.opendata.aws/msd/> |
 | File | `https://msd-for-monai.s3-us-west-2.amazonaws.com/Task01_BrainTumour.tar` |
 | Size | 7,608,266,240 bytes (HTTP `Content-Length`, checked 2026-10-21; `Last-Modified` 2020-08-14) |
-| Licence | CC BY-SA 4.0 (AWS registry entry; Simpson et al. 2019, arXiv:1902.09063) |
+| Licence | CC BY-SA 4.0 (AWS registry entry; Simpson et al. 2019, arXiv:1902.09063; `dataset.json` in the archive says `CC-BY-SA 4.0`, release 2.0 04/05/2018) |
 | Content | 484 labelled training volumes, 4 MRI channels (FLAIR, T1w, T1gd, T2w), tumour labels; derived from BraTS 2016/2017 |
-| Used | T2w channel, 8 axial slices per volume, 128x128, per-volume 99.8th-percentile scaling |
-| Download date | not yet downloaded |
+| Used | T2w channel (`dataset.json` modality 3), 8 axial slices per volume, 128x128, per-volume 99.8th-percentile scaling |
+| Download date | 2026-10-21, to `data/raw/msd/` |
+| Integrity | resumed download; the S3 multipart ETag `dfd1b5a5df62dadb48cad3d347148c70-907` (MD5 of 907 MD5s of 8 MiB parts) was recomputed locally and matches |
+| Contents | 484 `imagesTr` with 484 `labelsTr`, 266 unlabelled `imagesTs` (not used) |
 
 Citation: Antonelli M. et al., "The Medical Segmentation Decathlon", *Nature Communications* 13, 4128
 (2022), doi:10.1038/s41467-022-30695-9 (verified 2026-10-21).
@@ -38,11 +40,21 @@ terms before any commercial use.
 | Size | 3,853,445,120 bytes (HTTP `Content-Length`, checked 2026-10-21; `Last-Modified` 2014-10-07) |
 | Licence | CC BY-SA 3.0, stated on the IXI page (read 2026-10-21); acknowledge the IXI website |
 | Sites | Guy's Hospital (Guys), Hammersmith Hospital (HH), Institute of Psychiatry (IOP); per-site field strength is reported inconsistently by secondary sources, `TODO[verify]` against the IXI demographics sheet |
-| Used | `--ixi-per-site 40` subjects per site, 8 axial slices each, never trained on or tuned on |
-| Download date | not yet downloaded |
+| Used | `--ixi-per-site 40` subjects per site (first 40 by file name), 8 axial slices each, never trained on or tuned on |
+| Download date | 2026-10-21, to `data/raw/ixi/` |
+| Integrity | resumed download (the server dropped connections often); no checksum is published, so: exact byte size, the full tar index reads cleanly, and gzip CRCs are checked on every file used |
+| Contents | 578 T2 volumes: Guys 319, HH 185, IOP 74 |
 
-IXI images are healthy subjects and are not skull-stripped, so the evaluation region is an Otsu
-foreground with holes filled (`experiments/prepare_data.py`). Label masks are all zero.
+IXI images are healthy subjects and are not skull-stripped, so the evaluation region is a head mask
+(threshold at half Otsu, closing, hole filling and largest component, slice by slice;
+`experiments/prepare_data.py`). Only brain-level slices are used: the lowest 45 % of the head's axial
+extent (jaw, neck, skull base) is skipped, then the same >= 50 %-of-max-area rule as MSD applies.
+Label masks are all zero. MSD is skull-stripped and IXI is not, so the IXI shift includes the skull and scalp
+as well as site/scanner; keep that in mind when reading OOD results. Anatomy coverage also differs a
+little: the lowest MSD slices include the cerebellum, while IXI slices start around the midbrain.
+
+Prepared sets (2026-10-21): `msd_t2_128.npz` has 3,872 slices from 484 patients (69 % of slices contain
+tumour); `ixi_t2_128.npz` has 960 slices from 120 subjects (40 per site).
 
 ## Preparing the slice datasets
 
