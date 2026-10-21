@@ -6,9 +6,9 @@ venv/
 .venv/
 
 # data, caches and checkpoints: large or regenerable
-data/
-checkpoints/
-logs/
+/data/
+/checkpoints/
+/logs/
 *.log
 *.pt
 *.npz

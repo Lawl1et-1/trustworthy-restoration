@@ -22,6 +22,17 @@ def rician(x, sigma, gen):
     return torch.sqrt((x + n1) ** 2 + n2 ** 2)
 
 
+_SPLIT_CODE = {"train": 0, "val": 1, "cal": 2, "test": 3, "ood": 4}
+
+
+def task_generator(task_name, split, seed):
+    """Generator for the degradations of one (task, split, seed). Every method that is evaluated on
+    (task, split, seed) sees exactly the same noise and masks, so comparisons are paired."""
+    import zlib
+    s = (zlib.crc32(task_name.encode()) * 1009 + _SPLIT_CODE[split] * 100_003 + int(seed)) % (2**63 - 1)
+    return torch.Generator().manual_seed(s)
+
+
 def _np_rng(gen):
     return np.random.default_rng(int(torch.randint(0, 2**31 - 1, (1,), generator=gen)))
 

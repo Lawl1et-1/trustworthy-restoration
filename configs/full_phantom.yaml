@@ -1,0 +1,14 @@
+# Full profile, classical baselines (M2): 4 noise levels, R in {2,4,8}, mixed inpainting masks.
+profile: full
+data: {name: phantom, n_images: 600, size: 128, seed: 1234}
+seeds: [0, 1, 2]
+tune_val_slices: 32
+tasks:
+  denoise_s0.03: {type: denoise, sigma: 0.03}
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  denoise_s0.10: {type: denoise, sigma: 0.10}
+  denoise_s0.15: {type: denoise, sigma: 0.15}
+  mri_R2: {type: mri, R: 2, mask: mixed, sigma: 0.02}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  mri_R8: {type: mri, R: 8, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}

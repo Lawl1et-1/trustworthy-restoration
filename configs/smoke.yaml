@@ -1,0 +1,9 @@
+# CPU smoke profile: 64x64 synthetic phantoms, a handful of images, one degradation seed.
+profile: smoke
+data: {name: phantom, n_images: 60, size: 64, seed: 1234, max_slices: {test: 12}}
+seeds: [0]
+tune_val_slices: 6
+tasks:
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}
