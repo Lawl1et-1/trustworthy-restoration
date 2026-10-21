@@ -1,0 +1,15 @@
+numpy==2.2.4
+scipy==1.15.2
+pandas==2.2.3
+matplotlib==3.10.1
+scikit-image==0.26.0
+scikit-learn==1.6.1
+torch==2.11.0
+torchvision==0.26.0
+PyYAML==6.0.2
+pytest==9.1.1
+PyWavelets==1.10.0
+bm3d==4.0.3
+lpips==0.1.4
+medmnist==3.0.2
+nibabel==5.4.2
