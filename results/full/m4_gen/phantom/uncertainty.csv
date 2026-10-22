@@ -1,0 +1,9 @@
+split,task,method,cov90,mean_spread,spread_err_spearman
+test,denoise_s0.03,diffusion,0.8203,0.0114,0.2285
+test,denoise_s0.06,diffusion,0.8067,0.0122,0.2433
+test,denoise_s0.10,diffusion,0.7746,0.0146,0.2416
+test,denoise_s0.15,diffusion,0.7738,0.0186,0.2570
+test,inpaint_mixed,diffusion,0.8263,0.0120,0.2411
+test,mri_R2,diffusion,0.9106,0.0295,0.1956
+test,mri_R4,diffusion,0.9020,0.0292,0.1938
+test,mri_R8,diffusion,0.9158,0.0301,0.1991
