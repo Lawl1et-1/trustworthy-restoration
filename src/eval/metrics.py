@@ -101,14 +101,15 @@ def spurious_blobs(x, xh, region, exclude, amp=0.08, sigma=1.0):
 def lesion_recovery(xh, x_bg, lesions, n):
     """Fraction of the true contrast recovered for each phantom lesion (1 = perfect, < 0.5 = erased).
 
-    x_bg is the lesion-free version of the same image, so contrast = mean over the lesion core of
-    (restored - lesion-free clean) / true contrast.
+    x_bg is the lesion-free version of the same image, so recovery = mean over the lesion core of
+    (restored - lesion-free clean) / mean over the core of the true lesion (contrast x soft profile).
     """
     from src.phantoms.phantom import lesion_profile
     out = []
     for les in lesions:
-        core = lesion_profile(n, les["cy"], les["cx"], les["r"]) > 0.5
-        out.append(float((xh - x_bg)[core].mean() / les["contrast"]))
+        prof = lesion_profile(n, les["cy"], les["cx"], les["r"])
+        core = prof > 0.5
+        out.append(float((xh - x_bg)[core].mean() / (les["contrast"] * prof[core].mean())))
     return out
 
 
