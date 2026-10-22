@@ -1,0 +1,262 @@
+[
+ {
+  "method": "unet",
+  "seed": 0,
+  "best_val_psnr": 24.478195190429688,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 23.852445602416992,
+    "train_loss": 0.12199577111750841
+   },
+   {
+    "step": 40,
+    "val_psnr": 24.478195190429688,
+    "train_loss": 0.05500354524701834
+   }
+  ],
+  "seconds": 4.6,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "hetero",
+  "seed": 0,
+  "best_val_psnr": 22.765125274658203,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 20.40024757385254,
+    "train_loss": -0.2343401125166565
+   },
+   {
+    "step": 40,
+    "val_psnr": 22.765125274658203,
+    "train_loss": -1.559406191110611
+   }
+  ],
+  "seconds": 3.5,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "hetero",
+  "seed": 1,
+  "best_val_psnr": 24.28727149963379,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 16.93236541748047,
+    "train_loss": -0.11548538436181843
+   },
+   {
+    "step": 40,
+    "val_psnr": 24.28727149963379,
+    "train_loss": -1.5617595434188842
+   }
+  ],
+  "seconds": 3.2,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "quantile",
+  "seed": 0,
+  "best_val_psnr": 23.212642669677734,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 22.32259750366211,
+    "train_loss": 0.05581691050902009
+   },
+   {
+    "step": 40,
+    "val_psnr": 23.212642669677734,
+    "train_loss": 0.0177853612229228
+   }
+  ],
+  "seconds": 3.4,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "unet",
+  "seed": 0,
+  "best_val_psnr": 22.498836517333984,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 21.820297241210938,
+    "train_loss": 0.12017496600747109
+   },
+   {
+    "step": 40,
+    "val_psnr": 22.498836517333984,
+    "train_loss": 0.048991487361490726
+   }
+  ],
+  "seconds": 4.1,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "hetero",
+  "seed": 0,
+  "best_val_psnr": 22.04932975769043,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 18.454788208007812,
+    "train_loss": -0.24542306941002606
+   },
+   {
+    "step": 40,
+    "val_psnr": 22.04932975769043,
+    "train_loss": -1.5678264558315278
+   }
+  ],
+  "seconds": 4.1,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "hetero",
+  "seed": 1,
+  "best_val_psnr": 21.64761734008789,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 18.456363677978516,
+    "train_loss": -0.0946761145722121
+   },
+   {
+    "step": 40,
+    "val_psnr": 21.64761734008789,
+    "train_loss": -1.3787209272384644
+   }
+  ],
+  "seconds": 4.3,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "quantile",
+  "seed": 0,
+  "best_val_psnr": 22.215551376342773,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 21.574602127075195,
+    "train_loss": 0.0555000645108521
+   },
+   {
+    "step": 40,
+    "val_psnr": 22.215551376342773,
+    "train_loss": 0.0182238319888711
+   }
+  ],
+  "seconds": 4.2,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "unet",
+  "seed": 0,
+  "best_val_psnr": 17.81541633605957,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 17.631698608398438,
+    "train_loss": 0.12754379399120808
+   },
+   {
+    "step": 40,
+    "val_psnr": 17.81541633605957,
+    "train_loss": 0.07962581254541874
+   }
+  ],
+  "seconds": 3.1,
+  "steps": 40,
+  "type": "mri"
+ },
+ {
+  "method": "hetero",
+  "seed": 0,
+  "best_val_psnr": 17.987167358398438,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 16.880691528320312,
+    "train_loss": -0.23292461186647415
+   },
+   {
+    "step": 40,
+    "val_psnr": 17.987167358398438,
+    "train_loss": -1.418795680999756
+   }
+  ],
+  "seconds": 3.3,
+  "steps": 40,
+  "type": "mri"
+ },
+ {
+  "method": "hetero",
+  "seed": 1,
+  "best_val_psnr": 17.47748374938965,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 16.021045684814453,
+    "train_loss": -0.09853121163323522
+   },
+   {
+    "step": 40,
+    "val_psnr": 17.47748374938965,
+    "train_loss": -1.3302174180746078
+   }
+  ],
+  "seconds": 3.3,
+  "steps": 40,
+  "type": "mri"
+ },
+ {
+  "method": "quantile",
+  "seed": 0,
+  "best_val_psnr": 17.377538681030273,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 17.30245590209961,
+    "train_loss": 0.05664040148258209
+   },
+   {
+    "step": 40,
+    "val_psnr": 17.377538681030273,
+    "train_loss": 0.02523160194978118
+   }
+  ],
+  "seconds": 3.4,
+  "steps": 40,
+  "type": "mri"
+ },
+ {
+  "method": "unrolled",
+  "seed": 0,
+  "best_val_psnr": 18.147802352905273,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 17.587108612060547,
+    "train_loss": 0.1626875504851341
+   },
+   {
+    "step": 40,
+    "val_psnr": 18.147802352905273,
+    "train_loss": 0.07027017958462238
+   }
+  ],
+  "seconds": 12.5,
+  "steps": 40,
+  "type": "mri"
+ }
+]

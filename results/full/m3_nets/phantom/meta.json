@@ -1,0 +1,104 @@
+{
+ "config": {
+  "profile": "full",
+  "data": {
+   "name": "phantom",
+   "n_images": 600,
+   "size": 128,
+   "seed": 1234
+  },
+  "methods": {
+   "unet": [
+    0,
+    1,
+    2
+   ],
+   "hetero": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "quantile": [
+    0,
+    1,
+    2
+   ],
+   "unrolled": [
+    0,
+    1,
+    2
+   ]
+  },
+  "train": {
+   "base": 16,
+   "batch": 16,
+   "lr": 0.001,
+   "steps": 4000,
+   "eval_every": 500,
+   "n_val": 32,
+   "warmup_frac": 0.1,
+   "nll_mode": "faithful",
+   "mc_samples": 16,
+   "eval_batch": 32
+  },
+  "eval_dseeds": [
+   0,
+   1,
+   2
+  ],
+  "tasks": {
+   "denoise_s0.03": {
+    "type": "denoise",
+    "sigma": 0.03
+   },
+   "denoise_s0.06": {
+    "type": "denoise",
+    "sigma": 0.06
+   },
+   "denoise_s0.10": {
+    "type": "denoise",
+    "sigma": 0.1
+   },
+   "denoise_s0.15": {
+    "type": "denoise",
+    "sigma": 0.15
+   },
+   "mri_R2": {
+    "type": "mri",
+    "R": 2,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "mri_R4": {
+    "type": "mri",
+    "R": 4,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "mri_R8": {
+    "type": "mri",
+    "R": 8,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "inpaint_mixed": {
+    "type": "inpaint",
+    "mask": "mixed",
+    "sigma": 0.01
+   }
+  }
+ },
+ "git": "d1326db",
+ "python": "3.12.9",
+ "torch": "2.11.0+cu126",
+ "device": "NVIDIA GeForce GTX 1660 Ti with Max-Q Design",
+ "wall_seconds": 2554.3,
+ "n_slices": {
+  "train": 360,
+  "val": 60,
+  "cal": 90,
+  "test": 90
+ }
+}

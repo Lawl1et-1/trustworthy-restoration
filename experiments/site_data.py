@@ -1,0 +1,91 @@
+"""Project page data: collects the result files into docs/data/results.json for docs/index.html.
+
+  python -m experiments.site_data [--profile full]
+
+Nothing on the page is typed in by hand: every number comes from results/<profile>/... through this script.
+Datasets whose M3 tables are missing are written as {"status": "pending"} so the page says so.
+"""
+import argparse
+import datetime as dt
+import json
+import pathlib
+import subprocess
+
+import pandas as pd
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+DATASETS = ["phantom", "msd"]
+VERDICT = {"lo": 0.87, "hi": 0.93}  # 90 % nominal: within 3 points holds, below is overconfident, above conservative
+
+
+def _git():
+    try:
+        return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, text=True).strip()
+    except Exception:
+        return "unknown"
+
+
+def _records(df):
+    return json.loads(df.to_json(orient="records", double_precision=4))
+
+
+def collect(profile):
+    out = {"generated": dt.date.today().isoformat(), "git": _git(), "profile": profile, "verdict_band": VERDICT,
+           "datasets": {}}
+    for ds in DATASETS:
+        m3 = ROOT / "results" / profile / "m3_nets" / ds
+        m2 = ROOT / "results" / profile / "m2_classical" / ds
+        entry = {}
+        if (m2 / "summary.csv").exists():
+            s2 = pd.read_csv(m2 / "summary.csv")
+            entry["classical"] = _records(s2[["split", "task", "method", "psnr", "psnr_lo", "psnr_hi", "ssim",
+                                              "n_patients"]])
+        if (m3 / "comparison.csv").exists():
+            entry["comparison"] = _records(pd.read_csv(m3 / "comparison.csv"))
+            entry["uncertainty"] = _records(pd.read_csv(m3 / "uncertainty.csv"))
+            if (m3 / "shift.csv").exists():
+                entry["shift"] = _records(pd.read_csv(m3 / "shift.csv"))
+            meta = json.loads((m3 / "meta.json").read_text()) if (m3 / "meta.json").exists() else {}
+            summ = pd.read_csv(m3 / "summary.csv")
+            entry["n_patients"] = {sp: int(g.n_patients.max()) for sp, g in summ.groupby("split")}
+            entry["n_slices"] = meta.get("n_slices")
+            entry["device"] = meta.get("device")
+            if (m3 / "train_logs.json").exists():
+                entry["n_networks"] = len(json.loads((m3 / "train_logs.json").read_text()))
+            entry["status"] = "done"
+        else:
+            entry["status"] = "pending"
+        demo = ROOT / "docs" / "demo" / ds / "manifest.json"
+        if demo.exists():
+            entry["demo"] = f"demo/{ds}/manifest.json"
+        out["datasets"][ds] = entry
+    # in-browser networks for "try your own image": the MSD (real MRI) set when exported, else the phantom set
+    for ds in ("msd", "phantom"):
+        if (ROOT / "docs" / "models" / ds / "models.json").exists():
+            out["models"] = f"models/{ds}/models.json"
+            break
+    # example image for that demo: the first IXI gallery scan (a hospital the models never saw), else a phantom
+    from PIL import Image
+    for ds, split, label in (("msd", "ood", "Example: IXI test scan, {site}, a hospital the models never saw"),
+                             ("phantom", "test", "Example: a test phantom")):
+        mf = ROOT / "docs" / "demo" / ds / "manifest.json"
+        if mf.exists():
+            th = json.loads(mf.read_text()).get("thumbs", {}).get(split)
+            if th:
+                im = Image.open(mf.parent / th["file"])
+                t = im.size[1]
+                im.crop((0, 0, t, t)).save(ROOT / "docs" / "demo" / "example.png")
+                out["example"] = {"src": "demo/example.png", "label": label.format(site=th["site"][0])}
+                break
+    return out
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--profile", default="full")
+    a = ap.parse_args()
+    data = collect(a.profile)
+    p = ROOT / "docs" / "data" / "results.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(data, indent=1))
+    print("wrote", p.relative_to(ROOT), {k: v["status"] for k, v in data["datasets"].items()})

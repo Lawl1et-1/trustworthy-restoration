@@ -51,7 +51,8 @@ class UNet(nn.Module):
         self.out = nn.Conv2d(ch[0], cout, 1)
         self.base = base
 
-    def forward(self, x, t=None):
+    def features(self, x, t=None):
+        """Last full-resolution feature map (base channels), before the 1x1 output conv."""
         temb = self.tmlp(timestep_embedding(t, self.base)) if self.tdim else None
         h = self.e0(self.inc(x), temb)
         skips = [h]
@@ -61,7 +62,10 @@ class UNet(nn.Module):
         h = self.mid(skips.pop(), temb)
         for blk in self.up:
             h = blk(torch.cat([F.interpolate(h, scale_factor=2, mode="nearest"), skips.pop()], 1), temb)
-        return self.out(h)
+        return h
+
+    def forward(self, x, t=None):
+        return self.out(self.features(x, t))
 
 
 class Unrolled(nn.Module):

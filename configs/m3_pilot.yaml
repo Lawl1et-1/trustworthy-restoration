@@ -1,0 +1,11 @@
+# Pilot (not part of the results): how many steps until val PSNR plateaus, and is hetero NLL stable?
+profile: pilot
+data: {name: phantom, n_images: 600, size: 128, seed: 1234}
+tasks:
+  denoise_s0.03: {type: denoise, sigma: 0.03}
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  denoise_s0.10: {type: denoise, sigma: 0.10}
+  denoise_s0.15: {type: denoise, sigma: 0.15}
+methods: {unet: [0], hetero: [0]}
+train: {base: 16, batch: 16, lr: 0.001, steps: 4000, eval_every: 500, n_val: 32, warmup_frac: 0.1, mc_samples: 16, eval_batch: 32}
+eval_dseeds: [0]

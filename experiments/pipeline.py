@@ -27,12 +27,17 @@ STAGES = {
     "smoke": [
         ("-m", "pytest", "-q", "tests"),
         ("-m", "experiments.run_task", "--config", "configs/smoke.yaml"),
+        ("-m", "experiments.m3_nets", "--config", "configs/m3_smoke.yaml"),
+        ("-m", "experiments.m3_tables", "--profile", "smoke"),
     ],
     "reproduce": [
         ("-m", "pytest", "-q", "tests"),
         ("-m", "experiments.run_task", "--config", "configs/full_phantom.yaml"),
         ("-m", "experiments.run_task", "--config", "configs/full_msd.yaml"),
         ("-m", "experiments.m2_tables"),
+        ("-m", "experiments.m3_nets", "--config", "configs/m3_full_phantom.yaml"),
+        ("-m", "experiments.m3_nets", "--config", "configs/m3_full_msd.yaml"),
+        ("-m", "experiments.m3_tables"),
     ],
     "test": [("-m", "pytest", "-q", "tests")],
     "data": [("-m", "experiments.prepare_data", "--msd", "data/raw/msd/Task01_BrainTumour.tar",
