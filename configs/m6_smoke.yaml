@@ -1,0 +1,12 @@
+# M6 smoke: CPU, smoke phantoms and the smoke M3/M4 checkpoints. Checks the pipeline, not the numbers.
+profile: smoke
+cpu: true
+data: {name: phantom, n_images: 60, size: 64, seed: 1234, max_slices: {test: 12}}
+tasks:
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}
+nets: [configs/m3_smoke.yaml, configs/m4_smoke.yaml]
+alpha: 0.1
+delta: 0.1
+eval_batch: 16
