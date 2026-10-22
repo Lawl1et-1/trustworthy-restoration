@@ -2,6 +2,7 @@
 
   python -m experiments.m3_tables                  full profile, every dataset with both M2 and M3 results
   python -m experiments.m3_tables --profile smoke
+  python -m experiments.m3_tables --stage m4_gen  the same tables for the M4 generative restorers
 
 M2 and M3 draw their test degradations from the same streams (task_generator(task, split, dseed)), so each
 test image is degraded identically for every method and the comparison can be paired per patient.
@@ -30,7 +31,7 @@ from src.eval.stats import paired_bootstrap
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 INPUT = {"denoise": "noisy", "mri": "zero_filled", "inpaint": "masked"}
-ORDER = ["unet", "mcdropout", "hetero", "ensemble", "quantile", "unrolled"]
+ORDER = ["unet", "mcdropout", "hetero", "ensemble", "quantile", "unrolled", "diffusion", "diffusion_sample", "gan"]
 
 
 def _ttype(task):
@@ -150,9 +151,9 @@ def markdown(comp, unc, sh):
     return "\n".join(out)
 
 
-def run(profile):
+def run(profile, stage="m3_nets"):
     done = []
-    for m3dir in sorted((ROOT / "results" / profile / "m3_nets").glob("*")):
+    for m3dir in sorted((ROOT / "results" / profile / stage).glob("*")):
         ds = m3dir.name
         m2dir = ROOT / "results" / profile / "m2_classical" / ds
         need = [m3dir / "summary.csv", m3dir / "per_image.csv.gz", m2dir / "summary.csv", m2dir / "per_image.csv.gz"]
@@ -180,6 +181,8 @@ def run(profile):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--profile", default="full")
-    res = run(ap.parse_args().profile)
+    ap.add_argument("--stage", default="m3_nets", help="m3_nets or m4_gen: which learned restorers to compare")
+    a = ap.parse_args()
+    res = run(a.profile, a.stage)
     if any(p for _, p in res):
         sys.exit(1)
