@@ -1,0 +1,67 @@
+{
+ "dataset": "phantom",
+ "size": 128,
+ "models": {
+  "denoise_hetero": {
+   "file": "denoise_hetero.onnx",
+   "bytes": 3309207,
+   "inputs": [
+    "inp",
+    "cond"
+   ],
+   "checkpoint": "denoise_hetero_s0.pt"
+  },
+  "inpaint_hetero": {
+   "file": "inpaint_hetero.onnx",
+   "bytes": 3309207,
+   "inputs": [
+    "inp",
+    "cond"
+   ],
+   "checkpoint": "inpaint_hetero_s0.pt"
+  },
+  "mri_hetero": {
+   "file": "mri_hetero.onnx",
+   "bytes": 3309207,
+   "inputs": [
+    "inp",
+    "cond"
+   ],
+   "checkpoint": "mri_hetero_s0.pt"
+  },
+  "mri_unrolled": {
+   "file": "mri_unrolled.onnx",
+   "bytes": 5060994,
+   "inputs": [
+    "inp",
+    "cond",
+    "mask",
+    "y_re",
+    "y_im"
+   ],
+   "checkpoint": "mri_unrolled_s0.pt"
+  }
+ },
+ "max_abs_err": {
+  "denoise_hetero": 1.9222497940063477e-06,
+  "inpaint_hetero": 7.867813110351562e-06,
+  "mri_hetero": 1.817941665649414e-06,
+  "mri_unrolled": 2.086162567138672e-06
+ },
+ "degradations": {
+  "denoise_sigmas": [
+   0.03,
+   0.06,
+   0.1,
+   0.15
+  ],
+  "mri_R": [
+   2,
+   4,
+   8
+  ],
+  "mri_sigma": 0.02,
+  "mri_center_frac": 0.08,
+  "inpaint_sigma": 0.01
+ }
+}

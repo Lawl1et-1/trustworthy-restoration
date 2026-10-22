@@ -1,0 +1,4763 @@
+{
+ "dataset": "msd",
+ "emax": 0.15,
+ "tile": 128,
+ "rule": "is a fixed rule decided before looking at any output, never a pick of good-looking cases:\n  phantom   the first 9 test phantoms (sorted id) that contain at least one lesion\n  msd       the first 9 test patients (sorted id), each at its slice with the largest tumour area\n  ixi       the first 3 subjects of each site (sorted id), each at its middle slice",
+ "items": [
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "BRATS_008",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_3_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.829181671142578
+    },
+    "bm3d": {
+     "psnr": 29.905860900878906
+    },
+    "unet": {
+     "psnr": 32.21617889404297
+    },
+    "mcdropout": {
+     "psnr": 32.21099090576172,
+     "cov90": 0.19954084560933616
+    },
+    "hetero": {
+     "psnr": 32.08517074584961,
+     "cov90": 0.9303615840826478
+    },
+    "ensemble": {
+     "psnr": 32.159175872802734,
+     "cov90": 0.9303615840826478
+    },
+    "quantile": {
+     "psnr": 32.01637649536133,
+     "cov90": 0.9206045532810407
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "BRATS_022",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_12_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.78061866760254
+    },
+    "bm3d": {
+     "psnr": 30.11014175415039
+    },
+    "unet": {
+     "psnr": 32.81402587890625
+    },
+    "mcdropout": {
+     "psnr": 32.84845733642578,
+     "cov90": 0.2685005811700891
+    },
+    "hetero": {
+     "psnr": 32.464664459228516,
+     "cov90": 0.942464161177838
+    },
+    "ensemble": {
+     "psnr": 32.57859420776367,
+     "cov90": 0.9593180937621077
+    },
+    "quantile": {
+     "psnr": 32.571956634521484,
+     "cov90": 0.9382022471910112
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 19,
+   "pid": "BRATS_025",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_19_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.77334976196289
+    },
+    "bm3d": {
+     "psnr": 29.781496047973633
+    },
+    "unet": {
+     "psnr": 32.31884765625
+    },
+    "mcdropout": {
+     "psnr": 32.337921142578125,
+     "cov90": 0.25418371141688356
+    },
+    "hetero": {
+     "psnr": 32.22932434082031,
+     "cov90": 0.9494235775381182
+    },
+    "ensemble": {
+     "psnr": 32.373844146728516,
+     "cov90": 0.9455187802156936
+    },
+    "quantile": {
+     "psnr": 32.15419006347656,
+     "cov90": 0.9377091855708442
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 28,
+   "pid": "BRATS_030",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_28_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.696077346801758
+    },
+    "bm3d": {
+     "psnr": 29.36756134033203
+    },
+    "unet": {
+     "psnr": 32.15155029296875
+    },
+    "mcdropout": {
+     "psnr": 32.154563903808594,
+     "cov90": 0.14820359281437123
+    },
+    "hetero": {
+     "psnr": 32.1005973815918,
+     "cov90": 0.9007698887938409
+    },
+    "ensemble": {
+     "psnr": 32.09995651245117,
+     "cov90": 0.9108212147134302
+    },
+    "quantile": {
+     "psnr": 31.951534271240234,
+     "cov90": 0.9080410607356715
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 34,
+   "pid": "BRATS_050",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_34_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.633468627929688
+    },
+    "bm3d": {
+     "psnr": 29.102088928222656
+    },
+    "unet": {
+     "psnr": 31.053451538085938
+    },
+    "mcdropout": {
+     "psnr": 31.066051483154297,
+     "cov90": 0.16757821045723031
+    },
+    "hetero": {
+     "psnr": 31.144790649414062,
+     "cov90": 0.8766134325092978
+    },
+    "ensemble": {
+     "psnr": 31.275728225708008,
+     "cov90": 0.8836140888208269
+    },
+    "quantile": {
+     "psnr": 30.977392196655273,
+     "cov90": 0.8827390067818858
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 44,
+   "pid": "BRATS_057",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_44_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.631521224975586
+    },
+    "bm3d": {
+     "psnr": 30.482175827026367
+    },
+    "unet": {
+     "psnr": 32.368499755859375
+    },
+    "mcdropout": {
+     "psnr": 32.33671188354492,
+     "cov90": 0.24841064280668712
+    },
+    "hetero": {
+     "psnr": 32.35797882080078,
+     "cov90": 0.9281846008947492
+    },
+    "ensemble": {
+     "psnr": 32.63739776611328,
+     "cov90": 0.9366611725924182
+    },
+    "quantile": {
+     "psnr": 32.27951431274414,
+     "cov90": 0.9093477748999294
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 52,
+   "pid": "BRATS_059",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_52_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.746084213256836
+    },
+    "bm3d": {
+     "psnr": 29.413040161132812
+    },
+    "unet": {
+     "psnr": 31.12302589416504
+    },
+    "mcdropout": {
+     "psnr": 31.129955291748047,
+     "cov90": 0.19109896544993166
+    },
+    "hetero": {
+     "psnr": 31.277606964111328,
+     "cov90": 0.9010345500683193
+    },
+    "ensemble": {
+     "psnr": 31.357574462890625,
+     "cov90": 0.9002537575639273
+    },
+    "quantile": {
+     "psnr": 31.05636215209961,
+     "cov90": 0.9113800507515127
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 59,
+   "pid": "BRATS_060",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_59_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.87444496154785
+    },
+    "bm3d": {
+     "psnr": 29.039932250976562
+    },
+    "unet": {
+     "psnr": 30.315502166748047
+    },
+    "mcdropout": {
+     "psnr": 30.288768768310547,
+     "cov90": 0.16393758428048544
+    },
+    "hetero": {
+     "psnr": 30.481842041015625,
+     "cov90": 0.8788287420535542
+    },
+    "ensemble": {
+     "psnr": 30.546993255615234,
+     "cov90": 0.8813330764785205
+    },
+    "quantile": {
+     "psnr": 30.287139892578125,
+     "cov90": 0.8747832787516856
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 67,
+   "pid": "BRATS_063",
+   "site": "msd",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_67_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 17.755794525146484
+    },
+    "bm3d": {
+     "psnr": 29.713945388793945
+    },
+    "unet": {
+     "psnr": 31.96087646484375
+    },
+    "mcdropout": {
+     "psnr": 31.97183609008789,
+     "cov90": 0.2167972674301788
+    },
+    "hetero": {
+     "psnr": 31.850605010986328,
+     "cov90": 0.9138034960819771
+    },
+    "ensemble": {
+     "psnr": 31.80168342590332,
+     "cov90": 0.9246534056660639
+    },
+    "quantile": {
+     "psnr": 31.707582473754883,
+     "cov90": 0.9117942535664054
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 4,
+   "pid": "IXI002-Guys-0828",
+   "site": "Guys",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_4_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.03351593017578
+    },
+    "bm3d": {
+     "psnr": 29.16733741760254
+    },
+    "unet": {
+     "psnr": 27.093475341796875
+    },
+    "mcdropout": {
+     "psnr": 27.116106033325195,
+     "cov90": 0.150381033022862
+    },
+    "hetero": {
+     "psnr": 27.98539924621582,
+     "cov90": 0.8672311600338696
+    },
+    "ensemble": {
+     "psnr": 27.841121673583984,
+     "cov90": 0.846909398814564
+    },
+    "quantile": {
+     "psnr": 27.032129287719727,
+     "cov90": 0.7849280270956817
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 44,
+   "pid": "IXI016-Guys-0697",
+   "site": "Guys",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_44_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.04781723022461
+    },
+    "bm3d": {
+     "psnr": 28.436378479003906
+    },
+    "unet": {
+     "psnr": 27.89590835571289
+    },
+    "mcdropout": {
+     "psnr": 27.903911590576172,
+     "cov90": 0.13912598156367362
+    },
+    "hetero": {
+     "psnr": 28.134193420410156,
+     "cov90": 0.8514851485148515
+    },
+    "ensemble": {
+     "psnr": 28.035667419433594,
+     "cov90": 0.8364629566404916
+    },
+    "quantile": {
+     "psnr": 27.671466827392578,
+     "cov90": 0.8076135199726869
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 52,
+   "pid": "IXI017-Guys-0698",
+   "site": "Guys",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_52_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.044111251831055
+    },
+    "bm3d": {
+     "psnr": 28.86595916748047
+    },
+    "unet": {
+     "psnr": 27.146549224853516
+    },
+    "mcdropout": {
+     "psnr": 27.16309356689453,
+     "cov90": 0.1891323400525855
+    },
+    "hetero": {
+     "psnr": 27.88038444519043,
+     "cov90": 0.8730937773882559
+    },
+    "ensemble": {
+     "psnr": 27.74285316467285,
+     "cov90": 0.8499561787905346
+    },
+    "quantile": {
+     "psnr": 27.008047103881836,
+     "cov90": 0.7936897458369851
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 12,
+   "pid": "IXI012-HH-1211",
+   "site": "HH",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_12_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.264467239379883
+    },
+    "bm3d": {
+     "psnr": 28.32180404663086
+    },
+    "unet": {
+     "psnr": 26.193355560302734
+    },
+    "mcdropout": {
+     "psnr": 26.240665435791016,
+     "cov90": 0.18321964529331514
+    },
+    "hetero": {
+     "psnr": 26.376771926879883,
+     "cov90": 0.7956343792633015
+    },
+    "ensemble": {
+     "psnr": 26.274925231933594,
+     "cov90": 0.7778990450204638
+    },
+    "quantile": {
+     "psnr": 25.998085021972656,
+     "cov90": 0.7747612551159618
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 20,
+   "pid": "IXI013-HH-1212",
+   "site": "HH",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_20_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.20050621032715
+    },
+    "bm3d": {
+     "psnr": 28.726478576660156
+    },
+    "unet": {
+     "psnr": 27.563364028930664
+    },
+    "mcdropout": {
+     "psnr": 27.5888614654541,
+     "cov90": 0.18771432831370205
+    },
+    "hetero": {
+     "psnr": 27.932723999023438,
+     "cov90": 0.8647681526763084
+    },
+    "ensemble": {
+     "psnr": 28.100284576416016,
+     "cov90": 0.8498583569405099
+    },
+    "quantile": {
+     "psnr": 27.66611099243164,
+     "cov90": 0.8239153123602206
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 28,
+   "pid": "IXI014-HH-1236",
+   "site": "HH",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_28_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.259326934814453
+    },
+    "bm3d": {
+     "psnr": 28.7232666015625
+    },
+    "unet": {
+     "psnr": 27.053478240966797
+    },
+    "mcdropout": {
+     "psnr": 27.086191177368164,
+     "cov90": 0.16372682044323839
+    },
+    "hetero": {
+     "psnr": 27.684106826782227,
+     "cov90": 0.8775817880295492
+    },
+    "ensemble": {
+     "psnr": 27.791011810302734,
+     "cov90": 0.8700437207899895
+    },
+    "quantile": {
+     "psnr": 27.224308013916016,
+     "cov90": 0.8126036484245439
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 180,
+   "pid": "IXI035-IOP-0873",
+   "site": "IOP",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_180_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.19332504272461
+    },
+    "bm3d": {
+     "psnr": 27.9611759185791
+    },
+    "unet": {
+     "psnr": 26.299148559570312
+    },
+    "mcdropout": {
+     "psnr": 26.28827667236328,
+     "cov90": 0.19662317728319267
+    },
+    "hetero": {
+     "psnr": 27.34781265258789,
+     "cov90": 0.8686108979278588
+    },
+    "ensemble": {
+     "psnr": 27.444408416748047,
+     "cov90": 0.8736761320030698
+    },
+    "quantile": {
+     "psnr": 26.262922286987305,
+     "cov90": 0.7883346124328473
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 652,
+   "pid": "IXI230-IOP-0869",
+   "site": "IOP",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_652_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.12325668334961
+    },
+    "bm3d": {
+     "psnr": 28.184043884277344
+    },
+    "unet": {
+     "psnr": 26.5811824798584
+    },
+    "mcdropout": {
+     "psnr": 26.656612396240234,
+     "cov90": 0.19667221297836934
+    },
+    "hetero": {
+     "psnr": 27.511119842529297,
+     "cov90": 0.8479201331114808
+    },
+    "ensemble": {
+     "psnr": 27.6195125579834,
+     "cov90": 0.8469217970049917
+    },
+    "quantile": {
+     "psnr": 26.97869300842285,
+     "cov90": 0.7863560732113145
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 660,
+   "pid": "IXI231-IOP-0866",
+   "site": "IOP",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "ood_660_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.093215942382812
+    },
+    "bm3d": {
+     "psnr": 28.22946548461914
+    },
+    "unet": {
+     "psnr": 27.456165313720703
+    },
+    "mcdropout": {
+     "psnr": 27.487449645996094,
+     "cov90": 0.1849529780564263
+    },
+    "hetero": {
+     "psnr": 28.120452880859375,
+     "cov90": 0.8463949843260188
+    },
+    "ensemble": {
+     "psnr": 28.082271575927734,
+     "cov90": 0.8404737025426681
+    },
+    "quantile": {
+     "psnr": 27.635604858398438,
+     "cov90": 0.7988505747126436
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "BRATS_008",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_3_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 27.967361450195312
+    },
+    "tv": {
+     "psnr": 31.42767906188965
+    },
+    "unet": {
+     "psnr": 31.093624114990234
+    },
+    "mcdropout": {
+     "psnr": 31.09368324279785,
+     "cov90": 0.2228811938014157
+    },
+    "hetero": {
+     "psnr": 30.8371524810791,
+     "cov90": 0.9437535871436771
+    },
+    "ensemble": {
+     "psnr": 31.170101165771484,
+     "cov90": 0.9579108475224795
+    },
+    "quantile": {
+     "psnr": 30.928346633911133,
+     "cov90": 0.9307442127415343
+    },
+    "unrolled": {
+     "psnr": 32.794437408447266
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "BRATS_022",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_12_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.675708770751953
+    },
+    "tv": {
+     "psnr": 31.999303817749023
+    },
+    "unet": {
+     "psnr": 31.685598373413086
+    },
+    "mcdropout": {
+     "psnr": 31.689369201660156,
+     "cov90": 0.25881441301820995
+    },
+    "hetero": {
+     "psnr": 31.171241760253906,
+     "cov90": 0.9633862843858969
+    },
+    "ensemble": {
+     "psnr": 31.49917984008789,
+     "cov90": 0.9744285160790391
+    },
+    "quantile": {
+     "psnr": 31.167579650878906,
+     "cov90": 0.9548624564122433
+    },
+    "unrolled": {
+     "psnr": 33.872413635253906
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 19,
+   "pid": "BRATS_025",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_19_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.76673126220703
+    },
+    "tv": {
+     "psnr": 31.86699867248535
+    },
+    "unet": {
+     "psnr": 31.71891212463379
+    },
+    "mcdropout": {
+     "psnr": 31.664018630981445,
+     "cov90": 0.2811454072145779
+    },
+    "hetero": {
+     "psnr": 31.148664474487305,
+     "cov90": 0.9631833395314243
+    },
+    "ensemble": {
+     "psnr": 31.74325942993164,
+     "cov90": 0.978058757902566
+    },
+    "quantile": {
+     "psnr": 31.181838989257812,
+     "cov90": 0.9470063220528078
+    },
+    "unrolled": {
+     "psnr": 33.75186538696289
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 28,
+   "pid": "BRATS_030",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_28_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.948490142822266
+    },
+    "tv": {
+     "psnr": 26.568490982055664
+    },
+    "unet": {
+     "psnr": 27.883604049682617
+    },
+    "mcdropout": {
+     "psnr": 27.86676788330078,
+     "cov90": 0.17964071856287422
+    },
+    "hetero": {
+     "psnr": 27.60900115966797,
+     "cov90": 0.8475192472198461
+    },
+    "ensemble": {
+     "psnr": 27.8195858001709,
+     "cov90": 0.8661248930710008
+    },
+    "quantile": {
+     "psnr": 27.52305030822754,
+     "cov90": 0.836398631308811
+    },
+    "unrolled": {
+     "psnr": 28.285158157348633
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 34,
+   "pid": "BRATS_050",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_34_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 27.82423210144043
+    },
+    "tv": {
+     "psnr": 30.537696838378906
+    },
+    "unet": {
+     "psnr": 30.952653884887695
+    },
+    "mcdropout": {
+     "psnr": 30.929882049560547,
+     "cov90": 0.19951870487858236
+    },
+    "hetero": {
+     "psnr": 30.71816635131836,
+     "cov90": 0.9398381098227959
+    },
+    "ensemble": {
+     "psnr": 31.12208366394043,
+     "cov90": 0.9527455698971778
+    },
+    "quantile": {
+     "psnr": 30.731761932373047,
+     "cov90": 0.907241303872238
+    },
+    "unrolled": {
+     "psnr": 32.71973419189453
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 44,
+   "pid": "BRATS_057",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_44_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 28.08497428894043
+    },
+    "tv": {
+     "psnr": 32.32674026489258
+    },
+    "unet": {
+     "psnr": 31.300434112548828
+    },
+    "mcdropout": {
+     "psnr": 31.291099548339844,
+     "cov90": 0.2307511184365434
+    },
+    "hetero": {
+     "psnr": 31.22640609741211,
+     "cov90": 0.959265363786202
+    },
+    "ensemble": {
+     "psnr": 31.49576187133789,
+     "cov90": 0.960207205085943
+    },
+    "quantile": {
+     "psnr": 30.792564392089844,
+     "cov90": 0.8883918059806922
+    },
+    "unrolled": {
+     "psnr": 33.20405197143555
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 52,
+   "pid": "BRATS_059",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_52_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.368432998657227
+    },
+    "tv": {
+     "psnr": 28.69154930114746
+    },
+    "unet": {
+     "psnr": 28.742238998413086
+    },
+    "mcdropout": {
+     "psnr": 28.748821258544922,
+     "cov90": 0.20593402303337893
+    },
+    "hetero": {
+     "psnr": 28.71427345275879,
+     "cov90": 0.8969353894202615
+    },
+    "ensemble": {
+     "psnr": 28.955429077148438,
+     "cov90": 0.9227015420651962
+    },
+    "quantile": {
+     "psnr": 28.684913635253906,
+     "cov90": 0.8526254147960179
+    },
+    "unrolled": {
+     "psnr": 30.306194305419922
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 59,
+   "pid": "BRATS_060",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_59_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.484596252441406
+    },
+    "tv": {
+     "psnr": 28.761577606201172
+    },
+    "unet": {
+     "psnr": 28.651294708251953
+    },
+    "mcdropout": {
+     "psnr": 28.634510040283203,
+     "cov90": 0.18281641302253904
+    },
+    "hetero": {
+     "psnr": 28.32805824279785,
+     "cov90": 0.8778655365054903
+    },
+    "ensemble": {
+     "psnr": 28.71762466430664,
+     "cov90": 0.9086881140435369
+    },
+    "quantile": {
+     "psnr": 28.38125228881836,
+     "cov90": 0.8713157387786554
+    },
+    "unrolled": {
+     "psnr": 30.706310272216797
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 67,
+   "pid": "BRATS_063",
+   "site": "msd",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_67_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.280475616455078
+    },
+    "tv": {
+     "psnr": 29.412328720092773
+    },
+    "unet": {
+     "psnr": 30.130508422851562
+    },
+    "mcdropout": {
+     "psnr": 30.119850158691406,
+     "cov90": 0.22061482820976497
+    },
+    "hetero": {
+     "psnr": 29.82975196838379,
+     "cov90": 0.9238497086598353
+    },
+    "ensemble": {
+     "psnr": 30.111385345458984,
+     "cov90": 0.9389190275266225
+    },
+    "quantile": {
+     "psnr": 29.77953338623047,
+     "cov90": 0.9067711472774764
+    },
+    "unrolled": {
+     "psnr": 31.89263916015625
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 4,
+   "pid": "IXI002-Guys-0828",
+   "site": "Guys",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_4_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.61197280883789
+    },
+    "tv": {
+     "psnr": 25.06338119506836
+    },
+    "unet": {
+     "psnr": 25.12699317932129
+    },
+    "mcdropout": {
+     "psnr": 25.146629333496094,
+     "cov90": 0.1627434377646063
+    },
+    "hetero": {
+     "psnr": 24.966915130615234,
+     "cov90": 0.7256562235393734
+    },
+    "ensemble": {
+     "psnr": 25.344350814819336,
+     "cov90": 0.7698560541913633
+    },
+    "quantile": {
+     "psnr": 24.96708869934082,
+     "cov90": 0.7380186282811176
+    },
+    "unrolled": {
+     "psnr": 26.337244033813477
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 44,
+   "pid": "IXI016-Guys-0697",
+   "site": "Guys",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_44_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.41118621826172
+    },
+    "tv": {
+     "psnr": 26.1649112701416
+    },
+    "unet": {
+     "psnr": 26.43367576599121
+    },
+    "mcdropout": {
+     "psnr": 26.491605758666992,
+     "cov90": 0.2140662342096279
+    },
+    "hetero": {
+     "psnr": 26.53451919555664,
+     "cov90": 0.8088084670536019
+    },
+    "ensemble": {
+     "psnr": 26.97967529296875,
+     "cov90": 0.8591669511778764
+    },
+    "quantile": {
+     "psnr": 26.50204849243164,
+     "cov90": 0.8702628883578013
+    },
+    "unrolled": {
+     "psnr": 27.809322357177734
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 52,
+   "pid": "IXI017-Guys-0698",
+   "site": "Guys",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_52_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.18347930908203
+    },
+    "tv": {
+     "psnr": 25.339370727539062
+    },
+    "unet": {
+     "psnr": 24.834182739257812
+    },
+    "mcdropout": {
+     "psnr": 24.809885025024414,
+     "cov90": 0.15670464504820336
+    },
+    "hetero": {
+     "psnr": 24.83828353881836,
+     "cov90": 0.7253286590709904
+    },
+    "ensemble": {
+     "psnr": 25.126588821411133,
+     "cov90": 0.7737072743207712
+    },
+    "quantile": {
+     "psnr": 24.842327117919922,
+     "cov90": 0.7735319894829097
+    },
+    "unrolled": {
+     "psnr": 25.81997299194336
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 12,
+   "pid": "IXI012-HH-1211",
+   "site": "HH",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_12_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.0886287689209
+    },
+    "tv": {
+     "psnr": 26.317121505737305
+    },
+    "unet": {
+     "psnr": 25.539203643798828
+    },
+    "mcdropout": {
+     "psnr": 25.5577449798584,
+     "cov90": 0.13369713506139158
+    },
+    "hetero": {
+     "psnr": 25.524200439453125,
+     "cov90": 0.7626193724420192
+    },
+    "ensemble": {
+     "psnr": 25.7528018951416,
+     "cov90": 0.8210095497953616
+    },
+    "quantile": {
+     "psnr": 25.497257232666016,
+     "cov90": 0.7657571623465211
+    },
+    "unrolled": {
+     "psnr": 25.734254837036133
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 20,
+   "pid": "IXI013-HH-1212",
+   "site": "HH",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_20_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.23674201965332
+    },
+    "tv": {
+     "psnr": 25.201465606689453
+    },
+    "unet": {
+     "psnr": 26.1530704498291
+    },
+    "mcdropout": {
+     "psnr": 26.166221618652344,
+     "cov90": 0.20023855673177282
+    },
+    "hetero": {
+     "psnr": 25.946617126464844,
+     "cov90": 0.7790368271954674
+    },
+    "ensemble": {
+     "psnr": 26.208419799804688,
+     "cov90": 0.8254062919338006
+    },
+    "quantile": {
+     "psnr": 25.98853874206543,
+     "cov90": 0.8006560310123751
+    },
+    "unrolled": {
+     "psnr": 26.47327423095703
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 28,
+   "pid": "IXI014-HH-1236",
+   "site": "HH",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_28_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.577791213989258
+    },
+    "tv": {
+     "psnr": 24.95267677307129
+    },
+    "unet": {
+     "psnr": 25.302406311035156
+    },
+    "mcdropout": {
+     "psnr": 25.304433822631836,
+     "cov90": 0.19071310116086237
+    },
+    "hetero": {
+     "psnr": 25.38362693786621,
+     "cov90": 0.7485300768882859
+    },
+    "ensemble": {
+     "psnr": 25.68012237548828,
+     "cov90": 0.7939092416704356
+    },
+    "quantile": {
+     "psnr": 25.41866683959961,
+     "cov90": 0.7518468264736922
+    },
+    "unrolled": {
+     "psnr": 26.29419708251953
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 180,
+   "pid": "IXI035-IOP-0873",
+   "site": "IOP",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_180_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.025638580322266
+    },
+    "tv": {
+     "psnr": 23.45277976989746
+    },
+    "unet": {
+     "psnr": 23.759044647216797
+    },
+    "mcdropout": {
+     "psnr": 23.744171142578125,
+     "cov90": 0.1510360706062932
+    },
+    "hetero": {
+     "psnr": 23.752418518066406,
+     "cov90": 0.7091327705295472
+    },
+    "ensemble": {
+     "psnr": 24.09113311767578,
+     "cov90": 0.7660782808902533
+    },
+    "quantile": {
+     "psnr": 23.614582061767578,
+     "cov90": 0.7366078280890254
+    },
+    "unrolled": {
+     "psnr": 25.07533836364746
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 652,
+   "pid": "IXI230-IOP-0869",
+   "site": "IOP",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_652_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 22.7808837890625
+    },
+    "tv": {
+     "psnr": 23.23413848876953
+    },
+    "unet": {
+     "psnr": 23.592620849609375
+    },
+    "mcdropout": {
+     "psnr": 23.623367309570312,
+     "cov90": 0.16605657237936777
+    },
+    "hetero": {
+     "psnr": 23.503313064575195,
+     "cov90": 0.6981697171381032
+    },
+    "ensemble": {
+     "psnr": 23.751516342163086,
+     "cov90": 0.7459234608985025
+    },
+    "quantile": {
+     "psnr": 23.50496482849121,
+     "cov90": 0.7236272878535774
+    },
+    "unrolled": {
+     "psnr": 24.62017250061035
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 660,
+   "pid": "IXI231-IOP-0866",
+   "site": "IOP",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "ood_660_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.87660026550293
+    },
+    "tv": {
+     "psnr": 24.55445098876953
+    },
+    "unet": {
+     "psnr": 24.616161346435547
+    },
+    "mcdropout": {
+     "psnr": 24.616174697875977,
+     "cov90": 0.15604319052594917
+    },
+    "hetero": {
+     "psnr": 24.653812408447266,
+     "cov90": 0.7115987460815048
+    },
+    "ensemble": {
+     "psnr": 24.832265853881836,
+     "cov90": 0.7614071752002787
+    },
+    "quantile": {
+     "psnr": 24.666271209716797,
+     "cov90": 0.7180424939045629
+    },
+    "unrolled": {
+     "psnr": 25.839675903320312
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "BRATS_008",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_3_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 27.308040618896484
+    },
+    "tv": {
+     "psnr": 29.772727966308594
+    },
+    "unet": {
+     "psnr": 29.953044891357422
+    },
+    "mcdropout": {
+     "psnr": 29.91982650756836,
+     "cov90": 0.2226898794719725
+    },
+    "hetero": {
+     "psnr": 29.842845916748047,
+     "cov90": 0.9460493590969964
+    },
+    "ensemble": {
+     "psnr": 29.987911224365234,
+     "cov90": 0.9584847905108093
+    },
+    "quantile": {
+     "psnr": 29.815853118896484,
+     "cov90": 0.9299789554237612
+    },
+    "unrolled": {
+     "psnr": 30.714685440063477
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "BRATS_022",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_12_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.6485538482666
+    },
+    "tv": {
+     "psnr": 29.291244506835938
+    },
+    "unet": {
+     "psnr": 30.21533203125
+    },
+    "mcdropout": {
+     "psnr": 30.19648551940918,
+     "cov90": 0.23363037582332424
+    },
+    "hetero": {
+     "psnr": 29.821958541870117,
+     "cov90": 0.9666795815575359
+    },
+    "ensemble": {
+     "psnr": 30.03849983215332,
+     "cov90": 0.9691979852770244
+    },
+    "quantile": {
+     "psnr": 29.51930046081543,
+     "cov90": 0.9486633087950407
+    },
+    "unrolled": {
+     "psnr": 31.14557647705078
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 19,
+   "pid": "BRATS_025",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_19_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.974140167236328
+    },
+    "tv": {
+     "psnr": 30.123111724853516
+    },
+    "unet": {
+     "psnr": 30.907947540283203
+    },
+    "mcdropout": {
+     "psnr": 30.896381378173828,
+     "cov90": 0.27668278170323546
+    },
+    "hetero": {
+     "psnr": 30.393259048461914,
+     "cov90": 0.9698772777984381
+    },
+    "ensemble": {
+     "psnr": 30.85329818725586,
+     "cov90": 0.9812197843064336
+    },
+    "quantile": {
+     "psnr": 30.4800968170166,
+     "cov90": 0.945146894756415
+    },
+    "unrolled": {
+     "psnr": 31.55918312072754
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 28,
+   "pid": "BRATS_030",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_28_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.83680534362793
+    },
+    "tv": {
+     "psnr": 25.85796546936035
+    },
+    "unet": {
+     "psnr": 27.723644256591797
+    },
+    "mcdropout": {
+     "psnr": 27.717077255249023,
+     "cov90": 0.18862275449101795
+    },
+    "hetero": {
+     "psnr": 27.37094497680664,
+     "cov90": 0.8761762189905903
+    },
+    "ensemble": {
+     "psnr": 27.622814178466797,
+     "cov90": 0.9014114627887083
+    },
+    "quantile": {
+     "psnr": 27.34699058532715,
+     "cov90": 0.8680496150556031
+    },
+    "unrolled": {
+     "psnr": 27.668758392333984
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 34,
+   "pid": "BRATS_050",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_34_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.482351303100586
+    },
+    "tv": {
+     "psnr": 27.455249786376953
+    },
+    "unet": {
+     "psnr": 28.670101165771484
+    },
+    "mcdropout": {
+     "psnr": 28.662832260131836,
+     "cov90": 0.19011157295996495
+    },
+    "hetero": {
+     "psnr": 28.41595458984375,
+     "cov90": 0.9138044191642967
+    },
+    "ensemble": {
+     "psnr": 28.614824295043945,
+     "cov90": 0.9264931087289433
+    },
+    "quantile": {
+     "psnr": 28.432262420654297,
+     "cov90": 0.8617370378472982
+    },
+    "unrolled": {
+     "psnr": 28.870038986206055
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 44,
+   "pid": "BRATS_057",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_44_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 26.188499450683594
+    },
+    "tv": {
+     "psnr": 28.719491958618164
+    },
+    "unet": {
+     "psnr": 29.961021423339844
+    },
+    "mcdropout": {
+     "psnr": 29.953937530517578,
+     "cov90": 0.21073699081704733
+    },
+    "hetero": {
+     "psnr": 29.77220916748047,
+     "cov90": 0.9585589828113963
+    },
+    "ensemble": {
+     "psnr": 29.99466896057129,
+     "cov90": 0.9597362844360725
+    },
+    "quantile": {
+     "psnr": 29.871768951416016,
+     "cov90": 0.8730868848599012
+    },
+    "unrolled": {
+     "psnr": 30.364418029785156
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 52,
+   "pid": "BRATS_059",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_52_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.339290618896484
+    },
+    "tv": {
+     "psnr": 27.39057731628418
+    },
+    "unet": {
+     "psnr": 28.759117126464844
+    },
+    "mcdropout": {
+     "psnr": 28.782262802124023,
+     "cov90": 0.22018348623853212
+    },
+    "hetero": {
+     "psnr": 28.648967742919922,
+     "cov90": 0.9305094671091158
+    },
+    "ensemble": {
+     "psnr": 28.829063415527344,
+     "cov90": 0.946320515323053
+    },
+    "quantile": {
+     "psnr": 28.517305374145508,
+     "cov90": 0.9022057388249073
+    },
+    "unrolled": {
+     "psnr": 29.65411949157715
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 59,
+   "pid": "BRATS_060",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_59_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.641103744506836
+    },
+    "tv": {
+     "psnr": 26.773584365844727
+    },
+    "unet": {
+     "psnr": 27.028968811035156
+    },
+    "mcdropout": {
+     "psnr": 27.043060302734375,
+     "cov90": 0.19052205740705064
+    },
+    "hetero": {
+     "psnr": 26.642044067382812,
+     "cov90": 0.8761317665189752
+    },
+    "ensemble": {
+     "psnr": 26.899028778076172,
+     "cov90": 0.9084954729339241
+    },
+    "quantile": {
+     "psnr": 26.61154556274414,
+     "cov90": 0.8668849932575612
+    },
+    "unrolled": {
+     "psnr": 27.73659896850586
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 67,
+   "pid": "BRATS_063",
+   "site": "msd",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_67_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.626962661743164
+    },
+    "tv": {
+     "psnr": 27.65991973876953
+    },
+    "unet": {
+     "psnr": 29.36905860900879
+    },
+    "mcdropout": {
+     "psnr": 29.323028564453125,
+     "cov90": 0.24211372312638135
+    },
+    "hetero": {
+     "psnr": 29.064237594604492,
+     "cov90": 0.9326903757283505
+    },
+    "ensemble": {
+     "psnr": 29.263505935668945,
+     "cov90": 0.9489652401044806
+    },
+    "quantile": {
+     "psnr": 29.00641632080078,
+     "cov90": 0.9250552541691782
+    },
+    "unrolled": {
+     "psnr": 30.61244010925293
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 4,
+   "pid": "IXI002-Guys-0828",
+   "site": "Guys",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_4_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.858577728271484
+    },
+    "tv": {
+     "psnr": 24.395343780517578
+    },
+    "unet": {
+     "psnr": 24.024599075317383
+    },
+    "mcdropout": {
+     "psnr": 24.026668548583984,
+     "cov90": 0.1388653683319221
+    },
+    "hetero": {
+     "psnr": 23.838909149169922,
+     "cov90": 0.7439458086367485
+    },
+    "ensemble": {
+     "psnr": 24.0572509765625,
+     "cov90": 0.7820491109229466
+    },
+    "quantile": {
+     "psnr": 23.93925666809082,
+     "cov90": 0.7317527519051651
+    },
+    "unrolled": {
+     "psnr": 24.902799606323242
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 44,
+   "pid": "IXI016-Guys-0697",
+   "site": "Guys",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_44_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.032804489135742
+    },
+    "tv": {
+     "psnr": 24.402570724487305
+    },
+    "unet": {
+     "psnr": 24.518413543701172
+    },
+    "mcdropout": {
+     "psnr": 24.550621032714844,
+     "cov90": 0.19050870604301806
+    },
+    "hetero": {
+     "psnr": 24.607807159423828,
+     "cov90": 0.7715944008193922
+    },
+    "ensemble": {
+     "psnr": 24.773778915405273,
+     "cov90": 0.8209286445885968
+    },
+    "quantile": {
+     "psnr": 24.610349655151367,
+     "cov90": 0.8226357118470468
+    },
+    "unrolled": {
+     "psnr": 24.727783203125
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 52,
+   "pid": "IXI017-Guys-0698",
+   "site": "Guys",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_52_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.38397216796875
+    },
+    "tv": {
+     "psnr": 23.83662223815918
+    },
+    "unet": {
+     "psnr": 23.40723991394043
+    },
+    "mcdropout": {
+     "psnr": 23.419321060180664,
+     "cov90": 0.14373356704645046
+    },
+    "hetero": {
+     "psnr": 23.299028396606445,
+     "cov90": 0.6992112182296231
+    },
+    "ensemble": {
+     "psnr": 23.484718322753906,
+     "cov90": 0.7535495179666959
+    },
+    "quantile": {
+     "psnr": 23.3834285736084,
+     "cov90": 0.7248028045574058
+    },
+    "unrolled": {
+     "psnr": 23.570415496826172
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 12,
+   "pid": "IXI012-HH-1211",
+   "site": "HH",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_12_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 25.81125259399414
+    },
+    "tv": {
+     "psnr": 26.065710067749023
+    },
+    "unet": {
+     "psnr": 24.95629119873047
+    },
+    "mcdropout": {
+     "psnr": 24.98234748840332,
+     "cov90": 0.14870395634379263
+    },
+    "hetero": {
+     "psnr": 24.919240951538086,
+     "cov90": 0.786493860845839
+    },
+    "ensemble": {
+     "psnr": 25.054161071777344,
+     "cov90": 0.8379263301500682
+    },
+    "quantile": {
+     "psnr": 24.846277236938477,
+     "cov90": 0.7724420190995908
+    },
+    "unrolled": {
+     "psnr": 24.965438842773438
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 20,
+   "pid": "IXI013-HH-1212",
+   "site": "HH",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_20_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 24.078453063964844
+    },
+    "tv": {
+     "psnr": 24.186573028564453
+    },
+    "unet": {
+     "psnr": 24.621870040893555
+    },
+    "mcdropout": {
+     "psnr": 24.599637985229492,
+     "cov90": 0.15580736543909346
+    },
+    "hetero": {
+     "psnr": 24.67836570739746,
+     "cov90": 0.7690472640524825
+    },
+    "ensemble": {
+     "psnr": 24.763103485107422,
+     "cov90": 0.8143730430893097
+    },
+    "quantile": {
+     "psnr": 24.769412994384766,
+     "cov90": 0.7507082152974505
+    },
+    "unrolled": {
+     "psnr": 24.6051025390625
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 28,
+   "pid": "IXI014-HH-1236",
+   "site": "HH",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_28_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.836423873901367
+    },
+    "tv": {
+     "psnr": 23.989126205444336
+    },
+    "unet": {
+     "psnr": 24.346363067626953
+    },
+    "mcdropout": {
+     "psnr": 24.35236930847168,
+     "cov90": 0.1780491481984019
+    },
+    "hetero": {
+     "psnr": 24.4082088470459,
+     "cov90": 0.7544097693351425
+    },
+    "ensemble": {
+     "psnr": 24.638633728027344,
+     "cov90": 0.7982813206693804
+    },
+    "quantile": {
+     "psnr": 24.37910270690918,
+     "cov90": 0.7412935323383085
+    },
+    "unrolled": {
+     "psnr": 24.68509292602539
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 180,
+   "pid": "IXI035-IOP-0873",
+   "site": "IOP",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_180_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 21.667049407958984
+    },
+    "tv": {
+     "psnr": 21.734298706054688
+    },
+    "unet": {
+     "psnr": 22.124176025390625
+    },
+    "mcdropout": {
+     "psnr": 22.10962677001953,
+     "cov90": 0.12003069838833458
+    },
+    "hetero": {
+     "psnr": 22.301544189453125,
+     "cov90": 0.7102072141212586
+    },
+    "ensemble": {
+     "psnr": 22.378524780273438,
+     "cov90": 0.7576362240982348
+    },
+    "quantile": {
+     "psnr": 22.16486358642578,
+     "cov90": 0.6971603990790484
+    },
+    "unrolled": {
+     "psnr": 22.21571922302246
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 652,
+   "pid": "IXI230-IOP-0869",
+   "site": "IOP",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_652_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 21.822460174560547
+    },
+    "tv": {
+     "psnr": 22.181102752685547
+    },
+    "unet": {
+     "psnr": 22.367887496948242
+    },
+    "mcdropout": {
+     "psnr": 22.367040634155273,
+     "cov90": 0.13793677204658905
+    },
+    "hetero": {
+     "psnr": 22.33746337890625,
+     "cov90": 0.7016638935108153
+    },
+    "ensemble": {
+     "psnr": 22.46980857849121,
+     "cov90": 0.7462562396006656
+    },
+    "quantile": {
+     "psnr": 22.24580955505371,
+     "cov90": 0.6928452579034942
+    },
+    "unrolled": {
+     "psnr": 22.752193450927734
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 660,
+   "pid": "IXI231-IOP-0866",
+   "site": "IOP",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "ood_660_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 23.220382690429688
+    },
+    "tv": {
+     "psnr": 23.642480850219727
+    },
+    "unet": {
+     "psnr": 23.820472717285156
+    },
+    "mcdropout": {
+     "psnr": 23.81890869140625,
+     "cov90": 0.12765586903517934
+    },
+    "hetero": {
+     "psnr": 23.753067016601562,
+     "cov90": 0.7206548241030999
+    },
+    "ensemble": {
+     "psnr": 23.864957809448242,
+     "cov90": 0.7751654475792407
+    },
+    "quantile": {
+     "psnr": 23.773189544677734,
+     "cov90": 0.7013235806339255
+    },
+    "unrolled": {
+     "psnr": 24.024948120117188
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "BRATS_008",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_3_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 18.801372528076172
+    },
+    "biharmonic": {
+     "psnr": 27.272064208984375
+    },
+    "unet": {
+     "psnr": 29.821455001831055
+    },
+    "mcdropout": {
+     "psnr": 29.766345977783203,
+     "cov90": 0.1888272431605127
+    },
+    "hetero": {
+     "psnr": 30.066944122314453,
+     "cov90": 0.9250047828582361
+    },
+    "ensemble": {
+     "psnr": 30.44735336303711,
+     "cov90": 0.9605892481346853
+    },
+    "quantile": {
+     "psnr": 29.54515266418457,
+     "cov90": 0.9250047828582361
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "BRATS_022",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_12_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 15.565634727478027
+    },
+    "biharmonic": {
+     "psnr": 36.03488540649414
+    },
+    "unet": {
+     "psnr": 34.62293243408203
+    },
+    "mcdropout": {
+     "psnr": 34.61262130737305,
+     "cov90": 0.3688492832235568
+    },
+    "hetero": {
+     "psnr": 34.34556579589844,
+     "cov90": 0.9382022471910112
+    },
+    "ensemble": {
+     "psnr": 34.922462463378906,
+     "cov90": 0.9792716001549787
+    },
+    "quantile": {
+     "psnr": 33.80531311035156,
+     "cov90": 0.9155366137156141
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 19,
+   "pid": "BRATS_025",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_19_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 15.805448532104492
+    },
+    "biharmonic": {
+     "psnr": 25.027381896972656
+    },
+    "unet": {
+     "psnr": 25.950916290283203
+    },
+    "mcdropout": {
+     "psnr": 25.866119384765625,
+     "cov90": 0.23707698029007063
+    },
+    "hetero": {
+     "psnr": 26.786483764648438,
+     "cov90": 0.9146522870955746
+    },
+    "ensemble": {
+     "psnr": 26.435546875,
+     "cov90": 0.9470063220528078
+    },
+    "quantile": {
+     "psnr": 26.28838348388672,
+     "cov90": 0.9109334325027891
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 28,
+   "pid": "BRATS_030",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_28_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 19.751468658447266
+    },
+    "biharmonic": {
+     "psnr": 27.058250427246094
+    },
+    "unet": {
+     "psnr": 29.062267303466797
+    },
+    "mcdropout": {
+     "psnr": 29.055721282958984,
+     "cov90": 0.2221984602224123
+    },
+    "hetero": {
+     "psnr": 30.03689956665039,
+     "cov90": 0.9163815226689478
+    },
+    "ensemble": {
+     "psnr": 29.69656753540039,
+     "cov90": 0.9505988023952096
+    },
+    "quantile": {
+     "psnr": 29.843555450439453,
+     "cov90": 0.899272882805817
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 34,
+   "pid": "BRATS_050",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_34_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 19.145462036132812
+    },
+    "biharmonic": {
+     "psnr": 30.370054244995117
+    },
+    "unet": {
+     "psnr": 29.491893768310547
+    },
+    "mcdropout": {
+     "psnr": 29.487314224243164,
+     "cov90": 0.23627215051411066
+    },
+    "hetero": {
+     "psnr": 29.150619506835938,
+     "cov90": 0.9127105666156202
+    },
+    "ensemble": {
+     "psnr": 29.730375289916992,
+     "cov90": 0.9608400787573835
+    },
+    "quantile": {
+     "psnr": 29.614561080932617,
+     "cov90": 0.9243054036315904
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 44,
+   "pid": "BRATS_057",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_44_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 20.241905212402344
+    },
+    "biharmonic": {
+     "psnr": 30.525737762451172
+    },
+    "unet": {
+     "psnr": 34.56927490234375
+    },
+    "mcdropout": {
+     "psnr": 34.88071060180664,
+     "cov90": 0.19755121262067343
+    },
+    "hetero": {
+     "psnr": 34.52460861206055,
+     "cov90": 0.9397221568165764
+    },
+    "ensemble": {
+     "psnr": 34.147457122802734,
+     "cov90": 0.9693901577584177
+    },
+    "quantile": {
+     "psnr": 36.131011962890625,
+     "cov90": 0.9081704732752531
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 52,
+   "pid": "BRATS_059",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_52_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 19.010719299316406
+    },
+    "biharmonic": {
+     "psnr": 34.165130615234375
+    },
+    "unet": {
+     "psnr": 34.10979461669922
+    },
+    "mcdropout": {
+     "psnr": 34.08352279663086,
+     "cov90": 0.27425336716767523
+    },
+    "hetero": {
+     "psnr": 34.03415298461914,
+     "cov90": 0.9131368338863947
+    },
+    "ensemble": {
+     "psnr": 34.12685012817383,
+     "cov90": 0.9572516103845403
+    },
+    "quantile": {
+     "psnr": 34.114295959472656,
+     "cov90": 0.9131368338863947
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 59,
+   "pid": "BRATS_060",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_59_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 18.30167579650879
+    },
+    "biharmonic": {
+     "psnr": 31.498796463012695
+    },
+    "unet": {
+     "psnr": 31.640857696533203
+    },
+    "mcdropout": {
+     "psnr": 31.600521087646484,
+     "cov90": 0.19398959738008092
+    },
+    "hetero": {
+     "psnr": 30.996732711791992,
+     "cov90": 0.9073396262762473
+    },
+    "ensemble": {
+     "psnr": 31.422264099121094,
+     "cov90": 0.9497206703910615
+    },
+    "quantile": {
+     "psnr": 31.596649169921875,
+     "cov90": 0.9123482951261799
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 67,
+   "pid": "BRATS_063",
+   "site": "msd",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_67_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 15.418553352355957
+    },
+    "biharmonic": {
+     "psnr": 23.2064151763916
+    },
+    "unet": {
+     "psnr": 22.573720932006836
+    },
+    "mcdropout": {
+     "psnr": 22.638635635375977,
+     "cov90": 0.2135824794052642
+    },
+    "hetero": {
+     "psnr": 24.30545997619629,
+     "cov90": 0.8635724331926864
+    },
+    "ensemble": {
+     "psnr": 23.795774459838867,
+     "cov90": 0.9107896323086196
+    },
+    "quantile": {
+     "psnr": 23.490936279296875,
+     "cov90": 0.8808519188266024
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 4,
+   "pid": "IXI002-Guys-0828",
+   "site": "Guys",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_4_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 25.303062438964844
+    },
+    "biharmonic": {
+     "psnr": 35.93368911743164
+    },
+    "unet": {
+     "psnr": 35.88908386230469
+    },
+    "mcdropout": {
+     "psnr": 35.887203216552734,
+     "cov90": 0.19779847586790855
+    },
+    "hetero": {
+     "psnr": 35.36754608154297,
+     "cov90": 0.8540220152413209
+    },
+    "ensemble": {
+     "psnr": 35.49274826049805,
+     "cov90": 0.9300592718035563
+    },
+    "quantile": {
+     "psnr": 35.672306060791016,
+     "cov90": 0.8887383573243014
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 44,
+   "pid": "IXI016-Guys-0697",
+   "site": "Guys",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_44_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 19.911666870117188
+    },
+    "biharmonic": {
+     "psnr": 22.22456932067871
+    },
+    "unet": {
+     "psnr": 26.575639724731445
+    },
+    "mcdropout": {
+     "psnr": 26.57028579711914,
+     "cov90": 0.1940935472857631
+    },
+    "hetero": {
+     "psnr": 26.54254722595215,
+     "cov90": 0.8654831000341413
+    },
+    "ensemble": {
+     "psnr": 26.544055938720703,
+     "cov90": 0.9240355069989757
+    },
+    "quantile": {
+     "psnr": 26.626407623291016,
+     "cov90": 0.8738477296005462
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 52,
+   "pid": "IXI017-Guys-0698",
+   "site": "Guys",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_52_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 23.800296783447266
+    },
+    "biharmonic": {
+     "psnr": 32.26203536987305
+    },
+    "unet": {
+     "psnr": 32.52446746826172
+    },
+    "mcdropout": {
+     "psnr": 32.546871185302734,
+     "cov90": 0.21104294478527608
+    },
+    "hetero": {
+     "psnr": 32.58934783935547,
+     "cov90": 0.8241893076248905
+    },
+    "ensemble": {
+     "psnr": 32.471309661865234,
+     "cov90": 0.9020157756354076
+    },
+    "quantile": {
+     "psnr": 32.81831359863281,
+     "cov90": 0.8496056091148115
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 12,
+   "pid": "IXI012-HH-1211",
+   "site": "HH",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_12_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 25.48255729675293
+    },
+    "biharmonic": {
+     "psnr": 33.801185607910156
+    },
+    "unet": {
+     "psnr": 33.23793029785156
+    },
+    "mcdropout": {
+     "psnr": 33.20021057128906,
+     "cov90": 0.1706684856753069
+    },
+    "hetero": {
+     "psnr": 32.593597412109375,
+     "cov90": 0.8454297407912688
+    },
+    "ensemble": {
+     "psnr": 32.61064910888672,
+     "cov90": 0.9287858117326058
+    },
+    "quantile": {
+     "psnr": 32.62685775756836,
+     "cov90": 0.8863574351978172
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 20,
+   "pid": "IXI013-HH-1212",
+   "site": "HH",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_20_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 21.724868774414062
+    },
+    "biharmonic": {
+     "psnr": 32.70384216308594
+    },
+    "unet": {
+     "psnr": 32.32658004760742
+    },
+    "mcdropout": {
+     "psnr": 32.308433532714844,
+     "cov90": 0.25108096019084536
+    },
+    "hetero": {
+     "psnr": 32.24898910522461,
+     "cov90": 0.876845087222305
+    },
+    "ensemble": {
+     "psnr": 32.28508377075195,
+     "cov90": 0.9427463843745341
+    },
+    "quantile": {
+     "psnr": 32.21410369873047,
+     "cov90": 0.8889220217683018
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 28,
+   "pid": "IXI014-HH-1236",
+   "site": "HH",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_28_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 21.264543533325195
+    },
+    "biharmonic": {
+     "psnr": 30.95731544494629
+    },
+    "unet": {
+     "psnr": 30.17166519165039
+    },
+    "mcdropout": {
+     "psnr": 30.15955352783203,
+     "cov90": 0.20880446253580587
+    },
+    "hetero": {
+     "psnr": 30.714553833007812,
+     "cov90": 0.8703452434795719
+    },
+    "ensemble": {
+     "psnr": 30.48528289794922,
+     "cov90": 0.9404492688074778
+    },
+    "quantile": {
+     "psnr": 30.269596099853516,
+     "cov90": 0.8655208804462535
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 180,
+   "pid": "IXI035-IOP-0873",
+   "site": "IOP",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_180_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 22.86687660217285
+    },
+    "biharmonic": {
+     "psnr": 30.701658248901367
+    },
+    "unet": {
+     "psnr": 30.592761993408203
+    },
+    "mcdropout": {
+     "psnr": 30.597293853759766,
+     "cov90": 0.22870299309286257
+    },
+    "hetero": {
+     "psnr": 31.162979125976562,
+     "cov90": 0.851726784343822
+    },
+    "ensemble": {
+     "psnr": 30.78977394104004,
+     "cov90": 0.9287797390636992
+    },
+    "quantile": {
+     "psnr": 30.857349395751953,
+     "cov90": 0.8755180353031466
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 652,
+   "pid": "IXI230-IOP-0869",
+   "site": "IOP",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_652_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 17.912221908569336
+    },
+    "biharmonic": {
+     "psnr": 24.368541717529297
+    },
+    "unet": {
+     "psnr": 24.737491607666016
+    },
+    "mcdropout": {
+     "psnr": 24.730274200439453,
+     "cov90": 0.16688851913477543
+    },
+    "hetero": {
+     "psnr": 24.82845687866211,
+     "cov90": 0.8442595673876871
+    },
+    "ensemble": {
+     "psnr": 24.854480743408203,
+     "cov90": 0.9099833610648919
+    },
+    "quantile": {
+     "psnr": 24.502708435058594,
+     "cov90": 0.870216306156406
+    }
+   }
+  },
+  {
+   "split": "ood",
+   "idx": 660,
+   "pid": "IXI231-IOP-0866",
+   "site": "IOP",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "ood_660_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 18.937084197998047
+    },
+    "biharmonic": {
+     "psnr": 27.59812355041504
+    },
+    "unet": {
+     "psnr": 26.390369415283203
+    },
+    "mcdropout": {
+     "psnr": 26.44057846069336,
+     "cov90": 0.289272030651341
+    },
+    "hetero": {
+     "psnr": 26.97490692138672,
+     "cov90": 0.8406478578892372
+    },
+    "ensemble": {
+     "psnr": 27.251672744750977,
+     "cov90": 0.9009056078021596
+    },
+    "quantile": {
+     "psnr": 26.485231399536133,
+     "cov90": 0.8288052943225357
+    }
+   }
+  }
+ ],
+ "thumbs": {
+  "test": {
+   "file": "test_thumbs.png",
+   "idx": [
+    3,
+    12,
+    19,
+    28,
+    34,
+    44,
+    52,
+    59,
+    67
+   ],
+   "pid": [
+    "BRATS_008",
+    "BRATS_022",
+    "BRATS_025",
+    "BRATS_030",
+    "BRATS_050",
+    "BRATS_057",
+    "BRATS_059",
+    "BRATS_060",
+    "BRATS_063"
+   ],
+   "site": [
+    "msd",
+    "msd",
+    "msd",
+    "msd",
+    "msd",
+    "msd",
+    "msd",
+    "msd",
+    "msd"
+   ]
+  },
+  "ood": {
+   "file": "ood_thumbs.png",
+   "idx": [
+    4,
+    44,
+    52,
+    12,
+    20,
+    28,
+    180,
+    652,
+    660
+   ],
+   "pid": [
+    "IXI002-Guys-0828",
+    "IXI016-Guys-0697",
+    "IXI017-Guys-0698",
+    "IXI012-HH-1211",
+    "IXI013-HH-1212",
+    "IXI014-HH-1236",
+    "IXI035-IOP-0873",
+    "IXI230-IOP-0869",
+    "IXI231-IOP-0866"
+   ],
+   "site": [
+    "Guys",
+    "Guys",
+    "Guys",
+    "HH",
+    "HH",
+    "HH",
+    "IOP",
+    "IOP",
+    "IOP"
+   ]
+  }
+ },
+ "checks": []
+}

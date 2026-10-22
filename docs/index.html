@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trustworthy Restoration</title>
+<meta name="description" content="Test report: learned MRI restoration against classical baselines, and whether each method's stated uncertainty holds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap">
+<style>
+/* Layout: a standards-lab test report. Certificate frame (masthead, field block, rail) in seal green;
+   a calm serif reading column; wide figures break out of the column; one signature: stated vs measured scales. */
+:root{
+  --paper:#f3f6f3; --paper-2:#e6eee9; --ink:#17201b; --ink-2:#47554d; --rule:#c5d0c9;
+  --seal:#0d5843; --seal-ink:#f3f6f3; --fail:#ad3219; --warn:#86650c; --hold:#0d5843;
+  --map-lo:#0b1a14; --map-hi:#e9f7c9;
+  --f-display:"Archivo",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-data:"Archivo",ui-sans-serif,system-ui,sans-serif;
+  --measure:68ch; --s1:.25rem; --s2:.5rem; --s3:.75rem; --s4:1rem; --s5:1.5rem; --s6:2.25rem; --s7:3.5rem; --s8:5rem;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#101613; --paper-2:#17211c; --ink:#e4ebe6; --ink-2:#a1b0a7; --rule:#2c3832;
+  --seal:#62c4a1; --seal-ink:#0c1511; --fail:#f07b5f; --warn:#d8b54b; --hold:#62c4a1; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#101613; --paper-2:#17211c; --ink:#e4ebe6; --ink-2:#a1b0a7; --rule:#2c3832;
+  --seal:#62c4a1; --seal-ink:#0c1511; --fail:#f07b5f; --warn:#d8b54b; --hold:#62c4a1; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 var(--f-body);font-optical-sizing:auto;
+  -webkit-font-smoothing:antialiased;margin:0}
+::selection{background:var(--seal);color:var(--seal-ink)}
+a{color:var(--seal);text-underline-offset:.2em;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--seal);outline-offset:2px;border-radius:2px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.frame{max-width:76rem;margin:0 auto}
+
+/* masthead: the certificate's own frame */
+.mast{background:var(--seal);color:var(--seal-ink)}
+.mast .frame{padding-block:var(--s5) var(--s6);display:grid;gap:var(--s5)}
+.guilloche{display:block;width:100%;height:28px;opacity:.55}
+.mast-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s3);
+  font:600 .78rem/1.2 var(--f-data);font-stretch:118%;letter-spacing:.14em;text-transform:uppercase}
+.mast h1{font:780 clamp(2.3rem,6.4vw,4.6rem)/.95 var(--f-display);font-stretch:68%;letter-spacing:-.015em;margin:0;
+  text-wrap:balance;max-width:16ch}
+.mast .lede{font:400 1.2rem/1.5 var(--f-body);max-width:56ch;margin:0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:0;border-top:1px solid color-mix(in srgb,var(--seal-ink) 40%,transparent)}
+.fields div{padding:var(--s3) var(--s4) var(--s3) 0;border-bottom:1px solid color-mix(in srgb,var(--seal-ink) 25%,transparent)}
+.fields dt{font:600 .7rem/1.3 var(--f-data);font-stretch:118%;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.fields dd{margin:.2rem 0 0;font:500 .98rem/1.35 var(--f-data);font-variant-numeric:tabular-nums}
+
+/* body grid: rail + column */
+.body .frame{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s6);padding-block:var(--s7) var(--s8)}
+@media (min-width:62rem){.body .frame{grid-template-columns:12rem minmax(0,1fr)}}
+.rail{display:none}
+@media (min-width:62rem){.rail{display:block;position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--s5));align-self:start}
+  .rail ol{list-style:none;margin:0;padding:0 0 0 var(--s3);border-left:2px solid var(--seal);display:grid;gap:var(--s2)}
+  .rail a{font:500 .86rem/1.3 var(--f-data);color:var(--ink-2);text-decoration:none}
+  .rail a:hover,.rail a[aria-current="true"]{color:var(--seal)}
+  .rail .tag{font:600 .66rem/1 var(--f-data);font-stretch:118%;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);margin:0 0 var(--s3)}}
+main{min-width:0;display:grid;gap:var(--s8)}
+section{display:grid;gap:var(--s4);min-width:0}
+section>*{min-width:0}
+.prose{max-width:var(--measure)}
+.prose p{margin:0 0 var(--s4)}
+.prose p:last-child{margin-bottom:0}
+h2{font:760 clamp(1.6rem,3.2vw,2.15rem)/1.08 var(--f-display);font-stretch:74%;margin:0 0 var(--s2);text-wrap:balance;letter-spacing:-.005em}
+h3{font:650 1.05rem/1.25 var(--f-data);font-stretch:104%;margin:var(--s4) 0 0;text-wrap:balance}
+.clause{font:600 .72rem/1 var(--f-data);font-stretch:118%;letter-spacing:.14em;text-transform:uppercase;color:var(--seal);
+  display:flex;align-items:center;gap:var(--s3)}
+.clause::after{content:"";flex:1;height:1px;background:var(--rule)}
+.small{font:400 .88rem/1.5 var(--f-data);color:var(--ink-2)}
+.num{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+
+/* findings: stated claim, measured, verdict */
+.findings{display:grid;gap:0;border-top:2px solid var(--ink)}
+.finding{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);padding-block:var(--s4);border-bottom:1px solid var(--rule)}
+@media (min-width:46rem){.finding{grid-template-columns:minmax(0,1fr) 11.5rem;align-items:start;gap:var(--s5)}}
+.finding p{margin:0;max-width:62ch}
+.finding strong{font-weight:620}
+.stamp{justify-self:start;font:700 .7rem/1 var(--f-data);font-stretch:120%;letter-spacing:.14em;text-transform:uppercase;
+  padding:.45rem .55rem;border:1.5px solid currentColor;border-radius:2px;transform:rotate(-1.5deg);white-space:nowrap}
+.stamp.hold{color:var(--hold)} .stamp.fail{color:var(--fail)} .stamp.warn{color:var(--warn)} .stamp.info{color:var(--ink-2)}
+
+/* tabs (dataset switch) */
+.switch{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--rule);border-radius:3px;width:fit-content;max-width:100%}
+.switch button{font:600 .82rem/1 var(--f-data);padding:.6rem .9rem;background:transparent;color:var(--ink-2);border:0;
+  border-right:1px solid var(--rule);cursor:pointer}
+.switch button:last-child{border-right:0}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.switch button:hover:not([aria-pressed="true"]){color:var(--ink);background:var(--paper-2)}
+.switch button:disabled{opacity:.45;cursor:not-allowed}
+
+/* tables */
+.tablewrap{overflow-x:auto;border-top:2px solid var(--ink);border-bottom:1px solid var(--ink)}
+table{border-collapse:collapse;width:100%;font:400 .9rem/1.3 var(--f-data);font-variant-numeric:tabular-nums}
+caption{text-align:left;font:400 .85rem/1.5 var(--f-data);color:var(--ink-2);caption-side:bottom;padding-top:var(--s2)}
+th,td{padding:.55rem .6rem;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap;vertical-align:top}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+thead th{font:600 .72rem/1.2 var(--f-data);font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);vertical-align:bottom}
+td .sub{display:block;font-size:.74rem;color:var(--ink-2);margin-top:.15rem}
+td.best{font-weight:700}
+td.best::before{content:"";display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--seal);margin-right:.35rem;vertical-align:.08em}
+tr.ref td{color:var(--ink-2)}
+.pos{color:var(--hold)} .neg{color:var(--fail)}
+
+/* calibration scales (signature) */
+.scales{display:grid;gap:var(--s5)}
+.scale-group h3{margin-top:0}
+.scale-row{display:grid;grid-template-columns:7.5rem minmax(0,1fr) 9.5rem;align-items:center;gap:var(--s3);padding-block:.35rem}
+@media (max-width:30rem){.scale-row{grid-template-columns:5.6rem minmax(0,1fr);}.scale-row .stamp{grid-column:2;justify-self:start}}
+.scale-row .m{font:600 .86rem/1.2 var(--f-data)}
+.track{position:relative;height:30px}
+.track .base{position:absolute;left:0;right:0;top:14px;height:2px;background:var(--rule)}
+.track .band{position:absolute;top:6px;height:18px;background:color-mix(in srgb,var(--hold) 16%,transparent);border-left:1px solid var(--hold);border-right:1px solid var(--hold)}
+.track .nominal{position:absolute;top:2px;width:2px;height:26px;background:var(--ink);transform:translateX(-1px)}
+.track .mark{position:absolute;top:8px;width:14px;height:14px;border-radius:50%;transform:translateX(-7px);background:var(--paper);border:3px solid currentColor;transition:left .5s cubic-bezier(.16,1,.3,1)}
+.track .val{position:absolute;top:-2px;font:600 .72rem/1 var(--f-data);font-variant-numeric:tabular-nums;transform:translateX(-50%);color:inherit;white-space:nowrap}
+.track .tick{position:absolute;top:22px;font:400 .66rem/1 var(--f-data);color:var(--ink-2);transform:translateX(-50%);white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-width:30rem){.track .tick.minor{display:none}}
+.track .brk{position:absolute;top:9px;width:8px;height:12px;transform:translateX(-4px) skewX(-20deg);background:var(--paper);border-left:1px solid var(--ink-2);border-right:1px solid var(--ink-2)}
+.scale-axis{display:grid;grid-template-columns:7.5rem minmax(0,1fr) 9.5rem;gap:var(--s3)}
+@media (max-width:30rem){.scale-axis{grid-template-columns:5.6rem minmax(0,1fr)}}
+.scale-axis .track{height:16px}
+
+/* specimen viewer */
+.viewer{display:grid;gap:var(--s4);border-top:2px solid var(--ink);padding-top:var(--s4)}
+.controls{display:grid;gap:var(--s3);min-width:0}
+.viewer>*,.controls>*,.ctl>*{min-width:0}
+.ctl{display:grid;gap:.35rem}
+.ctl > span{font:600 .7rem/1 var(--f-data);font-stretch:118%;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);max-width:46rem}
+@media (min-width:40rem){.gallery{grid-template-columns:repeat(9,minmax(0,1fr))}}
+.gallery button{display:grid;gap:.3rem;padding:0;border:0;background:transparent;cursor:pointer;color:var(--ink-2);text-align:left;font:500 .7rem/1.2 var(--f-data);font-variant-numeric:tabular-nums}
+.gallery canvas{width:100%;aspect-ratio:1;image-rendering:pixelated;background:#000;border-radius:2px;outline:2px solid transparent;outline-offset:2px;transition:outline-color .15s}
+.gallery button:hover canvas{outline-color:var(--rule)}
+.gallery button[aria-pressed="true"] canvas{outline-color:var(--seal)}
+.gallery button[aria-pressed="true"]{color:var(--ink);font-weight:650}
+.gallery span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}
+.pick input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.filebtn,.act{font:600 .82rem/1 var(--f-data);padding:.65rem .95rem;border:1.5px solid var(--ink);border-radius:3px;background:transparent;color:var(--ink);cursor:pointer}
+.filebtn:hover,.act:hover{background:var(--ink);color:var(--paper)}
+.pick input[type=file]:focus-visible + .filebtn,.pick:focus-within .filebtn{outline:2px solid var(--seal);outline-offset:2px}
+.act:disabled{opacity:.45;cursor:progress}
+.dropping .compare{outline:2px dashed var(--seal);outline-offset:4px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5)}
+@media (min-width:56rem){.stage{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.compare{position:relative;width:100%;max-width:34rem;aspect-ratio:1;background:#000;touch-action:none;user-select:none;cursor:ew-resize;border-radius:2px;overflow:hidden}
+.compare canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.compare .after{clip-path:inset(0 0 0 var(--cut,50%))}
+.compare .handle{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:2px;background:var(--paper);transform:translateX(-1px);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.compare .handle::after{content:"";position:absolute;top:50%;left:50%;width:28px;height:28px;transform:translate(-50%,-50%);border-radius:50%;background:var(--paper);box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.compare .lab{position:absolute;bottom:8px;font:700 .68rem/1 var(--f-data);font-stretch:118%;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.55);padding:.35rem .45rem;border-radius:2px}
+.compare .lab.l{left:8px} .compare .lab.r{right:8px}
+.compare input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.maps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+.map{display:grid;gap:.35rem;margin:0}
+.map canvas{width:100%;aspect-ratio:1;image-rendering:pixelated;background:#000;border-radius:2px}
+.map figcaption{font:500 .78rem/1.3 var(--f-data);color:var(--ink-2)}
+.map figcaption b{color:var(--ink);font-weight:650}
+.legend{display:flex;align-items:center;gap:var(--s2);font:400 .74rem/1 var(--f-data);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.legend i{display:block;width:8rem;height:8px;border-radius:1px}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:0;border-top:1px solid var(--rule)}
+.readout div{padding:.5rem .5rem .5rem 0;border-bottom:1px solid var(--rule)}
+.readout dt{font:600 .68rem/1.2 var(--f-data);font-stretch:112%;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.readout dd{margin:.2rem 0 0;font:650 1.05rem/1.2 var(--f-data);font-variant-numeric:tabular-nums}
+.pending{border:1px dashed var(--rule);padding:var(--s4);font:400 .92rem/1.5 var(--f-data);color:var(--ink-2);max-width:var(--measure)}
+
+/* shift bars */
+.shift{display:grid;gap:.4rem}
+.shift-row{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:var(--s3);align-items:center}
+.shift-row .m{font:600 .84rem/1.2 var(--f-data)}
+.bars{display:grid;gap:3px}
+.bar{height:12px;background:var(--ink);border-radius:1px;min-width:1px;position:relative}
+.bar.ood{background:var(--fail)}
+.bar span{position:absolute;left:calc(100% + 6px);top:-2px;font:500 .72rem/1 var(--f-data);font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
+.key{display:flex;gap:var(--s4);font:400 .78rem/1 var(--f-data);color:var(--ink-2);flex-wrap:wrap}
+.key i{display:inline-block;width:.8rem;height:.8rem;margin-right:.35rem;vertical-align:-.1em}
+
+/* instruments + conditions */
+.deflist{display:grid;gap:0;border-top:1px solid var(--rule);max-width:var(--measure)}
+.deflist div{display:grid;grid-template-columns:minmax(0,9rem) minmax(0,1fr);gap:var(--s4);padding-block:.6rem;border-bottom:1px solid var(--rule)}
+@media (max-width:30rem){.deflist div{grid-template-columns:minmax(0,1fr);gap:.2rem}}
+.deflist dt{font:650 .9rem/1.35 var(--f-data)}
+.deflist dd{margin:0;font-size:.98rem}
+code,pre{font-family:ui-monospace,"Cascadia Mono","Menlo",monospace;font-size:.86em}
+pre{background:var(--paper-2);padding:var(--s4);overflow-x:auto;border-radius:2px;margin:0;max-width:100%}
+footer{border-top:2px solid var(--seal)}
+footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:var(--s4);justify-content:space-between;font:400 .84rem/1.5 var(--f-data);color:var(--ink-2)}
+</style>
+
+</head>
+<body>
+<header class="mast wrap">
+  <div class="frame">
+    <canvas class="guilloche" aria-hidden="true"></canvas>
+    <div class="mast-top"><span>Test report <span id="report-no" class="num">TR-M3</span></span><span>Learned MRI restoration · uncertainty</span></div>
+    <h1>Trustworthy Restoration</h1>
+    <p class="lede">Neural networks clean up noisy, undersampled and damaged brain MRI. This report measures two things for each method: how close the restored image is to the truth, and whether the uncertainty the method reports is honest.</p>
+    <dl class="fields">
+      <div><dt>Author</dt><dd id="f-author">Rayan (<a href="https://github.com/Lawl1et-1/trustworthy-restoration" style="color:inherit">Lawl1et-1</a>)</dd></div>
+      <div><dt>Issued</dt><dd id="f-issued" class="num">…</dd></div>
+      <div><dt>Specimens</dt><dd id="f-specimens">Phantoms · MSD BrainTumour T2 · IXI T2</dd></div>
+      <div><dt>Status</dt><dd id="f-status">M0–M3 done · M4–M7 planned</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="body wrap">
+  <div class="frame">
+    <nav class="rail" aria-label="Contents">
+      <p class="tag">Contents</p>
+      <ol>
+        <li><a href="#findings">Findings</a></li>
+        <li><a href="#viewer">Specimen viewer</a></li>
+        <li><a href="#try">Your own image</a></li>
+        <li><a href="#accuracy">Accuracy</a></li>
+        <li><a href="#calibration">Stated vs measured</a></li>
+        <li><a href="#shift">Under shift</a></li>
+        <li><a href="#method">Method</a></li>
+        <li><a href="#limits">Limits and next</a></li>
+        <li><a href="#reproduce">Reproduce</a></li>
+      </ol>
+    </nav>
+    <main>
+      <section id="findings" aria-labelledby="h-findings">
+        <p class="clause">Findings</p>
+        <h2 id="h-findings">What the measurements say</h2>
+        <div class="findings" id="findings-list"><p class="small">Loading results…</p></div>
+        <p class="small">Every number on this page is read from the repository's result files (<code>docs/data/results.json</code>, built by <code>experiments/site_data.py</code>). Intervals are 95 % patient-level bootstrap intervals; differences are paired on identical test degradations.</p>
+      </section>
+
+      <section id="viewer" aria-labelledby="h-viewer">
+        <p class="clause">Specimen viewer</p>
+        <h2 id="h-viewer">Pick a scan, see how it was restored</h2>
+        <div class="prose"><p>Choose a test scan from the gallery and a kind of damage. The scan is damaged exactly as in the evaluation and restored by the method you pick; drag across the image to compare the damaged input with the restoration. The maps show where the method was wrong, how wide it said its 90 % interval was, and the pixels where the truth fell outside that interval. The gallery follows a fixed rule set before any output was seen (the first test patients in id order), so it shows typical cases, good and bad.</p></div>
+        <div class="viewer" id="viewer-root"><p class="pending">Loading demo images…</p></div>
+      </section>
+
+      <section id="try" aria-labelledby="h-try">
+        <p class="clause">Your own image</p>
+        <h2 id="h-try">Damage a picture of yours, then restore it</h2>
+        <div class="prose"><p>Upload any image. The page turns it into a 128 × 128 greyscale picture, damages it the same way the test scans were damaged, and restores it with a trained network running in your browser. Your image never leaves your device. Because your picture is the truth, the page can show the real error and check whether the stated 90 % interval held.</p>
+        <p class="small">The networks were trained on brain MRI. Anything else (a photo, a drawing, a chest X-ray) is outside what they have seen, so expect worse restorations; watch whether the uncertainty map widens where the network is wrong.</p></div>
+        <div class="viewer" id="try-root">
+          <div class="controls">
+            <div class="ctl"><span>Image</span>
+              <div class="pick">
+                <label class="filebtn" for="try-file">Choose an image…</label>
+                <input type="file" id="try-file" accept="image/*">
+                <span class="small" id="try-name">Example: an IXI test scan</span>
+              </div>
+            </div>
+            <div class="ctl"><span>Damage</span><div class="switch" role="group" aria-label="Damage" id="try-task"></div></div>
+            <div class="ctl"><span>Strength</span><div class="switch" role="group" aria-label="Strength" id="try-level"></div></div>
+            <div class="ctl"><span>Network</span><div class="switch" role="group" aria-label="Network" id="try-net"></div></div>
+            <div><button type="button" class="act" id="try-again">Damage again</button></div>
+          </div>
+          <div class="stage" id="try-stage">
+            <div style="display:grid;gap:.75rem;min-width:0">
+              <div class="compare" id="try-compare">
+                <canvas id="try-before" width="128" height="128" aria-hidden="true"></canvas>
+                <canvas id="try-after" class="after" width="128" height="128" aria-hidden="true"></canvas>
+                <i class="handle"></i><span class="lab l">Damaged</span><span class="lab r" id="try-lab">Restored</span>
+                <input type="range" min="0" max="100" value="50" id="try-range" aria-label="Comparison position">
+              </div>
+              <dl class="readout" id="try-readout"></dl>
+              <p class="small" id="try-status" role="status">The network loads when you reach this section (about 14 MB, once).</p>
+            </div>
+            <div style="display:grid;gap:.75rem;min-width:0;align-content:start">
+              <div class="maps">
+                <figure class="map"><canvas id="try-clean" width="128" height="128"></canvas><figcaption><b>Your image</b> (the truth)</figcaption></figure>
+                <figure class="map"><canvas id="try-err" width="128" height="128"></canvas><figcaption><b>|Error|</b> of the restoration</figcaption></figure>
+                <figure class="map" id="try-fhw"><canvas id="try-hw" width="128" height="128"></canvas><figcaption><b>Stated 90 % half-width</b></figcaption></figure>
+                <figure class="map" id="try-fmiss"><canvas id="try-miss" width="128" height="128"></canvas><figcaption><b>Misses</b>: truth outside the interval</figcaption></figure>
+              </div>
+              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num">≥ 0.15</span><span>of the intensity range</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="accuracy" aria-labelledby="h-accuracy">
+        <p class="clause">Accuracy</p>
+        <h2 id="h-accuracy">How close each restoration is to the truth</h2>
+        <div class="prose"><p>Peak signal-to-noise ratio (PSNR, dB; higher is better) on the held-out test patients. The first row of each task is the strongest classical method from the previous milestone; under each learned method is its paired difference to that reference.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" id="acc-switch"></div>
+        <div id="acc-table"></div>
+      </section>
+
+      <section id="calibration" aria-labelledby="h-cal">
+        <p class="clause">Stated vs measured</p>
+        <h2 id="h-cal">Does a 90 % interval cover 90 % of pixels?</h2>
+        <div class="prose"><p>Each method with an uncertainty estimate states a 90 % interval for every pixel. The mark shows the fraction of brain pixels where the true value actually fell inside it, before any conformal correction. Within the shaded band (<span class="num" id="band-text">87–93 %</span>) the claim holds; to the left the method is overconfident, to the right it is conservative.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" id="cal-switch"></div>
+        <div class="scales" id="cal-scales"></div>
+      </section>
+
+      <section id="shift" aria-labelledby="h-shift">
+        <p class="clause">Under shift</p>
+        <h2 id="h-shift">Trained at one site, tested at three others</h2>
+        <div class="prose"><p>Models trained and tuned on MSD BrainTumour scans are tested, untouched, on IXI scans from three London hospitals. Raw PSNR is not comparable across datasets, because even the degraded input scores differently, so this compares each method's gain over its own input.</p></div>
+        <div id="shift-root"></div>
+      </section>
+
+      <section id="method" aria-labelledby="h-method">
+        <p class="clause">Method</p>
+        <h2 id="h-method">Instruments and test conditions</h2>
+        <h3>Methods under test</h3>
+        <dl class="deflist">
+          <div><dt>Classical</dt><dd>Total variation, wavelet-L1, BM3D and biharmonic inpainting, each with its weight tuned on validation patients only.</dd></div>
+          <div><dt>U-Net</dt><dd>One network per degradation type, all severities, conditioned on the noise level, acceleration or mask. L1 loss.</dd></div>
+          <div><dt>MC-dropout</dt><dd>The same U-Net with dropout left on, 16 samples; spread of the samples as uncertainty.</dd></div>
+          <div><dt>Heteroscedastic</dt><dd>U-Net mean plus a separate variance head trained on frozen features (the faithful construction of Stirn et al. 2023), so the uncertainty cannot degrade the mean.</dd></div>
+          <div><dt>Deep ensemble</dt><dd>Five heteroscedastic networks; total variance is the mean variance plus the variance of the means.</dd></div>
+          <div><dt>Quantile</dt><dd>U-Net predicting the 5, 50 and 95 % quantiles with the pinball loss; the median is the image.</dd></div>
+          <div><dt>Unrolled</dt><dd>MRI only: five cascades of a small U-Net and a learned data-consistency step that keeps the measured k-space.</dd></div>
+        </dl>
+        <h3>Degradations</h3>
+        <dl class="deflist">
+          <div><dt>Denoising</dt><dd>Rician noise, σ = 0.03, 0.06, 0.10, 0.15 of the intensity range.</dd></div>
+          <div><dt>Accelerated MRI</dt><dd>Simulated single-coil Cartesian k-space, keeping 1/2, 1/4 or 1/8 of the phase-encode lines (R = 2, 4, 8), plus measurement noise.</dd></div>
+          <div><dt>Inpainting</dt><dd>Mixed masks of missing blocks and lines.</dd></div>
+        </dl>
+        <h3>Specimens</h3>
+        <dl class="deflist" id="specimen-list">
+          <div><dt>Phantoms</dt><dd>600 synthetic brain phantoms (modified Shepp–Logan) with 0–4 lesions of known position and contrast. The only data with exact ground truth for erased or invented lesions.</dd></div>
+          <div><dt>MSD Task01</dt><dd>484 BrainTumour patients, T2 channel, 8 axial slices each; split by patient 60 / 10 / 15 / 15 into train, validation, calibration and test. CC BY-SA 4.0 (Antonelli et al. 2022).</dd></div>
+          <div><dt>IXI T2</dt><dd>120 healthy subjects, 40 from each of three hospitals; never used for training or tuning. CC BY-SA 3.0, IXI dataset, brain-development.org.</dd></div>
+        </dl>
+        <h3>Rules that keep the comparison fair</h3>
+        <div class="prose"><p>Patients, not slices, are split, so no patient appears on both sides. Every method restores the same degraded test images. Weights and checkpoints are chosen on validation patients; test, calibration and IXI data are never used for training or selection. Confidence intervals resample patients, because slices of one patient are correlated.</p></div>
+      </section>
+
+      <section id="limits" aria-labelledby="h-limits">
+        <p class="clause">Limits and next</p>
+        <h2 id="h-limits">What this report does not show yet</h2>
+        <div class="prose">
+          <p>The MRI acquisitions are simulated from magnitude images, single-coil, so they are cleaner than real scanner k-space. Results on fastMRI or raw multi-coil data may differ.</p>
+          <p>Coverage is raw. Conformal calibration on the held-out calibration patients, which can repair overconfident intervals with a finite-sample guarantee, is the next milestone. So are the hallucination tests on phantom lesions (does a method erase a real lesion or invent one) and the shift experiments that separate skull, site and noise effects.</p>
+          <p>This is research code. Nothing here is a clinical tool or has diagnostic value.</p>
+        </div>
+      </section>
+
+      <section id="reproduce" aria-labelledby="h-repro">
+        <p class="clause">Reproduce</p>
+        <h2 id="h-repro">Run it again</h2>
+        <div class="prose"><p>Data sources, sizes and checksums are in <code>DATA.md</code>. The full profile trains 72 networks; on a 6 GB laptop GPU this took several hours.</p></div>
+        <pre><code>python -m experiments.pipeline data        # MSD + IXI slice sets from the public archives
+python -m experiments.pipeline reproduce   # tests, classical baselines, learned restorers, tables
+python -m experiments.m3_demo --config configs/m3_full_msd.yaml
+python -m experiments.site_data            # rebuilds this page's data</code></pre>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer class="wrap">
+  <div class="frame">
+    <span>Trustworthy Restoration · <a href="https://github.com/Lawl1et-1/trustworthy-restoration">source on GitHub</a></span>
+    <span id="foot-build" class="num"></span>
+  </div>
+</footer>
+
+<script>
+(() => {
+"use strict";
+const METHOD = {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Heteroscedastic", ensemble:"Ensemble", quantile:"Quantile", unrolled:"Unrolled",
+  bm3d:"BM3D", tv:"TV", biharmonic:"Biharmonic", wavelet:"Wavelet", noisy:"Input", zero_filled:"Input", masked:"Input", input:"Input"};
+const TASK = {"denoise_s0.03":"Denoising σ 0.03","denoise_s0.06":"Denoising σ 0.06","denoise_s0.10":"Denoising σ 0.10","denoise_s0.15":"Denoising σ 0.15",
+  mri_R2:"MRI, R = 2", mri_R4:"MRI, R = 4", mri_R8:"MRI, R = 8", inpaint_mixed:"Inpainting"};
+const DSNAME = {phantom:"Phantoms", msd:"MSD BrainTumour", ixi:"IXI (other sites)"};
+const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled"];
+const TASKORDER = Object.keys(TASK);
+const $ = (s, r=document) => r.querySelector(s);
+const el = (tag, attrs={}, ...kids) => { const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "html") e.innerHTML = v; else if (v !== null && v !== undefined) e.setAttribute(k, v); }
+  for (const k of kids.flat()) if (k !== null && k !== undefined) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e; };
+const f1 = v => (v == null || isNaN(v)) ? "–" : v.toFixed(1);
+const f2 = v => (v == null || isNaN(v)) ? "–" : v.toFixed(2);
+const sgn = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(2);
+const pct = v => (v*100).toFixed(1) + " %";
+const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
+
+/* guilloche: the certificate's security line, drawn once */
+function guilloche(){
+  const c = $(".guilloche"); if (!c) return;
+  const draw = () => { const w = c.clientWidth, h = c.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = w*dpr; c.height = h*dpr; const g = c.getContext("2d"); g.scale(dpr,dpr);
+    g.strokeStyle = getComputedStyle(c).color || "#fff"; g.lineWidth = .6;
+    for (let k = 0; k < 7; k++) { g.beginPath();
+      for (let x = 0; x <= w; x += 1.5) { const t = x/w*Math.PI*2;
+        const y = h/2 + (h/2-2)*Math.sin(t*(38+k*0.5) + k*0.9)*Math.cos(t*3 + k*0.4);
+        x ? g.lineTo(x,y) : g.moveTo(x,y); }
+      g.stroke(); } };
+  draw(); let r; addEventListener("resize", () => { clearTimeout(r); r = setTimeout(draw, 150); });
+}
+
+function switcher(root, options, current, onPick){
+  root.replaceChildren(...options.map(o => { const b = el("button", {type:"button", "aria-pressed": String(o.id === current)}, o.label);
+    if (o.disabled) { b.disabled = true; b.title = "Results pending"; }
+    b.addEventListener("click", () => { root.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); onPick(o.id); });
+    return b; }));
+}
+
+const phantomCaveat = () => el("p",{class:"small", style:"max-width:72ch;margin:0"}, "Caveat for the phantom heteroscedastic and ensemble rows: their loss was chosen in a pilot on phantom denoising that also printed phantom test numbers. The choice followed validation PSNR, but the phantom test set was seen. MSD results are not affected.");
+function verdict(cov, band){ if (cov < band.lo) return ["fail","Overconfident"]; if (cov > band.hi) return ["warn","Conservative"]; return ["hold","Holds"]; }
+
+/* ---------- accuracy ---------- */
+function accuracy(data, ds){
+  const root = $("#acc-table"); const d = data.datasets[ds];
+  if (!d || d.status !== "done") { root.replaceChildren(el("p",{class:"pending"},"Results for "+DSNAME[ds]+" are still being computed.")); return; }
+  const rows = d.comparison.filter(r => r.split === "test");
+  const tasks = TASKORDER.filter(t => rows.some(r => r.task === t));
+  const methods = LEARNED.filter(m => rows.some(r => r.method === m));
+  const thead = el("tr", {}, el("th",{scope:"col"},"Task"), el("th",{scope:"col"},"Input"), el("th",{scope:"col"},"Best classical"), methods.map(m => el("th",{scope:"col"},METHOD[m])));
+  const body = tasks.map(t => {
+    const tr = rows.filter(r => r.task === t); const ref = tr.find(r => r.method.endsWith("(M2)"));
+    const vals = [ref, ...methods.map(m => tr.find(r => r.method === m))].filter(Boolean).map(r => r.psnr);
+    const best = Math.max(...vals);
+    const cell = (r, isRef) => { if (!r) return el("td",{},"–");
+      const c = el("td", {class: r.psnr === best ? "best" : null}, f2(r.psnr));
+      if (isRef) c.append(el("span",{class:"sub"}, METHOD[r.reference] || r.reference));
+      else if (r.diff_vs_ref_db != null) c.append(el("span",{class:"sub "+(r.diff_lo > 0 ? "pos" : r.diff_hi < 0 ? "neg" : "")}, sgn(r.diff_vs_ref_db)+" ["+sgn(r.diff_lo)+", "+sgn(r.diff_hi)+"]"));
+      return c; };
+    return el("tr", {}, el("th",{scope:"row"},TASK[t]||t), el("td",{},f2(tr[0].input_psnr)), cell(ref,true), methods.map(m => cell(tr.find(r => r.method === m))));
+  });
+  const n = d.n_patients && d.n_patients.test;
+  root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"acc-cap"}, el("thead",{},thead), el("tbody",{},body))),
+    ...(ds === "phantom" ? [phantomCaveat()] : []),
+    el("p",{class:"small", id:"acc-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `${DSNAME[ds]} test set, ${n} patients. Dot: best in the row. Below each learned method: paired difference to the best classical method in dB, with its 95 % interval; green where the whole interval is above zero, red where it is below.`));
+}
+
+/* ---------- calibration scales ---------- */
+function calibration(data, ds){
+  const root = $("#cal-scales"); const d = data.datasets[ds]; const band = data.verdict_band;
+  if (!d || d.status !== "done") { root.replaceChildren(el("p",{class:"pending"},"Results for "+DSNAME[ds]+" are still being computed.")); return; }
+  // piecewise axis, marked with a break: 0-80 % takes the left 35 %, 80-100 % the rest, so the band around 90 % is readable
+  const P = v => { v = Math.min(1, Math.max(0, v)); return v <= .8 ? v / .8 * 35 : 35 + (v - .8) / .2 * 65; };
+  const X = v => P(v) + "%"; const lo = 0;
+  const groups = [];
+  const splits = [...new Set(d.uncertainty.map(r => r.split))];
+  for (const sp of splits) for (const t of TASKORDER) {
+    const rs = d.uncertainty.filter(r => r.split === sp && r.task === t); if (!rs.length) continue;
+    if (!["denoise_s0.10","mri_R4","mri_R8","inpaint_mixed"].includes(t)) continue;
+    const title = TASK[t] + (sp === "ood" ? " · IXI" : "");
+    groups.push(el("div",{class:"scale-group"}, el("h3",{}, title),
+      ["mcdropout","hetero","ensemble","quantile"].map(m => rs.find(r => r.method === m)).filter(Boolean).map(r => {
+        const [cls, word] = verdict(r.cov90, band);
+        return el("div",{class:"scale-row"}, el("span",{class:"m"}, METHOD[r.method]),
+          el("div",{class:"track", role:"img", "aria-label": `${METHOD[r.method]}: measured coverage ${pct(r.cov90)} against nominal 90 %`},
+            el("i",{class:"base"}), el("i",{class:"brk", style:"left:35%"}), el("i",{class:"band", style:`left:${X(band.lo)};width:calc(${X(band.hi)} - ${X(band.lo)})`}),
+            el("i",{class:"nominal", style:`left:${X(.9)}`}),
+            el("i",{class:"mark "+cls, style:`left:${X(r.cov90)};color:var(--${cls})`}),
+            el("span",{class:"val", style:`left:${X(r.cov90)};color:var(--${cls})`}, pct(r.cov90))),
+          el("span",{class:"stamp "+cls}, word)); })));
+  }
+  const axis = el("div",{class:"scale-axis", "aria-hidden":"true"}, el("span"), el("div",{class:"track"},
+    [0,.4,.8,.85,.9,.95,1].map(v => el("span",{class:"tick"+([.85,.95].includes(v) ? " minor" : ""), style:`left:${X(v)};top:0`}, Math.round(v*100)+" %"))), el("span"));
+  root.replaceChildren(axis, ...groups, ...(ds === "phantom" ? [phantomCaveat()] : []));
+}
+
+/* ---------- shift ---------- */
+function shift(data){
+  const root = $("#shift-root"); const d = data.datasets.msd;
+  if (!d || d.status !== "done" || !d.shift) { root.replaceChildren(el("p",{class:"pending"},"The MSD → IXI comparison appears here when the MSD run has finished.")); return; }
+  const tasks = TASKORDER.filter(t => d.shift.some(r => r.task === t));
+  const mx = Math.max(...d.shift.map(r => Math.max(r.gain_db_test, r.gain_db_ood, 0)));
+  const W = v => Math.max(0, v) / mx * 85 + "%";
+  root.replaceChildren(el("div",{class:"key"}, el("span",{}, el("i",{style:"background:var(--ink)"}), "MSD test (same site as training)"), el("span",{}, el("i",{style:"background:var(--fail)"}), "IXI (other hospitals)")),
+    ...tasks.map(t => el("div",{}, el("h3",{}, TASK[t]), el("div",{class:"shift"},
+      d.shift.filter(r => r.task === t).sort((a,b) => b.gain_db_test - a.gain_db_test).map(r => el("div",{class:"shift-row"},
+        el("span",{class:"m"}, METHOD[r.method.replace(" (M2)","")] + (r.method.endsWith("(M2)") ? " (classical)" : "")),
+        el("div",{class:"bars", role:"img", "aria-label": `${r.method}: gain ${f2(r.gain_db_test)} dB in distribution, ${f2(r.gain_db_ood)} dB on IXI`},
+          el("div",{class:"bar", style:`width:${W(r.gain_db_test)}`}, el("span",{}, sgn(r.gain_db_test)+" dB")),
+          el("div",{class:"bar ood", style:`width:${W(r.gain_db_ood)}`}, el("span",{}, sgn(r.gain_db_ood)+" dB")))))))));
+}
+
+/* ---------- findings (generated from the data) ---------- */
+function findings(data){
+  const out = []; const band = data.verdict_band;
+  for (const ds of ["phantom","msd"]) {
+    const d = data.datasets[ds]; if (!d || d.status !== "done") { out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+": "), "learned restorers are still training; this row fills in when the run finishes."), el("span",{class:"stamp info"},"Pending"))); continue; }
+    const test = d.comparison.filter(r => r.split === "test");
+    // accuracy: how many task rows the best learned method beats the classical reference with the whole CI above zero
+    const tasks = [...new Set(test.map(r => r.task))];
+    let wins = 0, losses = 0, bestGap = -Infinity, bestTask = null, bestM = null;
+    for (const t of tasks) { const lr = test.filter(r => r.task === t && LEARNED.includes(r.method) && r.diff_vs_ref_db != null);
+      const b = lr.reduce((a, r) => (!a || r.diff_vs_ref_db > a.diff_vs_ref_db) ? r : a, null); if (!b) continue;
+      if (b.diff_lo > 0) wins++; else if (b.diff_hi < 0) losses++;
+      if (b.diff_vs_ref_db > bestGap) { bestGap = b.diff_vs_ref_db; bestTask = t; bestM = b.method; } }
+    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+", accuracy. "),
+      `In ${wins} of ${tasks.length} task settings the best learned method beats the strongest classical method, with the whole 95 % interval above zero` + (losses ? `; in ${losses} it is worse.` : ".") +
+      ` The largest gain is ${sgn(bestGap)} dB (${METHOD[bestM]}, ${TASK[bestTask]}).`), el("span",{class:"stamp "+(wins === tasks.length ? "hold" : wins ? "warn" : "fail")}, `${wins} / ${tasks.length} better`)));
+    // calibration: mean coverage per method across test tasks
+    const u = d.uncertainty.filter(r => r.split === "test");
+    const mean = m => { const v = u.filter(r => r.method === m).map(r => r.cov90); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : NaN; };
+    const covs = ["mcdropout","hetero","ensemble","quantile"].map(m => [m, mean(m)]).filter(x => !isNaN(x[1]));
+    const held = covs.filter(([,c]) => c >= band.lo && c <= band.hi).map(([m]) => METHOD[m]);
+    const mc = covs.find(([m]) => m === "mcdropout");
+    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+", stated uncertainty. "),
+      (mc ? `MC-dropout's 90 % intervals cover on average ${pct(mc[1])} of pixels, far below what they state. ` : "") +
+      (held.length ? `${held.length > 1 ? held.slice(0,-1).join(", ") + " and " + held[held.length-1] : held[0]} ${held.length > 1 ? "stay" : "stays"} within ${Math.round(band.lo*100)}–${Math.round(band.hi*100)} % on average across tasks.` : "No method stays within the band on average.")),
+      el("span",{class:"stamp "+(mc && mc[1] < band.lo ? "fail" : "hold")}, mc && mc[1] < band.lo ? "MC-dropout fails" : "Holds")));
+    if (ds === "msd" && d.shift) {
+      const cls = d.shift.filter(r => r.method.endsWith("(M2)") && r.task.startsWith("mri"));
+      const lrn = d.shift.filter(r => LEARNED.includes(r.method) && r.task.startsWith("mri"));
+      const avg = a => a.reduce((s,r) => s + r.gain_change_db, 0) / (a.length || 1);
+      out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Under site shift (MSD → IXI), MRI. "),
+        `Moving to other hospitals changes the classical gain over the input by ${sgn(avg(cls))} dB on average, and the learned methods' gain by ${sgn(avg(lrn))} dB.`),
+        el("span",{class:"stamp info"}, "Measured")));
+    }
+  }
+  $("#findings-list").replaceChildren(...out);
+}
+
+/* ---------- specimen viewer ---------- */
+const LUT = (() => { // sequential map from near-black green to pale lime, perceptually even enough for 8-bit maps
+  const stops = [[11,26,20],[18,74,62],[38,128,98],[110,176,104],[196,222,140],[240,249,212]];
+  const t = new Uint8ClampedArray(256*3);
+  for (let i = 0; i < 256; i++) { const x = i/255*(stops.length-1), k = Math.min(stops.length-2, Math.floor(x)), f = x-k;
+    for (let c = 0; c < 3; c++) t[i*3+c] = stops[k][c] + (stops[k+1][c]-stops[k][c])*f; }
+  return t; })();
+
+async function viewer(data){
+  const root = $("#viewer-root");
+  const manifests = {};
+  for (const ds of ["phantom","msd"]) { const p = data.datasets[ds] && data.datasets[ds].demo; if (!p) continue;
+    try { manifests[ds] = await (await fetch(p)).json(); } catch(e) {} }
+  if (!Object.keys(manifests).length) { root.replaceChildren(el("p",{class:"pending"},"Demo images appear here once they have been exported from the trained checkpoints.")); return; }
+  // sources, real scans first: msd test, msd ood (IXI), phantom test
+  const sources = [];
+  if (manifests.msd) { sources.push({id:"msd", ds:"msd", split:"test", label:"MSD BrainTumour"});
+    if (manifests.msd.items.some(i => i.split === "ood")) sources.push({id:"ixi", ds:"msd", split:"ood", label:"IXI (unseen sites)"}); }
+  if (manifests.phantom) sources.push({id:"phantom", ds:"phantom", split:"test", label:"Phantoms"});
+  const st = {src: store.get("tr.src") || sources[0].id, task:"mri_R4", img:0, method:"unrolled", cut:50};
+  if (!sources.some(s => s.id === st.src)) st.src = sources[0].id;
+  const imgCache = new Map();
+  const loadImg = src => { if (!imgCache.has(src)) imgCache.set(src, new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; })); return imgCache.get(src); };
+
+  const ctlSrc = el("div",{class:"switch", role:"group", "aria-label":"Specimen set"});
+  const ctlTask = el("div",{class:"switch", role:"group", "aria-label":"Degradation"});
+  const ctlImg = el("div",{class:"gallery", role:"group", "aria-label":"Test scan"});
+  const ctlM = el("div",{class:"switch", role:"group", "aria-label":"Method"});
+  const before = el("canvas",{width:128,height:128,"aria-hidden":"true"}), after = el("canvas",{class:"after",width:128,height:128,"aria-hidden":"true"});
+  const range = el("input",{type:"range", min:0, max:100, value:50, id:"cmp-range", "aria-label":"Comparison position"});
+  const labL = el("span",{class:"lab l"},"Input"), labR = el("span",{class:"lab r"},"Restored");
+  const compare = el("div",{class:"compare"}, before, after, el("i",{class:"handle"}), labL, labR, range);
+  const mk = (cap) => { const c = el("canvas",{width:128,height:128}); const fc = el("figcaption",{html:cap}); return [c, el("figure",{class:"map"}, c, fc), fc]; };
+  const [cClean, fClean] = mk("<b>Truth</b> (clean image)");
+  const [cErr, fErr, capErr] = mk("<b>|Error|</b> of the restoration");
+  const [cHw, fHw, capHw] = mk("<b>Stated 90 % half-width</b>");
+  const [cMiss, fMiss, capMiss] = mk("<b>Misses</b>: truth outside the interval");
+  const legend = el("div",{class:"legend"}, el("span",{class:"num"},"0"), el("i",{style:"background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"}), el("span",{class:"num", id:"emax"},"≥ 0.15"), el("span",{}, "of the intensity range"));
+  const readout = el("dl",{class:"readout"});
+  const note = el("p",{class:"small"});
+  root.replaceChildren(el("div",{class:"controls"},
+      el("div",{class:"ctl"}, el("span",{},"Specimens"), ctlSrc), el("div",{class:"ctl"}, el("span",{},"Damage"), ctlTask),
+      el("div",{class:"ctl"}, el("span",{},"Test scan"), ctlImg), el("div",{class:"ctl"}, el("span",{},"Method"), ctlM)),
+    el("div",{class:"stage"}, el("div",{style:"display:grid;gap:.75rem;min-width:0"}, compare, readout, note),
+      el("div",{style:"display:grid;gap:.75rem;min-width:0;align-content:start"}, el("div",{class:"maps"}, fClean, fErr, fHw, fMiss), legend)));
+
+  async function gallery(root, man, th, order, its){
+    const key = man.dataset + "/" + st.src;
+    if (root.dataset.key !== key) {
+      root.dataset.key = key;
+      const sprite = th ? await loadImg("demo/" + man.dataset + "/" + th.file) : null;
+      root.replaceChildren(...order.map((idx, k) => {
+        const c = el("canvas",{width:man.tile, height:man.tile, "aria-hidden":"true"});
+        if (sprite) c.getContext("2d").drawImage(sprite, k*man.tile, 0, man.tile, man.tile, 0, 0, man.tile, man.tile);
+        const pid = th ? th.pid[k] : String(idx), site = th ? th.site[k] : "";
+        const m = pid.match(/^IXI(\d+)/);
+        const lab = m ? site + " " + m[1] : pid.replace(/^ph0*/, "phantom ").replace(/^BRATS_/, "BraTS ");
+        const b = el("button",{type:"button", "aria-pressed":"false", "aria-label":"Test scan " + (k+1) + ", " + pid + (site && site !== "phantom" ? ", " + site : "")}, c, el("span",{}, lab));
+        b.addEventListener("click", () => { st.img = k; render(); });
+        return b; }));
+    }
+    [...root.children].forEach((b, k) => b.setAttribute("aria-pressed", String(k === st.img)));
+  }
+  function items(){ const s = sources.find(x => x.id === st.src); return manifests[s.ds].items.filter(i => i.split === s.split); }
+  function tileDraw(img, k, canvas, mode, base){
+    const g = canvas.getContext("2d"), T = img.naturalHeight; canvas.width = T; canvas.height = T;
+    g.drawImage(img, k*T, 0, T, T, 0, 0, T, T);
+    if (mode === "grey") return;
+    const id = g.getImageData(0,0,T,T), p = id.data;
+    if (mode === "map") { for (let i = 0; i < p.length; i += 4) { const v = p[i]; p[i] = LUT[v*3]; p[i+1] = LUT[v*3+1]; p[i+2] = LUT[v*3+2]; } }
+    if (mode === "miss") { const b = base.data; const red = getComputedStyle(document.documentElement).getPropertyValue("--fail").trim() || "#ad3219";
+      const rr = parseInt(red.slice(1,3),16), gg = parseInt(red.slice(3,5),16), bb = parseInt(red.slice(5,7),16);
+      for (let i = 0; i < p.length; i += 4) { const miss = p[i] > 127, v = b[i]*0.55; p[i] = miss ? rr : v; p[i+1] = miss ? gg : v; p[i+2] = miss ? bb : v; } }
+    g.putImageData(id,0,0);
+  }
+  async function render(){
+    store.set("tr.src", st.src);
+    const its = items();
+    const tasks = TASKORDER.filter(t => its.some(i => i.task === t));
+    if (!tasks.includes(st.task)) st.task = tasks[0];
+    const srcO = sources.find(s => s.id === st.src); const man0 = manifests[srcO.ds];
+    const th = man0.thumbs && man0.thumbs[srcO.split];
+    const order = th ? th.idx : [...new Set(its.map(i => i.idx))];
+    if (st.img >= order.length) st.img = 0;
+    const it = its.find(i => i.task === st.task && i.idx === order[st.img]) || its.find(i => i.task === st.task);
+    const avail = LEARNED.filter(m => it.tiles.includes(m));
+    if (!avail.includes(st.method) && st.method !== it.reference) st.method = avail.includes("ensemble") ? "ensemble" : avail[0];
+    if (st.method !== it.reference && !avail.includes(st.method)) st.method = avail[0];
+    switcher(ctlSrc, sources.map(s => ({id:s.id, label:s.label})), st.src, v => { st.src = v; st.img = 0; render(); });
+    switcher(ctlTask, tasks.map(t => ({id:t, label:TASK[t]})), st.task, v => { st.task = v; render(); });
+    await gallery(ctlImg, man0, th, order, its);
+    switcher(ctlM, [...avail.map(m => ({id:m, label:METHOD[m]})), {id:it.reference, label:METHOD[it.reference]+" (classical)"}], st.method, v => { st.method = v; render(); });
+    const man = manifests[sources.find(s => s.id === st.src).ds];
+    const img = await loadImg("demo/" + man.dataset + "/" + it.file);
+    const k = n => it.tiles.indexOf(n);
+    tileDraw(img, k("input"), before, "grey");
+    tileDraw(img, k(st.method), after, "grey");
+    tileDraw(img, k("clean"), cClean, "grey");
+    tileDraw(img, k(st.method + "_err"), cErr, "map");
+    const hasU = k(st.method + "_halfwidth") >= 0;
+    fHw.hidden = fMiss.hidden = !hasU;
+    if (hasU) { tileDraw(img, k(st.method + "_halfwidth"), cHw, "map");
+      const g = cClean.getContext("2d"); const base = g.getImageData(0,0,cClean.width,cClean.height);
+      tileDraw(img, k(st.method + "_miss"), cMiss, "miss", base); }
+    $("#emax").textContent = "≥ " + man.emax;
+    labR.textContent = METHOD[st.method] || st.method;
+    const s = it.stats; const ms = s[st.method] || {};
+    const dd = (t, v) => el("div",{}, el("dt",{},t), el("dd",{},v));
+    readout.replaceChildren(dd("Input PSNR", f2(s.input.psnr)+" dB"), dd(METHOD[it.reference]+" PSNR", f2(s[it.reference].psnr)+" dB"),
+      ...(LEARNED.includes(st.method) ? [dd(METHOD[st.method]+" PSNR", f2(ms.psnr)+" dB")] : []),
+      ...(ms.cov90 != null ? [dd("90 % coverage here", pct(ms.cov90))] : []));
+    note.textContent = `${it.pid}${it.site && it.site !== "phantom" ? ", " + it.site : ""}, ${TASK[it.task]}. ` +
+      (hasU ? "" : (LEARNED.includes(st.method) ? "This method reports no uncertainty." : "Classical methods report no uncertainty.")) +
+      (man.checks && man.checks.length ? " Export check flagged: " + man.checks.length + " item(s)." : "");
+  }
+  const setCut = v => { st.cut = v; compare.style.setProperty("--cut", v + "%"); };
+  range.addEventListener("input", e => setCut(+e.target.value));
+  setCut(50);
+  await render();
+}
+
+/* ---------- your own image: damage + restore in the browser ---------- */
+const Z90 = 1.6448536269514722;
+function rng(seed){ let a = seed >>> 0; const u = () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  let spare = null; const g = () => { if (spare !== null) { const s = spare; spare = null; return s; } let v, w, r; do { v = 2*u()-1; w = 2*u()-1; r = v*v + w*w; } while (!r || r >= 1); const f = Math.sqrt(-2*Math.log(r)/r); spare = w*f; return v*f; };
+  return { u, g, int: n => Math.floor(u()*n) }; }
+function fft1(re, im, inv){ const n = re.length; for (let i = 1, j = 0; i < n; i++) { let b = n >> 1; for (; j & b; b >>= 1) j ^= b; j ^= b; if (i < j) { [re[i], re[j]] = [re[j], re[i]]; [im[i], im[j]] = [im[j], im[i]]; } }
+  for (let len = 2; len <= n; len <<= 1) { const a = (inv ? 2 : -2) * Math.PI / len, wr = Math.cos(a), wi = Math.sin(a);
+    for (let i = 0; i < n; i += len) { let cr = 1, ci = 0; for (let k = 0; k < len/2; k++) { const ur = re[i+k], ui = im[i+k], vr = re[i+k+len/2]*cr - im[i+k+len/2]*ci, vi = re[i+k+len/2]*ci + im[i+k+len/2]*cr;
+      re[i+k] = ur+vr; im[i+k] = ui+vi; re[i+k+len/2] = ur-vr; im[i+k+len/2] = ui-vi; const t = cr*wr - ci*wi; ci = cr*wi + ci*wr; cr = t; } } } }
+function fft2(re, im, n, inv){ // orthonormal, in place, row-major n x n
+  const r = new Float64Array(n), c = new Float64Array(n), s = 1/Math.sqrt(n);
+  for (let y = 0; y < n; y++) { for (let x = 0; x < n; x++) { r[x] = re[y*n+x]; c[x] = im[y*n+x]; } fft1(r, c, inv); for (let x = 0; x < n; x++) { re[y*n+x] = r[x]*s; im[y*n+x] = c[x]*s; } }
+  for (let x = 0; x < n; x++) { for (let y = 0; y < n; y++) { r[y] = re[y*n+x]; c[y] = im[y*n+x]; } fft1(r, c, inv); for (let y = 0; y < n; y++) { re[y*n+x] = r[y]*s; im[y*n+x] = c[y]*s; } } }
+function cartesianRows(n, R, kind, g, centerFrac){ // port of masks.cartesian_mask: conjugate-symmetric phase-encode lines
+  const target = Math.round(n / R), c = Math.max(1, Math.round(centerFrac * n / 2));
+  const chosen = new Set([0]); for (let k = 1; k <= c; k++) { chosen.add(k); chosen.add((n - k) % n); }
+  const pairs = []; for (let k = c + 1; k < n/2; k++) pairs.push(k);
+  let order;
+  if (kind === "equispaced") { const off = g.int(R); order = [...pairs.filter(k => (k+off) % R === 0), ...pairs.filter(k => (k+off) % R !== 0)]; }
+  else { order = pairs.slice(); for (let i = order.length - 1; i > 0; i--) { const j = g.int(i+1); [order[i], order[j]] = [order[j], order[i]]; } }
+  for (const k of order) { if (chosen.size + 2 > target) break; chosen.add(k); chosen.add((n - k) % n); }
+  return chosen; }
+function inpaintMask(n, g){ // port of masks.inpaint_mask("mixed"): rectangles, brush strokes or lost rows
+  const m = new Uint8Array(n*n).fill(1), missing = () => m.reduce((a, v) => a + (v ? 0 : 1), 0), kind = g.int(3);
+  if (kind === 0) { const target = (0.08 + 0.12*g.u())*n*n; while (missing() < target) { const h = Math.floor(n/10) + g.int(Math.floor(n/4) - Math.floor(n/10)), w = Math.floor(n/10) + g.int(Math.floor(n/4) - Math.floor(n/10));
+      const y0 = g.int(n - h), x0 = g.int(n - w); for (let y = y0; y < y0+h; y++) for (let x = x0; x < x0+w; x++) m[y*n+x] = 0; } }
+  else if (kind === 1) { const target = (0.08 + 0.12*g.u())*n*n; while (missing() < target) { let y = g.u()*n, x = g.u()*n; const r = n/64 + g.u()*(n/24 - n/64), steps = 5 + g.int(10);
+      for (let s = 0; s < steps; s++) { const a = g.u()*2*Math.PI; y = Math.min(n-1, Math.max(0, y + 3*r*Math.sin(a))); x = Math.min(n-1, Math.max(0, x + 3*r*Math.cos(a)));
+        for (let yy = Math.max(0, Math.floor(y-r)); yy <= Math.min(n-1, Math.ceil(y+r)); yy++) for (let xx = Math.max(0, Math.floor(x-r)); xx <= Math.min(n-1, Math.ceil(x+r)); xx++) if (Math.hypot(yy-y, xx-x) <= r) m[yy*n+xx] = 0; } } }
+  else { const target = (0.1 + 0.15*g.u())*n; const rowsGone = () => { let c = 0; for (let y = 0; y < n; y++) if (!m[y*n]) c++; return c; };
+    while (rowsGone() < target) { const y0 = g.int(n), h = 1 + g.int(3); for (let y = y0; y < Math.min(n, y0+h); y++) for (let x = 0; x < n; x++) m[y*n+x] = 0; } }
+  return m; }
+function toImage(img, n){ // centre-crop square, n x n greyscale in [0, 1], scaled by its own 99.8th percentile (as prepare_data.py)
+  const c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d", {willReadFrequently:true});
+  const s = Math.min(img.naturalWidth || img.width, img.naturalHeight || img.height), sx = ((img.naturalWidth || img.width) - s)/2, sy = ((img.naturalHeight || img.height) - s)/2;
+  g.imageSmoothingQuality = "high"; g.drawImage(img, sx, sy, s, s, 0, 0, n, n);
+  const p = g.getImageData(0, 0, n, n).data, x = new Float32Array(n*n);
+  for (let i = 0; i < n*n; i++) x[i] = (0.299*p[4*i] + 0.587*p[4*i+1] + 0.114*p[4*i+2]) / 255;
+  const sorted = Float32Array.from(x).sort(), q = sorted[Math.min(n*n-1, Math.floor(0.998*(n*n-1)))] || 1;
+  for (let i = 0; i < n*n; i++) x[i] = Math.min(1, Math.max(0, x[i] / q));
+  return x; }
+function paint(canvas, n, f){ const g = canvas.getContext("2d"); canvas.width = canvas.height = n; const id = g.createImageData(n, n);
+  for (let i = 0; i < n*n; i++) { const [r, gg, b] = f(i); id.data[4*i] = r; id.data[4*i+1] = gg; id.data[4*i+2] = b; id.data[4*i+3] = 255; } g.putImageData(id, 0, 0); }
+const grey = v => { const q = Math.round(Math.min(1, Math.max(0, v))*255); return [q, q, q]; };
+const lut = v => { const q = Math.round(Math.min(1, Math.max(0, v))*255); return [LUT[3*q], LUT[3*q+1], LUT[3*q+2]]; };
+
+async function tryDemo(data){
+  const T = {}; ["file","name","task","level","net","again","compare","before","after","lab","range","readout","status","clean","err","hw","miss","fhw","fmiss"].forEach(k => T[k] = document.getElementById("try-" + k));
+  const set = data.models; if (!set) { T.status.textContent = "The in-browser networks have not been exported yet."; return; }
+  let man; try { man = await (await fetch(set)).json(); } catch (e) { T.status.textContent = "The network list could not be loaded."; return; }
+  const base = set.replace(/models\.json$/, ""), n = man.size, D = man.degradations;
+  const TYPES = [{id:"denoise", label:"Noise"}, {id:"mri", label:"MRI, missing k-space"}, {id:"inpaint", label:"Holes"}].filter(t => man.models[t.id + "_hetero"]);
+  const LEVELS = {denoise: D.denoise_sigmas.map(s => ({id:s, label:"σ " + s.toFixed(2)})), mri: D.mri_R.map(R => ({id:R, label:"R = " + R})), inpaint: [{id:0, label:"Random mask"}]};
+  const st = {type: TYPES.some(t => t.id === "mri") ? "mri" : TYPES[0].id, level: null, net: "hetero", seed: 1, x: null};
+  const sessions = {}; let ortReady = null;
+  function loadOrt(){
+    if (ortReady) return ortReady;
+    ortReady = (async () => {
+      const add = src => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("could not load " + src)); document.head.append(s); });
+      if (!window.ort) { try { await add("vendor/ort.wasm.min.js"); } catch (e) { await add("https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/ort.wasm.min.js"); } }
+      ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false;
+      let local = false; try { local = (await fetch("vendor/ort-wasm-simd.wasm", {method:"HEAD"})).ok; } catch (e) {}
+      ort.env.wasm.wasmPaths = local ? "vendor/" : "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/";
+    })();
+    return ortReady; }
+  async function session(key){
+    if (!sessions[key]) sessions[key] = (async () => {
+      await loadOrt();
+      const url = base + man.models[key].file;
+      let bytes = null;
+      try { const r = await fetch(url); if (r.ok) bytes = new Uint8Array(await r.arrayBuffer()); } catch (e) {}
+      if (!bytes) { // hosts that do not serve .onnx get a base64 text copy next to it
+        const t = await (await fetch(url + ".b64.txt")).text(); const bin = atob(t.trim());
+        bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); }
+      return ort.InferenceSession.create(bytes, {executionProviders:["wasm"]}); })();
+    return sessions[key]; }
+  function degradeJS(x){
+    const g = rng(st.seed * 7919 + {denoise:1, mri:2, inpaint:3}[st.type]); const N = n*n;
+    const inp = new Float32Array(N), cond = new Float32Array(N), extra = {};
+    if (st.type === "denoise") { const s = st.level; for (let i = 0; i < N; i++) { const a = x[i] + s*g.g(), b = s*g.g(); inp[i] = Math.sqrt(a*a + b*b); cond[i] = s; } }
+    else if (st.type === "mri") { const R = st.level, rows = cartesianRows(n, R, g.int(2) ? "random" : "equispaced", g, D.mri_center_frac);
+      const re = Float64Array.from(x), im = new Float64Array(N); fft2(re, im, n, false);
+      const mask = new Float32Array(N), yr = new Float32Array(N), yi = new Float32Array(N);
+      for (let y = 0; y < n; y++) for (let c = 0; c < n; c++) { const i = y*n+c, m = rows.has(y) ? 1 : 0; mask[i] = m; yr[i] = m*(re[i] + D.mri_sigma*g.g()); yi[i] = m*(im[i] + D.mri_sigma*g.g()); }
+      const r2 = Float64Array.from(yr), i2 = Float64Array.from(yi); fft2(r2, i2, n, true);
+      for (let i = 0; i < N; i++) { inp[i] = r2[i]; cond[i] = 1/R; }
+      Object.assign(extra, {mask, y_re: yr, y_im: yi, lines: rows.size}); }
+    else { const m = inpaintMask(n, g); for (let i = 0; i < N; i++) { inp[i] = m[i] ? x[i] + D.inpaint_sigma*g.g() : 0; cond[i] = m[i]; } extra.missing = 1 - m.reduce((a, v) => a + v, 0)/N; }
+    return {inp, cond, extra}; }
+  const psnr = (a, b) => { let s = 0; for (let i = 0; i < a.length; i++) { const d = a[i] - Math.min(1, Math.max(0, b[i])); s += d*d; } return 10*Math.log10(1/Math.max(1e-12, s/a.length)); };
+  async function run(){
+    if (!st.x) return;
+    T.again.disabled = true;
+    const key = st.type + "_" + (st.type === "mri" ? st.net : "hetero");
+    T.status.textContent = sessions[key] ? "Restoring…" : "Loading the network…";
+    try {
+      await loadOrt();
+      const d = degradeJS(st.x), shape = [1, 1, n, n], feeds = {inp: new ort.Tensor("float32", d.inp, shape), cond: new ort.Tensor("float32", d.cond, shape)};
+      if (key === "mri_unrolled") for (const k of ["mask","y_re","y_im"]) feeds[k] = new ort.Tensor("float32", d.extra[k], shape);
+      const t0 = performance.now(); const s = await session(key); const out = await s.run(feeds); const ms = performance.now() - t0;
+      const mean = out.mean.data, sd = out.sd ? out.sd.data : null, x = st.x;
+      paint(T.before, n, i => grey(d.inp[i])); paint(T.after, n, i => grey(mean[i])); paint(T.clean, n, i => grey(x[i]));
+      paint(T.err, n, i => lut(Math.abs(x[i] - Math.min(1, Math.max(0, mean[i]))) / 0.15));
+      T.fhw.hidden = T.fmiss.hidden = !sd; let cov = null;
+      if (sd) { let inside = 0; const miss = new Uint8Array(n*n); for (let i = 0; i < n*n; i++) { const e = x[i] - mean[i]; if (Math.abs(e) <= Z90*sd[i]) inside++; else miss[i] = 1; }
+        cov = inside/(n*n); paint(T.hw, n, i => lut(Z90*sd[i]/0.15));
+        const red = getComputedStyle(document.documentElement).getPropertyValue("--fail").trim() || "#ad3219"; const rr = parseInt(red.slice(1,3),16), gg = parseInt(red.slice(3,5),16), bb = parseInt(red.slice(5,7),16);
+        paint(T.miss, n, i => miss[i] ? [rr, gg, bb] : grey(x[i]*0.55)); }
+      const dd = (t, v) => el("div",{}, el("dt",{},t), el("dd",{},v));
+      T.readout.replaceChildren(dd("Damaged PSNR", f2(psnr(x, d.inp)) + " dB"), dd("Restored PSNR", f2(psnr(x, mean)) + " dB"), ...(cov != null ? [dd("90 % coverage", pct(cov))] : []));
+      T.lab.textContent = METHOD[st.type === "mri" ? st.net : "hetero"];
+      const what = st.type === "mri" ? `${d.extra.lines} of ${n} k-space lines kept` : st.type === "inpaint" ? `${Math.round(d.extra.missing*100)} % of pixels missing` : `Rician noise, σ ${st.level}`;
+      T.status.textContent = `${what}. Restored in ${Math.round(ms)} ms on your device by the ${METHOD[st.type === "mri" ? st.net : "hetero"].toLowerCase()} network trained on ${man.dataset === "msd" ? "MSD brain MRI" : "phantoms"}. Coverage here counts every pixel of the image.`;
+    } catch (e) { T.status.textContent = "The network could not run in this browser (" + (e.message || e) + "). It needs WebAssembly."; }
+    T.again.disabled = false; }
+  function controls(){
+    switcher(T.task, TYPES, st.type, v => { st.type = v; st.level = null; controls(); run(); });
+    const lv = LEVELS[st.type]; if (!lv.some(l => l.id === st.level)) st.level = st.type === "denoise" ? 0.10 : st.type === "mri" ? 4 : 0;
+    switcher(T.level, lv, st.level, v => { st.level = v; run(); });
+    const nets = [{id:"hetero", label:"Heteroscedastic"}, ...(st.type === "mri" && man.models.mri_unrolled ? [{id:"unrolled", label:"Unrolled"}] : [])];
+    if (!nets.some(x => x.id === st.net)) st.net = "hetero";
+    switcher(T.net, nets, st.net, v => { st.net = v; run(); }); }
+  const useImage = (img, label) => { st.x = toImage(img, n); T.name.textContent = label; run(); };
+  T.file.addEventListener("change", () => { const f = T.file.files && T.file.files[0]; if (!f) return; const u = URL.createObjectURL(f); const im = new Image();
+    im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); }; im.onerror = () => { T.status.textContent = "That file could not be read as an image. Try a PNG or JPEG."; }; im.src = u; });
+  const root = document.getElementById("try-root");
+  ["dragenter","dragover"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.add("dropping"); }));
+  ["dragleave","drop"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.remove("dropping"); }));
+  root.addEventListener("drop", e => { const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (f && f.type.startsWith("image/")) { const u = URL.createObjectURL(f); const im = new Image(); im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); }; im.src = u; } });
+  T.again.addEventListener("click", () => { st.seed++; run(); });
+  T.range.addEventListener("input", e => T.compare.style.setProperty("--cut", e.target.value + "%"));
+  controls();
+  // example image: the first IXI test scan when available (healthy volunteer, a site the models never saw), else a phantom
+  const ex = data.example; T.name.textContent = ex ? ex.label : "";
+  const start = () => { if (!ex) return; const im = new Image(); im.onload = () => useImage(im, ex.label); im.src = ex.src; };
+  const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, {rootMargin:"400px"});
+  io.observe(root);
+}
+
+async function boot(){
+  guilloche();
+  let data;
+  try { data = await (await fetch("data/results.json", {cache:"no-cache"})).json(); }
+  catch(e) { $("#findings-list").replaceChildren(el("p",{class:"pending"},"The results file could not be loaded. Open this page through a web server (GitHub Pages, or python -m http.server in docs/).")); return; }
+  $("#f-issued").textContent = data.generated;
+  $("#report-no").textContent = "TR-M3-" + (data.git || "").toUpperCase();
+  $("#band-text").textContent = Math.round(data.verdict_band.lo*100) + "–" + Math.round(data.verdict_band.hi*100) + " %";
+  $("#foot-build").textContent = "Built from commit " + data.git + " on " + data.generated;
+  const done = ds => data.datasets[ds] && data.datasets[ds].status === "done";
+  const dsOpts = ["phantom","msd"].map(ds => ({id:ds, label:DSNAME[ds], disabled: !done(ds)}));
+  let accDs = store.get("tr.acc") || "msd"; if (!done(accDs)) accDs = done("phantom") ? "phantom" : "msd";
+  switcher($("#acc-switch"), dsOpts, accDs, v => { store.set("tr.acc", v); accuracy(data, v); calibration(data, v); syncCal(v); });
+  let calDs = accDs;
+  const syncCal = v => $("#cal-switch").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", String(dsOpts[i].id === v)));
+  switcher($("#cal-switch"), dsOpts, calDs, v => { calibration(data, v); });
+  accuracy(data, accDs); calibration(data, calDs); shift(data); findings(data);
+  const s = done("phantom") + done("msd");
+  viewer(data);
+  tryDemo(data);
+  // rail: mark the section in view
+  const links = [...document.querySelectorAll(".rail a")];
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.setAttribute("aria-current", String(a.getAttribute("href") === "#" + e.target.id))); }), {rootMargin:"-30% 0px -60% 0px"});
+  document.querySelectorAll("main section").forEach(s => io.observe(s));
+}
+boot();
+})();
+</script>
+</body>
+</html>

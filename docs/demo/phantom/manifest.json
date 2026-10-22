@@ -1,0 +1,2405 @@
+{
+ "dataset": "phantom",
+ "emax": 0.15,
+ "tile": 128,
+ "rule": "is a fixed rule decided before looking at any output, never a pick of good-looking cases:\n  phantom   the first 9 test phantoms (sorted id) that contain at least one lesion\n  msd       the first 9 test patients (sorted id), each at its slice with the largest tumour area\n  ixi       the first 3 subjects of each site (sorted id), each at its middle slice",
+ "items": [
+  {
+   "split": "test",
+   "idx": 0,
+   "pid": "ph00001",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_0_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.28773307800293
+    },
+    "bm3d": {
+     "psnr": 29.763999938964844
+    },
+    "unet": {
+     "psnr": 33.025062561035156
+    },
+    "mcdropout": {
+     "psnr": 32.86728286743164,
+     "cov90": 0.3299412354880321
+    },
+    "hetero": {
+     "psnr": 33.968814849853516,
+     "cov90": 0.8707180736706321
+    },
+    "ensemble": {
+     "psnr": 34.538368225097656,
+     "cov90": 0.9370789737709617
+    },
+    "quantile": {
+     "psnr": 33.03523254394531,
+     "cov90": 0.8677081840332521
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 1,
+   "pid": "ph00003",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_1_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.254291534423828
+    },
+    "bm3d": {
+     "psnr": 29.293100357055664
+    },
+    "unet": {
+     "psnr": 33.56352996826172
+    },
+    "mcdropout": {
+     "psnr": 33.62330627441406,
+     "cov90": 0.36516628823293706
+    },
+    "hetero": {
+     "psnr": 33.77238464355469,
+     "cov90": 0.8785895552290637
+    },
+    "ensemble": {
+     "psnr": 34.143653869628906,
+     "cov90": 0.9548550821423801
+    },
+    "quantile": {
+     "psnr": 33.52473831176758,
+     "cov90": 0.9119807666622145
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 2,
+   "pid": "ph00007",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_2_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.145418167114258
+    },
+    "bm3d": {
+     "psnr": 29.195899963378906
+    },
+    "unet": {
+     "psnr": 33.4700927734375
+    },
+    "mcdropout": {
+     "psnr": 33.49070739746094,
+     "cov90": 0.43191673894189075
+    },
+    "hetero": {
+     "psnr": 33.724220275878906,
+     "cov90": 0.8764093668690373
+    },
+    "ensemble": {
+     "psnr": 33.93496322631836,
+     "cov90": 0.9404452153801677
+    },
+    "quantile": {
+     "psnr": 33.043731689453125,
+     "cov90": 0.9025729979762938
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "ph00011",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_3_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.28157615661621
+    },
+    "bm3d": {
+     "psnr": 29.36017608642578
+    },
+    "unet": {
+     "psnr": 32.94118118286133
+    },
+    "mcdropout": {
+     "psnr": 32.90571212768555,
+     "cov90": 0.3321803911134761
+    },
+    "hetero": {
+     "psnr": 33.47704315185547,
+     "cov90": 0.8942397232938673
+    },
+    "ensemble": {
+     "psnr": 34.04149627685547,
+     "cov90": 0.9546361580417719
+    },
+    "quantile": {
+     "psnr": 32.86289978027344,
+     "cov90": 0.9159239058134894
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 4,
+   "pid": "ph00021",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_4_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.15261459350586
+    },
+    "bm3d": {
+     "psnr": 29.71794319152832
+    },
+    "unet": {
+     "psnr": 33.55481719970703
+    },
+    "mcdropout": {
+     "psnr": 33.518341064453125,
+     "cov90": 0.36688690244850364
+    },
+    "hetero": {
+     "psnr": 33.832584381103516,
+     "cov90": 0.8841818888457054
+    },
+    "ensemble": {
+     "psnr": 34.18866729736328,
+     "cov90": 0.9549164399533618
+    },
+    "quantile": {
+     "psnr": 32.96916198730469,
+     "cov90": 0.9040031092110377
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 6,
+   "pid": "ph00029",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_6_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.189136505126953
+    },
+    "bm3d": {
+     "psnr": 29.568695068359375
+    },
+    "unet": {
+     "psnr": 32.73344802856445
+    },
+    "mcdropout": {
+     "psnr": 32.773536682128906,
+     "cov90": 0.34562973158981414
+    },
+    "hetero": {
+     "psnr": 34.00173568725586,
+     "cov90": 0.8907088781830695
+    },
+    "ensemble": {
+     "psnr": 34.328269958496094,
+     "cov90": 0.9549896765313145
+    },
+    "quantile": {
+     "psnr": 32.68281173706055,
+     "cov90": 0.9026841018582243
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 9,
+   "pid": "ph00051",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_9_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.25146484375
+    },
+    "bm3d": {
+     "psnr": 29.542415618896484
+    },
+    "unet": {
+     "psnr": 33.12705612182617
+    },
+    "mcdropout": {
+     "psnr": 33.07503128051758,
+     "cov90": 0.3858881444003829
+    },
+    "hetero": {
+     "psnr": 34.06239700317383,
+     "cov90": 0.9130315875837549
+    },
+    "ensemble": {
+     "psnr": 34.602088928222656,
+     "cov90": 0.9633529331327773
+    },
+    "quantile": {
+     "psnr": 33.21247863769531,
+     "cov90": 0.9500888828114317
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 10,
+   "pid": "ph00057",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_10_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.180774688720703
+    },
+    "bm3d": {
+     "psnr": 28.80527114868164
+    },
+    "unet": {
+     "psnr": 33.11797332763672
+    },
+    "mcdropout": {
+     "psnr": 33.18107986450195,
+     "cov90": 0.3299147575919019
+    },
+    "hetero": {
+     "psnr": 33.71476745605469,
+     "cov90": 0.8931806073521577
+    },
+    "ensemble": {
+     "psnr": 34.141822814941406,
+     "cov90": 0.9399307405434203
+    },
+    "quantile": {
+     "psnr": 32.717281341552734,
+     "cov90": 0.8865210442194992
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "ph00073",
+   "site": "phantom",
+   "task": "denoise_s0.10",
+   "type": "denoise",
+   "file": "test_12_denoise_s0.10.png",
+   "tiles": [
+    "clean",
+    "input",
+    "bm3d",
+    "bm3d_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "bm3d",
+   "stats": {
+    "input": {
+     "psnr": 18.118125915527344
+    },
+    "bm3d": {
+     "psnr": 29.44066619873047
+    },
+    "unet": {
+     "psnr": 33.341793060302734
+    },
+    "mcdropout": {
+     "psnr": 33.32789993286133,
+     "cov90": 0.3715287517531557
+    },
+    "hetero": {
+     "psnr": 33.53852081298828,
+     "cov90": 0.864656381486676
+    },
+    "ensemble": {
+     "psnr": 33.891937255859375,
+     "cov90": 0.9363253856942496
+    },
+    "quantile": {
+     "psnr": 32.839786529541016,
+     "cov90": 0.8601683029453016
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 0,
+   "pid": "ph00001",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_0_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.74920082092285
+    },
+    "tv": {
+     "psnr": 30.843608856201172
+    },
+    "unet": {
+     "psnr": 32.98761749267578
+    },
+    "mcdropout": {
+     "psnr": 32.592796325683594,
+     "cov90": 0.5191342984090583
+    },
+    "hetero": {
+     "psnr": 32.88337326049805,
+     "cov90": 0.9107066074243945
+    },
+    "ensemble": {
+     "psnr": 33.08749771118164,
+     "cov90": 0.9676078543786728
+    },
+    "quantile": {
+     "psnr": 30.349271774291992,
+     "cov90": 0.8837609287659453
+    },
+    "unrolled": {
+     "psnr": 39.19010543823242
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 1,
+   "pid": "ph00003",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_1_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.92644500732422
+    },
+    "tv": {
+     "psnr": 32.625518798828125
+    },
+    "unet": {
+     "psnr": 32.600406646728516
+    },
+    "mcdropout": {
+     "psnr": 32.388671875,
+     "cov90": 0.4909843729130493
+    },
+    "hetero": {
+     "psnr": 32.55168151855469,
+     "cov90": 0.9065046079871778
+    },
+    "ensemble": {
+     "psnr": 32.57387161254883,
+     "cov90": 0.9688793909443034
+    },
+    "quantile": {
+     "psnr": 30.600393295288086,
+     "cov90": 0.8871377053559503
+    },
+    "unrolled": {
+     "psnr": 38.23580551147461
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 2,
+   "pid": "ph00007",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_2_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.044898986816406
+    },
+    "tv": {
+     "psnr": 30.721712112426758
+    },
+    "unet": {
+     "psnr": 32.88467788696289
+    },
+    "mcdropout": {
+     "psnr": 32.649017333984375,
+     "cov90": 0.4154379878577623
+    },
+    "hetero": {
+     "psnr": 32.56224060058594,
+     "cov90": 0.867736339982654
+    },
+    "ensemble": {
+     "psnr": 32.77029800415039,
+     "cov90": 0.9280138768430182
+    },
+    "quantile": {
+     "psnr": 31.326826095581055,
+     "cov90": 0.8178664353859497
+    },
+    "unrolled": {
+     "psnr": 37.91626739501953
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "ph00011",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_3_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.248397827148438
+    },
+    "tv": {
+     "psnr": 31.139575958251953
+    },
+    "unet": {
+     "psnr": 32.62699890136719
+    },
+    "mcdropout": {
+     "psnr": 32.323211669921875,
+     "cov90": 0.3824664094718637
+    },
+    "hetero": {
+     "psnr": 32.619232177734375,
+     "cov90": 0.8728216043634429
+    },
+    "ensemble": {
+     "psnr": 32.849334716796875,
+     "cov90": 0.9357456432087269
+    },
+    "quantile": {
+     "psnr": 31.600120544433594,
+     "cov90": 0.8205401090860716
+    },
+    "unrolled": {
+     "psnr": 37.31186294555664
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 4,
+   "pid": "ph00021",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_4_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 20.479991912841797
+    },
+    "tv": {
+     "psnr": 25.600189208984375
+    },
+    "unet": {
+     "psnr": 32.64271545410156
+    },
+    "mcdropout": {
+     "psnr": 32.2801399230957,
+     "cov90": 0.48788703199896355
+    },
+    "hetero": {
+     "psnr": 32.342350006103516,
+     "cov90": 0.9021894027723798
+    },
+    "ensemble": {
+     "psnr": 32.5118293762207,
+     "cov90": 0.9575074491514445
+    },
+    "quantile": {
+     "psnr": 31.410219192504883,
+     "cov90": 0.8539966316880425
+    },
+    "unrolled": {
+     "psnr": 36.7569580078125
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 6,
+   "pid": "ph00029",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_6_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 20.47638702392578
+    },
+    "tv": {
+     "psnr": 29.419818878173828
+    },
+    "unet": {
+     "psnr": 32.432167053222656
+    },
+    "mcdropout": {
+     "psnr": 32.33863830566406,
+     "cov90": 0.5465932553337922
+    },
+    "hetero": {
+     "psnr": 33.803382873535156,
+     "cov90": 0.9247075017205781
+    },
+    "ensemble": {
+     "psnr": 34.07471466064453,
+     "cov90": 0.9770130763936683
+    },
+    "quantile": {
+     "psnr": 30.985130310058594,
+     "cov90": 0.9208534067446662
+    },
+    "unrolled": {
+     "psnr": 38.50051498413086
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 9,
+   "pid": "ph00051",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_9_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.14427375793457
+    },
+    "tv": {
+     "psnr": 30.65505599975586
+    },
+    "unet": {
+     "psnr": 32.54822540283203
+    },
+    "mcdropout": {
+     "psnr": 32.276161193847656,
+     "cov90": 0.6425543552577602
+    },
+    "hetero": {
+     "psnr": 33.21199035644531,
+     "cov90": 0.93928620265281
+    },
+    "ensemble": {
+     "psnr": 33.45111083984375,
+     "cov90": 0.9756597839463969
+    },
+    "quantile": {
+     "psnr": 31.109020233154297,
+     "cov90": 0.9316286065910023
+    },
+    "unrolled": {
+     "psnr": 37.50084686279297
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 10,
+   "pid": "ph00057",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_10_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.294950485229492
+    },
+    "tv": {
+     "psnr": 30.825645446777344
+    },
+    "unet": {
+     "psnr": 32.79991912841797
+    },
+    "mcdropout": {
+     "psnr": 32.26366424560547,
+     "cov90": 0.4834842834310069
+    },
+    "hetero": {
+     "psnr": 33.00135803222656,
+     "cov90": 0.9082312200319659
+    },
+    "ensemble": {
+     "psnr": 33.280540466308594,
+     "cov90": 0.9661694192860948
+    },
+    "quantile": {
+     "psnr": 31.370502471923828,
+     "cov90": 0.8746670218433671
+    },
+    "unrolled": {
+     "psnr": 36.923377990722656
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "ph00073",
+   "site": "phantom",
+   "task": "mri_R4",
+   "type": "mri",
+   "file": "test_12_mri_R4.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.75326919555664
+    },
+    "tv": {
+     "psnr": 27.605300903320312
+    },
+    "unet": {
+     "psnr": 31.80221176147461
+    },
+    "mcdropout": {
+     "psnr": 31.693878173828125,
+     "cov90": 0.36577840112201965
+    },
+    "hetero": {
+     "psnr": 32.6729621887207,
+     "cov90": 0.8248246844319775
+    },
+    "ensemble": {
+     "psnr": 33.04243469238281,
+     "cov90": 0.9180925666199159
+    },
+    "quantile": {
+     "psnr": 30.914213180541992,
+     "cov90": 0.7873772791023843
+    },
+    "unrolled": {
+     "psnr": 37.521881103515625
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 0,
+   "pid": "ph00001",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_0_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 17.069637298583984
+    },
+    "tv": {
+     "psnr": 18.652801513671875
+    },
+    "unet": {
+     "psnr": 29.40021514892578
+    },
+    "mcdropout": {
+     "psnr": 28.885461807250977,
+     "cov90": 0.5955281639673212
+    },
+    "hetero": {
+     "psnr": 29.36693572998047,
+     "cov90": 0.9162964024652429
+    },
+    "ensemble": {
+     "psnr": 29.823740005493164,
+     "cov90": 0.9680378386125842
+    },
+    "quantile": {
+     "psnr": 27.484132766723633,
+     "cov90": 0.8943672065357604
+    },
+    "unrolled": {
+     "psnr": 33.02779769897461
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 1,
+   "pid": "ph00003",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_1_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.88216781616211
+    },
+    "tv": {
+     "psnr": 23.600074768066406
+    },
+    "unet": {
+     "psnr": 26.905248641967773
+    },
+    "mcdropout": {
+     "psnr": 27.08194351196289,
+     "cov90": 0.5083478028582877
+    },
+    "hetero": {
+     "psnr": 28.620704650878906,
+     "cov90": 0.9103779885134232
+    },
+    "ensemble": {
+     "psnr": 28.49742889404297,
+     "cov90": 0.9509817016161346
+    },
+    "quantile": {
+     "psnr": 26.989604949951172,
+     "cov90": 0.8820622412181114
+    },
+    "unrolled": {
+     "psnr": 31.28757667541504
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 2,
+   "pid": "ph00007",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_2_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 17.824384689331055
+    },
+    "tv": {
+     "psnr": 22.12815284729004
+    },
+    "unet": {
+     "psnr": 30.1212215423584
+    },
+    "mcdropout": {
+     "psnr": 29.723743438720703,
+     "cov90": 0.46342873662908357
+    },
+    "hetero": {
+     "psnr": 30.289724349975586,
+     "cov90": 0.8814686325527609
+    },
+    "ensemble": {
+     "psnr": 30.30195426940918,
+     "cov90": 0.9268574732581671
+    },
+    "quantile": {
+     "psnr": 29.01103973388672,
+     "cov90": 0.8301532234749928
+    },
+    "unrolled": {
+     "psnr": 34.31642532348633
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "ph00011",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_3_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 17.507020950317383
+    },
+    "tv": {
+     "psnr": 20.17683219909668
+    },
+    "unet": {
+     "psnr": 28.988033294677734
+    },
+    "mcdropout": {
+     "psnr": 28.708221435546875,
+     "cov90": 0.5852068644406013
+    },
+    "hetero": {
+     "psnr": 29.697172164916992,
+     "cov90": 0.8734867633364374
+    },
+    "ensemble": {
+     "psnr": 29.88962173461914,
+     "cov90": 0.9273646401489957
+    },
+    "quantile": {
+     "psnr": 28.301780700683594,
+     "cov90": 0.8109618198749501
+    },
+    "unrolled": {
+     "psnr": 34.33763122558594
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 4,
+   "pid": "ph00021",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_4_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.61041831970215
+    },
+    "tv": {
+     "psnr": 22.02594757080078
+    },
+    "unet": {
+     "psnr": 29.357831954956055
+    },
+    "mcdropout": {
+     "psnr": 29.199390411376953,
+     "cov90": 0.5148335276590232
+    },
+    "hetero": {
+     "psnr": 30.004541397094727,
+     "cov90": 0.9186423111802047
+    },
+    "ensemble": {
+     "psnr": 30.28904151916504,
+     "cov90": 0.9620417152480891
+    },
+    "quantile": {
+     "psnr": 28.551254272460938,
+     "cov90": 0.8767975126311698
+    },
+    "unrolled": {
+     "psnr": 32.4976806640625
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 6,
+   "pid": "ph00029",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_6_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 19.14227294921875
+    },
+    "tv": {
+     "psnr": 20.56252670288086
+    },
+    "unet": {
+     "psnr": 28.930644989013672
+    },
+    "mcdropout": {
+     "psnr": 28.78119468688965,
+     "cov90": 0.5871988988300069
+    },
+    "hetero": {
+     "psnr": 30.182830810546875,
+     "cov90": 0.9141087405368203
+    },
+    "ensemble": {
+     "psnr": 30.61283302307129,
+     "cov90": 0.9698554714384033
+    },
+    "quantile": {
+     "psnr": 28.026870727539062,
+     "cov90": 0.9134205092911218
+    },
+    "unrolled": {
+     "psnr": 33.483890533447266
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 9,
+   "pid": "ph00051",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_9_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.163644790649414
+    },
+    "tv": {
+     "psnr": 21.917495727539062
+    },
+    "unet": {
+     "psnr": 29.109355926513672
+    },
+    "mcdropout": {
+     "psnr": 28.926063537597656,
+     "cov90": 0.6005743197046356
+    },
+    "hetero": {
+     "psnr": 29.023401260375977,
+     "cov90": 0.9535074524818816
+    },
+    "ensemble": {
+     "psnr": 29.36968231201172,
+     "cov90": 0.9788048680432108
+    },
+    "quantile": {
+     "psnr": 27.929533004760742,
+     "cov90": 0.9376452892109941
+    },
+    "unrolled": {
+     "psnr": 31.024084091186523
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 10,
+   "pid": "ph00057",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_10_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.377948760986328
+    },
+    "tv": {
+     "psnr": 22.031497955322266
+    },
+    "unet": {
+     "psnr": 29.00211524963379
+    },
+    "mcdropout": {
+     "psnr": 28.646982192993164,
+     "cov90": 0.5263718700053277
+    },
+    "hetero": {
+     "psnr": 28.856151580810547,
+     "cov90": 0.9307405434203516
+    },
+    "ensemble": {
+     "psnr": 28.791486740112305,
+     "cov90": 0.9689664358018114
+    },
+    "quantile": {
+     "psnr": 28.14889144897461,
+     "cov90": 0.8767980820458178
+    },
+    "unrolled": {
+     "psnr": 32.44501876831055
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "ph00073",
+   "site": "phantom",
+   "task": "mri_R8",
+   "type": "mri",
+   "file": "test_12_mri_R8.png",
+   "tiles": [
+    "clean",
+    "input",
+    "tv",
+    "tv_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "unrolled",
+    "unrolled_err",
+    "region",
+    "lesion"
+   ],
+   "reference": "tv",
+   "stats": {
+    "input": {
+     "psnr": 18.635700225830078
+    },
+    "tv": {
+     "psnr": 19.25328254699707
+    },
+    "unet": {
+     "psnr": 27.5368595123291
+    },
+    "mcdropout": {
+     "psnr": 27.640398025512695,
+     "cov90": 0.4345021037868163
+    },
+    "hetero": {
+     "psnr": 28.776493072509766,
+     "cov90": 0.8403927068723702
+    },
+    "ensemble": {
+     "psnr": 29.10763931274414,
+     "cov90": 0.9225806451612903
+    },
+    "quantile": {
+     "psnr": 27.178831100463867,
+     "cov90": 0.7863955119214586
+    },
+    "unrolled": {
+     "psnr": 30.463638305664062
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 0,
+   "pid": "ph00001",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_0_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 20.15761947631836
+    },
+    "biharmonic": {
+     "psnr": 29.503925323486328
+    },
+    "unet": {
+     "psnr": 31.033113479614258
+    },
+    "mcdropout": {
+     "psnr": 30.874788284301758,
+     "cov90": 0.46782284649562844
+    },
+    "hetero": {
+     "psnr": 34.219356536865234,
+     "cov90": 0.9055467966174574
+    },
+    "ensemble": {
+     "psnr": 34.51774978637695,
+     "cov90": 0.9389422387845779
+    },
+    "quantile": {
+     "psnr": 31.667648315429688,
+     "cov90": 0.9098466389565716
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 1,
+   "pid": "ph00003",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_1_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 21.638765335083008
+    },
+    "biharmonic": {
+     "psnr": 25.086681365966797
+    },
+    "unet": {
+     "psnr": 30.2327938079834
+    },
+    "mcdropout": {
+     "psnr": 30.291908264160156,
+     "cov90": 0.45171630826766396
+    },
+    "hetero": {
+     "psnr": 31.367273330688477,
+     "cov90": 0.9046347001469214
+    },
+    "ensemble": {
+     "psnr": 33.265174865722656,
+     "cov90": 0.9422999866435154
+    },
+    "quantile": {
+     "psnr": 29.056720733642578,
+     "cov90": 0.8552157072258582
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 2,
+   "pid": "ph00007",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_2_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 19.765380859375
+    },
+    "biharmonic": {
+     "psnr": 27.07593536376953
+    },
+    "unet": {
+     "psnr": 31.012935638427734
+    },
+    "mcdropout": {
+     "psnr": 31.000164031982422,
+     "cov90": 0.457646718704828
+    },
+    "hetero": {
+     "psnr": 31.670846939086914,
+     "cov90": 0.8985255854293148
+    },
+    "ensemble": {
+     "psnr": 32.06367874145508,
+     "cov90": 0.9437698756866146
+    },
+    "quantile": {
+     "psnr": 31.02485466003418,
+     "cov90": 0.8764093668690373
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 3,
+   "pid": "ph00011",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_3_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 17.556930541992188
+    },
+    "biharmonic": {
+     "psnr": 18.700149536132812
+    },
+    "unet": {
+     "psnr": 27.4395751953125
+    },
+    "mcdropout": {
+     "psnr": 27.26846694946289,
+     "cov90": 0.5115072502328056
+    },
+    "hetero": {
+     "psnr": 30.136415481567383,
+     "cov90": 0.9129972063323134
+    },
+    "ensemble": {
+     "psnr": 30.304431915283203,
+     "cov90": 0.9445257416522549
+    },
+    "quantile": {
+     "psnr": 27.522838592529297,
+     "cov90": 0.901955567380604
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 4,
+   "pid": "ph00021",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_4_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 21.12842559814453
+    },
+    "biharmonic": {
+     "psnr": 27.20163345336914
+    },
+    "unet": {
+     "psnr": 29.581066131591797
+    },
+    "mcdropout": {
+     "psnr": 29.733642578125,
+     "cov90": 0.595673014639202
+    },
+    "hetero": {
+     "psnr": 32.28556442260742,
+     "cov90": 0.9019303018525716
+    },
+    "ensemble": {
+     "psnr": 32.315059661865234,
+     "cov90": 0.9397590361445783
+    },
+    "quantile": {
+     "psnr": 29.663999557495117,
+     "cov90": 0.8824977328669517
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 6,
+   "pid": "ph00029",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_6_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 24.476091384887695
+    },
+    "biharmonic": {
+     "psnr": 30.143199920654297
+    },
+    "unet": {
+     "psnr": 34.36524200439453
+    },
+    "mcdropout": {
+     "psnr": 34.25135040283203,
+     "cov90": 0.5212663454920854
+    },
+    "hetero": {
+     "psnr": 32.94915008544922,
+     "cov90": 0.89043358568479
+    },
+    "ensemble": {
+     "psnr": 33.42737579345703,
+     "cov90": 0.9441156228492773
+    },
+    "quantile": {
+     "psnr": 34.09494400024414,
+     "cov90": 0.9264969029593944
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 9,
+   "pid": "ph00051",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_9_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 16.184144973754883
+    },
+    "biharmonic": {
+     "psnr": 19.940977096557617
+    },
+    "unet": {
+     "psnr": 25.24155044555664
+    },
+    "mcdropout": {
+     "psnr": 24.85793685913086,
+     "cov90": 0.5115547654861206
+    },
+    "hetero": {
+     "psnr": 28.55545425415039,
+     "cov90": 0.9000410228360454
+    },
+    "ensemble": {
+     "psnr": 29.53667640686035,
+     "cov90": 0.9474907698618897
+    },
+    "quantile": {
+     "psnr": 25.57742691040039,
+     "cov90": 0.9016819362778613
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 10,
+   "pid": "ph00057",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_10_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 22.46169090270996
+    },
+    "biharmonic": {
+     "psnr": 29.672887802124023
+    },
+    "unet": {
+     "psnr": 34.4822998046875
+    },
+    "mcdropout": {
+     "psnr": 34.568607330322266,
+     "cov90": 0.4712306872669153
+    },
+    "hetero": {
+     "psnr": 34.179832458496094,
+     "cov90": 0.8995737879595098
+    },
+    "ensemble": {
+     "psnr": 34.31214141845703,
+     "cov90": 0.9347362812999467
+    },
+    "quantile": {
+     "psnr": 34.246551513671875,
+     "cov90": 0.9407298881193393
+    }
+   }
+  },
+  {
+   "split": "test",
+   "idx": 12,
+   "pid": "ph00073",
+   "site": "phantom",
+   "task": "inpaint_mixed",
+   "type": "inpaint",
+   "file": "test_12_inpaint_mixed.png",
+   "tiles": [
+    "clean",
+    "input",
+    "biharmonic",
+    "biharmonic_err",
+    "unet",
+    "unet_err",
+    "mcdropout",
+    "mcdropout_err",
+    "mcdropout_halfwidth",
+    "mcdropout_miss",
+    "hetero",
+    "hetero_err",
+    "hetero_halfwidth",
+    "hetero_miss",
+    "ensemble",
+    "ensemble_err",
+    "ensemble_halfwidth",
+    "ensemble_miss",
+    "quantile",
+    "quantile_err",
+    "quantile_halfwidth",
+    "quantile_miss",
+    "region",
+    "lesion"
+   ],
+   "reference": "biharmonic",
+   "stats": {
+    "input": {
+     "psnr": 20.73000144958496
+    },
+    "biharmonic": {
+     "psnr": 28.27151870727539
+    },
+    "unet": {
+     "psnr": 30.241594314575195
+    },
+    "mcdropout": {
+     "psnr": 30.394012451171875,
+     "cov90": 0.5483870967741935
+    },
+    "hetero": {
+     "psnr": 32.45081329345703,
+     "cov90": 0.8955119214586256
+    },
+    "ensemble": {
+     "psnr": 32.96823501586914,
+     "cov90": 0.9471248246844319
+    },
+    "quantile": {
+     "psnr": 30.574819564819336,
+     "cov90": 0.9061711079943899
+    }
+   }
+  }
+ ],
+ "thumbs": {
+  "test": {
+   "file": "test_thumbs.png",
+   "idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    6,
+    9,
+    10,
+    12
+   ],
+   "pid": [
+    "ph00001",
+    "ph00003",
+    "ph00007",
+    "ph00011",
+    "ph00021",
+    "ph00029",
+    "ph00051",
+    "ph00057",
+    "ph00073"
+   ],
+   "site": [
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom",
+    "phantom"
+   ]
+  }
+ },
+ "checks": []
+}
