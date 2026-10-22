@@ -29,7 +29,7 @@ class Block(nn.Module):
 
 def timestep_embedding(t, dim):
     half = dim // 2
-    f = torch.exp(-math.log(10000) * torch.arange(half, dtype=torch.float32) / half)
+    f = torch.exp(-math.log(10000) * torch.arange(half, dtype=torch.float32, device=t.device) / half)
     a = t.float()[:, None] * f[None]
     return torch.cat([a.sin(), a.cos()], 1)
 

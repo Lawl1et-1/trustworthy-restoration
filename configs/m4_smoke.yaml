@@ -1,0 +1,14 @@
+# M4 smoke: CPU, 64x64 phantoms, tiny networks, a few steps. Checks the pipeline, not the numbers.
+profile: smoke
+cpu: true
+out_name: m4_gen
+data: {name: phantom, n_images: 60, size: 64, seed: 1234, max_slices: {test: 12}}
+tasks:
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}
+methods: {diffusion: [0], gan: [0]}
+train: {base: 8, batch: 8, lr: 0.002, steps: 40, eval_every: 20, n_val: 4, mc_samples: 4, eval_batch: 16}
+train_overrides:
+  diffusion: {val_steps: 4, n_samples: 3, sample_steps: 5}
+eval_dseeds: [0]

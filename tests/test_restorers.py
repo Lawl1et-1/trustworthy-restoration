@@ -99,3 +99,46 @@ def test_faithful_variance_head_does_not_touch_the_unet():
     (0.5 * (lv + (X - mu.detach()) ** 2 * torch.exp(-lv))).mean().backward()
     assert all(p.grad is None or p.grad.abs().max() == 0 for p in m.net.parameters())
     assert any(p.grad is not None and p.grad.abs().max() > 0 for p in m.var_head.parameters())
+
+
+def test_diffusion_loss_and_samples_are_valid_and_reproducible():
+    torch.manual_seed(0)
+    m = Restorer("diffusion", base=8)
+    for kind in SPECS:
+        d = _d(kind)
+        c = condition(d, SPECS[kind])
+        loss = m.diffusion_loss(d, c, X, torch.Generator().manual_seed(0))
+        assert torch.isfinite(loss), kind
+        loss.backward()
+    m.eval()
+    d = _d("mri")
+    c = condition(d, SPECS["mri"])
+    p1 = m.predict(d, c, n_samples=3, steps=4, gen=torch.Generator().manual_seed(7))
+    p2 = m.predict(d, c, n_samples=3, steps=4, gen=torch.Generator().manual_seed(7))
+    p3 = m.predict(d, c, n_samples=3, steps=4, gen=torch.Generator().manual_seed(8))
+    assert p1["mean"].shape == X.shape and p1["sample"].shape == X.shape
+    assert (p1["lo"] >= 0).all() and (p1["lo"] > 0).any()  # samples differ, so the spread is not zero
+    assert torch.equal(p1["mean"], p2["mean"]) and not torch.equal(p1["mean"], p3["mean"])
+
+
+def test_gan_step_order_updates_both_networks():
+    torch.manual_seed(0)
+    m = Restorer("gan", base=8)
+    opt = torch.optim.Adam(m.net.parameters(), lr=1e-3)
+    opt_d = torch.optim.Adam(m.disc.parameters(), lr=1e-3)
+    d = _d("inpaint")
+    c = condition(d, SPECS["inpaint"])
+    g0 = [p.clone() for p in m.net.parameters()]
+    d0 = [p.clone() for p in m.disc.parameters()]
+    fake = m(d, c)
+    opt_d.zero_grad()
+    m.gan_d_loss(d, c, fake, X).backward()
+    opt_d.step()
+    loss = m.gan_g_loss(d, c, fake, X)  # must not fail although D was just updated in place
+    opt.zero_grad()
+    loss.backward()
+    opt.step()
+    assert any(not torch.equal(a, b) for a, b in zip(g0, m.net.parameters()))
+    assert any(not torch.equal(a, b) for a, b in zip(d0, m.disc.parameters()))
+    p = m.eval().predict(d, c)
+    assert p["mean"].shape == X.shape and (p["lo"] == 0).all()

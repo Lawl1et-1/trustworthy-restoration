@@ -16,6 +16,13 @@ Methods
   quantile    U-Net with 3 outputs for the 5 / 50 / 95 % quantiles, pinball loss; sorted to avoid crossing.
   unrolled    MRI only: K cascades of a small U-Net and soft data consistency (deterministic).
 
+M4 generative restorers
+  diffusion   SR3-style conditional diffusion (Saharia et al. 2022): epsilon-prediction U-Net with a timestep
+              embedding, conditioned on [degraded image, condition]; DDIM sampling (Song et al. 2021). K samples
+              per input: mean = sample mean, lo = hi = sample std, plus `sample` = the first draw.
+  gan         pix2pix (Isola et al. 2017): residual U-Net generator, PatchGAN discriminator on
+              (degraded image, condition, image), L1 x `gan_l1` + non-saturating adversarial loss. Deterministic.
+
 One network per degradation type covers all its severities. Input channels: [degraded image, condition],
 condition = noise-level map (denoise), 1/R map (MRI), measurement mask (inpainting).
 """
@@ -23,7 +30,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .nets import UNet, Unrolled
+from .diffusion import Diffusion
+from .nets import PatchGAN, UNet, Unrolled
 
 QUANTILES = (0.05, 0.5, 0.95)
 LOGVAR_MIN, LOGVAR_MAX = -14.0, 2.0
@@ -39,13 +47,20 @@ def condition(d, spec):
 
 
 class Restorer(nn.Module):
-    def __init__(self, method, base=16, p_drop=0.1, K=5, nll_mode="plain", nll_beta=0.5):
+    def __init__(self, method, base=16, p_drop=0.1, K=5, nll_mode="plain", nll_beta=0.5, gan_l1=100.0):
         super().__init__()
         assert nll_mode in ("plain", "beta", "faithful"), nll_mode
         self.method = method
         self.nll_mode, self.nll_beta = nll_mode, nll_beta
         self.faithful = method == "hetero" and nll_mode == "faithful"
-        if method == "unrolled":
+        if method == "diffusion":
+            self.net = UNet(3, 1, base, time=True)  # [x_t, degraded image, condition]
+            self.diff = Diffusion()
+        elif method == "gan":
+            self.net = UNet(2, 1, base)
+            self.disc = PatchGAN(cin=3, base=2 * base)
+            self.gan_l1 = gan_l1
+        elif method == "unrolled":
             self.net = Unrolled(K=K, base=base // 2)
         elif self.faithful:
             # Stirn et al. 2023: the U-Net only ever sees the MSE gradient; a separate variance head reads its
@@ -70,8 +85,38 @@ class Restorer(nn.Module):
             return torch.cat([d["inp"] + out[:, :1], out[:, 1:].clamp(LOGVAR_MIN, LOGVAR_MAX)], 1)
         return d["inp"] + out
 
+    # ---- M4: generative training objectives (the training loop calls these instead of forward + loss)
+
+    @staticmethod
+    def _to_pm1(v):
+        return 2 * v - 1
+
+    def diffusion_loss(self, d, cond, x, gen):
+        """Epsilon-prediction loss on x in [-1, 1], conditioned on the degraded image and the condition map."""
+        c = torch.cat([self._to_pm1(d["inp"]), cond], 1)
+        return self.diff.loss(self.net, self._to_pm1(x), c, gen)
+
+    def gan_d_loss(self, d, cond, fake, x):
+        """pix2pix discriminator loss on (degraded image, condition, image) triples; `fake` is detached."""
+        pair = torch.cat([d["inp"], cond], 1)
+        logit_real = self.disc(torch.cat([pair, x], 1))
+        logit_fake = self.disc(torch.cat([pair, fake.detach()], 1))
+        return 0.5 * (F.binary_cross_entropy_with_logits(logit_real, torch.ones_like(logit_real)) +
+                      F.binary_cross_entropy_with_logits(logit_fake, torch.zeros_like(logit_fake)))
+
+    def gan_g_loss(self, d, cond, fake, x):
+        """Generator loss: L1 x gan_l1 + non-saturating adversarial term (call after the D step)."""
+        logit = self.disc(torch.cat([d["inp"], cond, fake], 1))
+        return self.gan_l1 * F.l1_loss(fake, x) + F.binary_cross_entropy_with_logits(logit, torch.ones_like(logit))
+
+    @torch.no_grad()
+    def sample(self, d, cond, n_samples, steps, gen):
+        """(n_samples, B, 1, H, W) diffusion samples in [0, 1]-scale (not clipped)."""
+        c = torch.cat([self._to_pm1(d["inp"]), cond], 1)
+        return torch.stack([(self.diff.sample(self.net, c, steps, gen) + 1) / 2 for _ in range(n_samples)])
+
     def loss(self, out, x, step, warmup):
-        if self.method in ("unet", "unrolled"):
+        if self.method in ("unet", "unrolled", "gan"):
             return F.l1_loss(out, x)
         if self.method == "hetero":
             mu, lv = out[:, :1], out[:, 1:]
@@ -92,8 +137,13 @@ class Restorer(nn.Module):
         raise ValueError(self.method)
 
     @torch.no_grad()
-    def predict(self, d, cond, mc_samples=0):
-        """Prediction dict. mc_samples > 0 turns dropout on (unet only) for MC-dropout."""
+    def predict(self, d, cond, mc_samples=0, n_samples=8, steps=50, gen=None):
+        """Prediction dict. mc_samples > 0 turns dropout on (unet only) for MC-dropout.
+        Diffusion: n_samples DDIM draws with `steps` steps from generator `gen` (on the input's device)."""
+        if self.method == "diffusion":
+            s = self.sample(d, cond, n_samples, steps, gen)
+            sd = s.std(0) if n_samples > 1 else torch.zeros_like(s[0])
+            return {"mean": s.mean(0), "lo": sd, "hi": sd, "sample": s[0]}
         if self.method == "unet" and mc_samples:
             self.net.train()  # only dropout layers depend on train/eval (GroupNorm has no running stats)
             s = torch.stack([self.forward(d, cond) for _ in range(mc_samples)])
@@ -101,7 +151,7 @@ class Restorer(nn.Module):
             sd = s.std(0)
             return {"mean": s.mean(0), "lo": sd, "hi": sd}
         out = self.forward(d, cond)
-        if self.method in ("unet", "unrolled"):
+        if self.method in ("unet", "unrolled", "gan"):
             z = torch.zeros_like(out)
             return {"mean": out, "lo": z, "hi": z}
         if self.method == "hetero":

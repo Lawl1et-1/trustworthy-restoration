@@ -1,0 +1,18 @@
+# M4 pilot (not part of the results): how many steps diffusion and the GAN need, what sampling costs,
+# and how many DDIM steps / samples are enough. Scored on VALIDATION patients only (eval_split: val),
+# degradation seed 1 (seed 0 of the first n_val images is the selection set), so no test number is seen.
+profile: pilot_m4
+out_name: m4_gen
+eval_split: val
+data: {name: phantom, n_images: 600, size: 128, seed: 1234}
+tasks:
+  denoise_s0.06: {type: denoise, sigma: 0.06}
+  denoise_s0.15: {type: denoise, sigma: 0.15}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  mri_R8: {type: mri, R: 8, mask: mixed, sigma: 0.02}
+methods: {diffusion: [0], gan: [0]}
+train: {base: 16, batch: 16, lr: 0.001, steps: 4000, eval_every: 500, n_val: 32, eval_batch: 32}
+train_overrides:
+  diffusion: {lr: 0.0005, steps: 30000, eval_every: 2500, val_steps: 20, n_samples: 8, sample_steps: 50, sample_batch: 64}
+  gan: {lr: 0.0005, lr_d: 0.0002, gan_l1: 100.0}
+eval_dseeds: [1]

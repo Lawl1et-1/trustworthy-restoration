@@ -12,9 +12,15 @@ Protocol
   * Checkpoints go to checkpoints/<profile>/<dataset>/; an existing checkpoint is reused, so an
     interrupted run resumes where it stopped.
 
-Writes results/<profile>/m3_nets/<dataset>/{per_image.csv.gz, summary.csv, seeds.csv, train_logs.json, meta.json}.
+Writes results/<profile>/<out_name>/<dataset>/{per_image.csv.gz, summary.csv, seeds.csv, train_logs.json, meta.json},
+out_name = "m3_nets" by default; the M4 configs (diffusion, gan) set "m4_gen".
+
+M4 generative methods use the same protocol. Per-method training settings come from `train_overrides`.
+Diffusion is selected on val PSNR of one DDIM sample (`val_steps` steps) and evaluated with `n_samples`
+draws of `sample_steps` steps; its mean is scored as "diffusion" and its first draw as "diffusion_sample".
 """
 import argparse
+import zlib
 import json
 import pathlib
 import platform
@@ -68,25 +74,40 @@ def _val_set(val, tasks, n_val):
 
 
 @torch.no_grad()
-def val_psnr(model, x, vd, tasks, dev, bs):
+def val_psnr(model, x, vd, tasks, dev, bs, tcfg=None):
     model.eval()
+    kw = {}
     out = []
     for t, d in vd.items():
         means = []
         for i in range(0, len(x), bs):
             di = to_dev(slice_d(d, slice(i, i + bs)), dev)
-            means.append(model.predict(di, condition(di, tasks[t]))["mean"].clamp(0, 1).cpu())
+            if model.method == "diffusion":
+                kw = {"n_samples": 1, "steps": tcfg.get("val_steps", 20),
+                      "gen": torch.Generator(device=dev).manual_seed(zlib.crc32(f"val|{t}|{i}".encode()))}
+            means.append(model.predict(di, condition(di, tasks[t]), **kw)["mean"].clamp(0, 1).cpu())
         m = torch.cat(means)
         mse = ((m - x) ** 2).flatten(1).mean(1)
         out.append(float((10 * torch.log10(1 / mse.clamp_min(1e-12))).mean()))
     return float(np.mean(out))
 
 
+def make_model(method, tcfg):
+    return Restorer(method, base=tcfg["base"], p_drop=tcfg.get("p_drop", 0.1), nll_mode=tcfg.get("nll_mode", "plain"),
+                    nll_beta=tcfg.get("nll_beta", 0.5), gan_l1=tcfg.get("gan_l1", 100.0))
+
+
+def method_tcfg(cfg, method):
+    return {**cfg["train"], **cfg.get("train_overrides", {}).get(method, {})}
+
+
 def train_one(method, seed, tasks, data, tcfg, dev, ckpt):
     torch.manual_seed(seed)
     gen = torch.Generator().manual_seed(10_000 + seed)
-    model = Restorer(method, base=tcfg["base"], p_drop=tcfg.get("p_drop", 0.1), nll_mode=tcfg.get("nll_mode", "plain"), nll_beta=tcfg.get("nll_beta", 0.5)).to(dev)
-    opt = torch.optim.Adam(model.parameters(), lr=tcfg["lr"])
+    model = make_model(method, tcfg).to(dev)
+    opt = torch.optim.Adam(model.net.parameters() if method == "gan" else model.parameters(), lr=tcfg["lr"])
+    opt_d = (torch.optim.Adam(model.disc.parameters(), lr=tcfg.get("lr_d", tcfg["lr"]), betas=(0.5, 0.999))
+             if method == "gan" else None)
     steps, bs = tcfg["steps"], tcfg["batch"]
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=tcfg["lr"], total_steps=steps, pct_start=0.05)
     train = torch.from_numpy(data["train"].images)[:, None]
@@ -105,16 +126,25 @@ def train_one(method, seed, tasks, data, tcfg, dev, ckpt):
             x = x.flip(-2)
         task = names[int(torch.randint(0, len(names), (1,), generator=gen))]
         d = to_dev(degrade(x, tasks[task], gen), dev)
-        out = model(d, condition(d, tasks[task]))
-        loss = model.loss(out, x.to(dev), step, warm)
+        c = condition(d, tasks[task])
+        if method == "diffusion":
+            loss = model.diffusion_loss(d, c, x.to(dev), gen)
+        elif method == "gan":
+            fake = model(d, c)
+            opt_d.zero_grad(set_to_none=True)
+            model.gan_d_loss(d, c, fake, x.to(dev)).backward()
+            opt_d.step()
+            loss = model.gan_g_loss(d, c, fake, x.to(dev))  # D's grads from this are cleared at its next step
+        else:
+            loss = model.loss(model(d, c), x.to(dev), step, warm)
         opt.zero_grad(set_to_none=True)
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        torch.nn.utils.clip_grad_norm_(model.net.parameters() if method == "gan" else model.parameters(), 1.0)
         opt.step()
         sched.step()
         losses.append(loss.item())
         if (step + 1) % tcfg["eval_every"] == 0 or step + 1 == steps:
-            p = val_psnr(model, xv, vd, tasks, dev, tcfg.get("eval_batch", 32))
+            p = val_psnr(model, xv, vd, tasks, dev, tcfg.get("eval_batch", 32), tcfg)
             curve.append({"step": step + 1, "val_psnr": p, "train_loss": float(np.mean(losses[-tcfg["eval_every"]:]))})
             if p > best and (method != "hetero" or step >= warm):  # select only after the NLL phase starts
                 best, best_state = p, {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
@@ -128,7 +158,7 @@ def train_one(method, seed, tasks, data, tcfg, dev, ckpt):
 
 
 def load_model(method, ckpt, tcfg, dev):
-    m = Restorer(method, base=tcfg["base"], p_drop=tcfg.get("p_drop", 0.1), nll_mode=tcfg.get("nll_mode", "plain"), nll_beta=tcfg.get("nll_beta", 0.5)).to(dev)
+    m = make_model(method, tcfg).to(dev)
     m.load_state_dict(torch.load(ckpt, map_location=dev)["state"])
     return m.eval()
 
@@ -136,13 +166,19 @@ def load_model(method, ckpt, tcfg, dev):
 # ------------------------------------------------------------------ evaluation
 
 @torch.no_grad()
-def predict_all(models, d, spec, dev, bs, mc=0):
-    """Batched prediction; `models` is one model or a list (ensemble). Returns CPU tensors."""
+def predict_all(models, d, spec, dev, bs, mc=0, gen_kw=None, seed_key=""):
+    """Batched prediction; `models` is one model or a list (ensemble). Returns CPU tensors.
+    gen_kw (diffusion): n_samples, steps; each batch gets its own generator seeded from seed_key,
+    so samples are reproducible across reruns."""
     outs = []
     for i in range(0, d["inp"].shape[0], bs):
         di = to_dev(slice_d(d, slice(i, i + bs)), dev)
         c = condition(di, spec)
-        p = ensemble([m.predict(di, c) for m in models]) if isinstance(models, list) else models.predict(di, c, mc)
+        if gen_kw:
+            g = torch.Generator(device=dev).manual_seed(zlib.crc32(f"{seed_key}|{i}".encode()))
+            p = models.predict(di, c, gen=g, **gen_kw)
+        else:
+            p = ensemble([m.predict(di, c) for m in models]) if isinstance(models, list) else models.predict(di, c, mc)
         outs.append({k: v.cpu() for k, v in p.items()})
     return {k: torch.cat([o[k] for o in outs]) for k in outs[0]}
 
@@ -173,20 +209,25 @@ def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag)
             d = degrade(x, spec, task_generator(task, split_name, ds))
             for name, mseed, m, kw in models:
                 t0 = time.time()
-                p = predict_all(m, d, spec, dev, bs, mc=kw.get("mc", 0))
+                p = predict_all(m, d, spec, dev, kw.get("bs", bs), mc=kw.get("mc", 0), gen_kw=kw.get("gen_kw"),
+                                seed_key=f"{task}|{split_name}|{ds}|{mseed}")
                 p["quantile"] = name == "quantile"
                 sec = (time.time() - t0) / len(x_np)
-                xh = p["mean"].clamp(0, 1)[:, 0].numpy()
-                s = score(x_np, xh, data_split.region, d)
-                if name != "unet" and name != "unrolled":
-                    s.update(uncert_scores(x_np, p, data_split.region))
-                for i in range(len(x_np)):
-                    rows.append({"split": split_name, "task": task, "type": dtype, "method": name, "seed": ds,
-                                 "model_seed": mseed, "idx": i, "pid": data_split.pid[i], "site": data_split.site[i],
-                                 "sec_per_img": sec, **{k: float(v[i]) for k, v in s.items()}})
-                print(f"  [{tag}] {task} d{ds} {name:10s} m{mseed} PSNR {s['psnr'].mean():6.2f} "
-                      f"SSIM {s['ssim'].mean():.3f}" + (f" cov90 {np.nanmean(s['cov90']):.3f}" if "cov90" in s else ""),
-                      flush=True)
+                variants = [(name, p["mean"])] + ([(name + "_sample", p["sample"])] if "sample" in p else [])
+                for vname, img in variants:
+                    xh = img.clamp(0, 1)[:, 0].numpy()
+                    s = score(x_np, xh, data_split.region, d)
+                    if vname not in ("unet", "unrolled", "gan", "diffusion_sample"):
+                        s.update(uncert_scores(x_np, p, data_split.region))
+                    for i in range(len(x_np)):
+                        rows.append({"split": split_name, "task": task, "type": dtype, "method": vname, "seed": ds,
+                                     "model_seed": mseed, "idx": i, "pid": data_split.pid[i],
+                                     "site": data_split.site[i], "sec_per_img": sec,
+                                     **{k: float(v[i]) for k, v in s.items()}})
+                    print(f"  [{tag}] {task} d{ds} {vname:10s} m{mseed} PSNR {s['psnr'].mean():6.2f} "
+                          f"SSIM {s['ssim'].mean():.3f}"
+                          + (f" cov90 {np.nanmean(s['cov90']):.3f}" if "cov90" in s else "")
+                          + f" ({sec * 1000:.0f} ms/img)", flush=True)
 
 
 def summarise_nets(df):
@@ -214,7 +255,7 @@ def main(cfg_path):
     data = load_dataset(cfg["data"])
     ds_tag = cfg["data"].get("tag", cfg["data"]["name"])
     ckdir = ROOT / "checkpoints" / cfg["profile"] / ds_tag
-    out_dir = ROOT / "results" / cfg["profile"] / "m3_nets" / ds_tag
+    out_dir = ROOT / "results" / cfg["profile"] / cfg.get("out_name", "m3_nets") / ds_tag
     out_dir.mkdir(parents=True, exist_ok=True)
     tcfg = cfg["train"]
     types = sorted({s["type"] for s in cfg["tasks"].values()})
@@ -239,16 +280,23 @@ def main(cfg_path):
                     logs.append(torch.load(ck, map_location="cpu")["log"] | {"type": dtype, "reused": True})
                 else:
                     print(f"[{dtype}] train {method} seed {seed}", flush=True)
-                    logs.append(train_one(method, seed, tasks, data, tcfg, dev, ck) | {"type": dtype})
-                trained.setdefault(method, []).append((seed, load_model(method, ck, tcfg, dev)))
+                    logs.append(train_one(method, seed, tasks, data, method_tcfg(cfg, method), dev, ck) | {"type": dtype})
+                trained.setdefault(method, []).append((seed, load_model(method, ck, method_tcfg(cfg, method), dev)))
         models = []
         for method, ms in trained.items():
             for seed, m in ms:
-                models.append((method, seed, m, {}))
+                mt = method_tcfg(cfg, method)
+                kw = ({"gen_kw": {"n_samples": mt.get("n_samples", 8), "steps": mt.get("sample_steps", 50)},
+                       "bs": mt.get("sample_batch", mt.get("eval_batch", 32))} if method == "diffusion" else {})
+                models.append((method, seed, m, kw))
                 if method == "unet" and cfg.get("mc_dropout", True):
                     models.append(("mcdropout", seed, m, {"mc": tcfg.get("mc_samples", 16)}))
         if len(trained.get("hetero", [])) >= 2:
             models.append(("ensemble", -1, [m for _, m in trained["hetero"]], {}))
+        if cfg.get("eval_split", "test") == "val":
+            # pilots: score on validation patients only, so no test number is seen while choosing settings
+            evaluate(cfg, data["val"], "val", dtype, models, cfg["eval_dseeds"], dev, rows, "val")
+            continue
         evaluate(cfg, data["test"], "test", dtype, models, cfg["eval_dseeds"], dev, rows, "test")
         for tag, od in ood:
             evaluate(cfg, od, "ood", dtype, models, cfg.get("ood_dseeds", [0]), dev, rows, tag)

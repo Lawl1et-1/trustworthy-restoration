@@ -9,24 +9,30 @@ class Diffusion:
         self.abar = torch.cumprod(1 - betas, 0)
 
     def loss(self, net, x0, cond, gen=None):
-        """x0 is in [-1, 1]; cond is (B, C, H, W) conditioning stacked as extra input channels."""
-        B = x0.shape[0]
-        t = torch.randint(0, self.T, (B,), generator=gen)
-        eps = torch.randn(x0.shape, generator=gen)
-        a = self.abar[t].view(B, 1, 1, 1)
+        """x0 is in [-1, 1]; cond is (B, C, H, W) conditioning stacked as extra input channels.
+        `gen` is a CPU generator; the draws are moved to x0's device."""
+        B, dev = x0.shape[0], x0.device
+        t = torch.randint(0, self.T, (B,), generator=gen).to(dev)
+        eps = torch.randn(x0.shape, generator=gen).to(dev)
+        a = self.abar.to(dev)[t].view(B, 1, 1, 1)
         xt = a.sqrt() * x0 + (1 - a).sqrt() * eps
         return (net(torch.cat([xt, cond], 1), t) - eps).pow(2).mean()
 
     @torch.no_grad()
     def sample(self, net, cond, steps, gen):
-        """Deterministic DDIM (eta = 0); sample diversity comes from the initial noise."""
+        """Deterministic DDIM (eta = 0); sample diversity comes from the initial noise.
+        `gen` must live on cond's device."""
         B, _, H, W = cond.shape
-        x = torch.randn((B, 1, H, W), generator=gen)
-        ts = torch.linspace(self.T - 1, 0, steps).long()
+        dev = cond.device
+        abar = self.abar.to(dev)
+        x = torch.randn((B, 1, H, W), generator=gen, device=dev)
+        ts = torch.linspace(self.T - 1, 0, steps).long().to(dev)
         for i, t in enumerate(ts):
-            a = self.abar[t]
+            a = abar[t]
             eps = net(torch.cat([x, cond], 1), t.repeat(B))
             x0 = ((x - (1 - a).sqrt() * eps) / a.sqrt()).clamp(-1, 1)
-            a_prev = self.abar[ts[i + 1]] if i + 1 < len(ts) else torch.tensor(1.0)
+            a_prev = abar[ts[i + 1]] if i + 1 < len(ts) else torch.tensor(1.0, device=dev)
+            # recompute eps from the clamped x0 so the trajectory stays consistent with it
+            eps = (x - a.sqrt() * x0) / (1 - a).sqrt()
             x = a_prev.sqrt() * x0 + (1 - a_prev).sqrt() * eps
         return x
