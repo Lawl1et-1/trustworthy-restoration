@@ -64,6 +64,17 @@ def collect(profile):
                     entry["shift"] += _records(s4[~s4.method.str.endswith("(M2)")])
                 if (m4 / "train_logs.json").exists():
                     entry["n_networks"] = entry.get("n_networks", 0) + len(json.loads((m4 / "train_logs.json").read_text()))
+                # diffusion with data consistency: from the M4 run itself when it has those rows, else from the
+                # seed-0 DC evaluation (results/<profile>/m4_dc)
+                m4dc = ROOT / "results" / profile / "m4_dc" / ds
+                if not c4.method.str.startswith("diffusion_dc").any() and (m4dc / "comparison.csv").exists():
+                    cd = pd.read_csv(m4dc / "comparison.csv")
+                    entry["comparison"] += _records(cd[cd.method.str.startswith("diffusion_dc")])
+                    ud = pd.read_csv(m4dc / "uncertainty.csv")
+                    entry["uncertainty"] += _records(ud[ud.method.str.startswith("diffusion_dc")])
+                    if "shift" in entry and (m4dc / "shift.csv").exists():
+                        sd = pd.read_csv(m4dc / "shift.csv")
+                        entry["shift"] += _records(sd[sd.method.str.startswith("diffusion_dc")])
             m5 = ROOT / "results" / profile / "m5_halluc" / ds / "summary.csv"
             if m5.exists():
                 l5 = pd.read_csv(m5)
@@ -91,6 +102,9 @@ def collect(profile):
                      "recal": _records(pd.read_csv(m7 / "recal.csv")),
                      "site": _records(pd.read_csv(m7 / "site.csv")),
                      "noise": json.loads((m7 / "noise.json").read_text())}
+    if (ROOT / "docs" / "demo" / "enhance_example.png").exists():  # written by experiments/enhance_example.py
+        out["enhance_example"] = {"src": "demo/enhance_example.png",
+                                  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 × 256)"}
     # in-browser networks for "try your own image": the MSD (real MRI) set when exported, else the phantom set
     for ds in ("msd", "phantom"):
         if (ROOT / "docs" / "models" / ds / "models.json").exists():

@@ -1,6 +1,6 @@
 {
  "generated": "2026-10-23",
- "git": "419e247",
+ "git": "f228e59",
  "profile": "full",
  "verdict_band": {
   "lo": 0.87,
@@ -15280,6 +15280,10 @@
    },
    "msd_added_sigma": 0.006391469947041445
   }
+ },
+ "enhance_example": {
+  "src": "demo/enhance_example.png",
+  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 \u00d7 256)"
  },
  "models": "models/msd/models.json",
  "example": {

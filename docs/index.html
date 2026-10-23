@@ -221,6 +221,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
       <ol>
         <li><a href="#findings">Findings</a></li>
         <li><a href="#viewer">Specimen viewer</a></li>
+        <li><a href="#enhance">Enhance a scan</a></li>
         <li><a href="#try">Your own image</a></li>
         <li><a href="#accuracy">Accuracy</a></li>
         <li><a href="#lesions">Lesions</a></li>
@@ -246,6 +247,46 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <h2 id="h-viewer">Pick a scan, see how it was restored</h2>
         <div class="prose"><p>Choose a test scan from the gallery and a kind of damage. The scan is damaged exactly as in the evaluation and restored by the method you pick; drag across the image to compare the damaged input with the restoration. The maps show where the method was wrong, how wide it said its 90 % interval was, and the pixels where the truth fell outside that interval. The gallery follows a fixed rule set before any output was seen (the first test patients in id order), so it shows typical cases, good and bad.</p></div>
         <div class="viewer" id="viewer-root"><p class="pending">Loading demo images…</p></div>
+      </section>
+
+      <section id="enhance" aria-labelledby="h-enhance">
+        <p class="clause">Enhance a scan</p>
+        <h2 id="h-enhance">Reduce the noise in an MRI scan of yours</h2>
+        <div class="prose"><p>Upload a brain MRI slice (PNG, JPEG or an uncompressed DICOM file). The denoising network trained on MSD brain scans runs in your browser, patch by patch at the scan's own resolution (up to 512 pixels), and the slider compares the original with the result. Nothing is uploaded anywhere: the scan never leaves your device.</p>
+        <p class="small">What it does and does not do. It removes noise, which makes structures easier to see; it does not sharpen or add detail, because a network that makes structures look crisper than the data supports is inventing them (see Lesions). Check the "Removed" map: it should look like grain only. Anatomy in it means the network took out real structure. This is a research demonstration, not a medical device: do not use it for diagnosis.</p></div>
+        <div class="viewer" id="enh-root">
+          <div class="controls">
+            <div class="ctl"><span>Scan</span>
+              <div class="pick">
+                <label class="filebtn" for="enh-file">Choose a scan…</label>
+                <input type="file" id="enh-file" accept="image/*,.dcm,application/dicom">
+                <span class="small" id="enh-name">Loading the example…</span>
+              </div>
+            </div>
+            <div class="ctl"><span>Examples</span><div class="switch" role="group" aria-label="Example scan" id="enh-example"></div></div>
+            <div class="ctl"><span>Noise reduction</span><div class="switch" role="group" aria-label="Noise reduction strength" id="enh-level"></div></div>
+            <div><a class="act" id="enh-save" download="enhanced.png" href="#" aria-disabled="true">Save the enhanced image</a></div>
+          </div>
+          <div class="stage">
+            <div style="display:grid;gap:.75rem;min-width:0">
+              <div class="compare" id="enh-compare">
+                <canvas id="enh-before" width="128" height="128" aria-hidden="true"></canvas>
+                <canvas id="enh-after" class="after" width="128" height="128" aria-hidden="true"></canvas>
+                <i class="handle"></i><span class="lab l">Original</span><span class="lab r">Enhanced</span>
+                <input type="range" min="0" max="100" value="50" id="enh-range" aria-label="Comparison position">
+              </div>
+              <dl class="readout" id="enh-readout"></dl>
+              <p class="small" id="enh-status" role="status">The network loads when you reach this section (about 3 MB, once).</p>
+            </div>
+            <div style="display:grid;gap:.75rem;min-width:0;align-content:start">
+              <div class="maps">
+                <figure class="map"><canvas id="enh-removed" width="128" height="128"></canvas><figcaption><b>Removed</b>: original minus enhanced (should look like grain only)</figcaption></figure>
+                <figure class="map"><canvas id="enh-unc" width="128" height="128"></canvas><figcaption><b>Uncertainty</b>: the network's stated 90 % half-width</figcaption></figure>
+              </div>
+              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num">≥ 0.15</span><span>of the intensity range (uncertainty map)</span></div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section id="try" aria-labelledby="h-try">
@@ -350,7 +391,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
           <div><dt>Deep ensemble</dt><dd>Five heteroscedastic networks; total variance is the mean variance plus the variance of the means.</dd></div>
           <div><dt>Quantile</dt><dd>U-Net predicting the 5, 50 and 95 % quantiles with the pinball loss; the median is the image.</dd></div>
           <div><dt>Unrolled</dt><dd>MRI only: five cascades of a small U-Net and a learned data-consistency step that keeps the measured k-space.</dd></div>
-          <div><dt>Diffusion</dt><dd>Conditional diffusion model (SR3-style) sampled with 25 DDIM steps; eight samples per image give the mean and a per-pixel spread. "1 sample" is a single draw, what a user of a generative model would see. No data-consistency step.</dd></div>
+          <div><dt>Diffusion</dt><dd>Conditional diffusion model (SR3-style) sampled with 25 DDIM steps; eight samples per image give the mean and a per-pixel spread. "1 sample" is a single draw, what a user of a generative model would see. "+ DC" (MRI and inpainting): at every sampling step the predicted image is pulled halfway towards the measured data (k-space lines, known pixels); the strength was chosen on validation patients.</dd></div>
           <div><dt>GAN</dt><dd>pix2pix: U-Net generator and patch discriminator, L1 plus adversarial loss. No uncertainty.</dd></div>
         </dl>
         <h3>Analyses</h3>
@@ -397,6 +438,7 @@ python -m experiments.m5_hallucination --config configs/m5_full_phantom.yaml
 python -m experiments.m6_conformal --config configs/m6_full_msd.yaml
 python -m experiments.m7_shift --config configs/m7_full.yaml
 python -m experiments.m3_demo --config configs/m3_full_msd.yaml
+python -m experiments.enhance_example      # example scan for "Enhance a scan"
 python -m experiments.site_data            # rebuilds this page's data</code></pre>
       </section>
     </main>
@@ -414,14 +456,15 @@ python -m experiments.site_data            # rebuilds this page's data</code></p
 (() => {
 "use strict";
 const METHOD = {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Heteroscedastic", ensemble:"Ensemble", quantile:"Quantile", unrolled:"Unrolled",
-  diffusion:"Diffusion", diffusion_sample:"Diffusion, 1 sample", gan:"GAN",
+  diffusion:"Diffusion", diffusion_sample:"Diffusion, 1 sample", diffusion_dc:"Diffusion + DC", diffusion_dc_sample:"Diffusion + DC, 1 sample", gan:"GAN",
+  diffusion_dc_sample_const:"Diffusion + DC sample + band",
   unet_const:"U-Net + band", unrolled_const:"Unrolled + band", gan_const:"GAN + band", diffusion_sample_const:"Diffusion sample + band",
   bm3d:"BM3D", tv:"TV", biharmonic:"Biharmonic", wavelet:"Wavelet", noisy:"Input", zero_filled:"Input", masked:"Input", input:"Input"};
 const TASK = {"denoise_s0.03":"Denoising σ 0.03","denoise_s0.06":"Denoising σ 0.06","denoise_s0.10":"Denoising σ 0.10","denoise_s0.15":"Denoising σ 0.15",
   mri_R2:"MRI, R = 2", mri_R4:"MRI, R = 4", mri_R8:"MRI, R = 8", inpaint_mixed:"Inpainting"};
 const DSNAME = {phantom:"Phantoms", msd:"MSD BrainTumour", ixi:"IXI (other sites)"};
-const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","gan"];
-const UNCERT = ["mcdropout","hetero","ensemble","quantile","diffusion"];
+const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","diffusion_dc","diffusion_dc_sample","gan"];
+const UNCERT = ["mcdropout","hetero","ensemble","quantile","diffusion","diffusion_dc"];
 const TASKORDER = Object.keys(TASK);
 const $ = (s, r=document) => r.querySelector(s);
 const el = (tag, attrs={}, ...kids) => { const e = document.createElement(tag);
@@ -530,7 +573,7 @@ function shift(data){
 
 /* ---------- lesions (M5) ---------- */
 const LES_TASKS = ["denoise_s0.06","denoise_s0.10","mri_R2","mri_R4","inpaint_mixed"];
-const LES_METHODS = ["bm3d","tv","biharmonic","unet","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","gan","input"];
+const LES_METHODS = ["bm3d","tv","biharmonic","unet","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","diffusion_dc","diffusion_dc_sample","gan","input"];
 function lesions(data, task){
   const root = $("#les-table"); const d = data.datasets.phantom;
   if (!d || !d.lesions) { root.replaceChildren(el("p",{class:"pending"},"The lesion test appears here when its run has finished.")); return; }
@@ -549,7 +592,7 @@ function lesions(data, task){
 
 /* ---------- conformal (M6) ---------- */
 const CONF_TASKS = ["denoise_s0.10","mri_R4","inpaint_mixed"];
-const CONF_METHODS = ["mcdropout","hetero","ensemble","quantile","diffusion","unet_const","unrolled_const","gan_const","diffusion_sample_const"];
+const CONF_METHODS = ["mcdropout","hetero","ensemble","quantile","diffusion","diffusion_dc","unet_const","unrolled_const","gan_const","diffusion_sample_const","diffusion_dc_sample_const"];
 function conformal(data, ds, task){
   const root = $("#conf-table"); const d = data.datasets[ds]; const band = data.verdict_band;
   if (!d || !d.conformal) { root.replaceChildren(el("p",{class:"pending"},"Calibration results for "+DSNAME[ds]+" appear here when the run has finished.")); return; }
@@ -924,6 +967,209 @@ async function tryDemo(data){
   io.observe(root);
 }
 
+/* ---------- enhance a scan: DICOM reading, noise estimate, patch-wise denoising ---------- */
+function readDicom(buf){
+  // Minimal reader for uncompressed single-frame greyscale DICOM (explicit or implicit VR, little endian).
+  const v = new DataView(buf), u8 = new Uint8Array(buf);
+  const str = (o, n) => String.fromCharCode(...u8.subarray(o, o + n)).replace(/[\0 ]+$/, "");
+  let off = (buf.byteLength > 132 && str(128, 4) === "DICM") ? 132 : 0;
+  const tags = {}; let explicit = true, ts = "", pix = null;
+  const LONG = new Set(["OB","OD","OF","OL","OW","SQ","UC","UR","UT","UN"]);
+  const isVR = o => /^[A-Z]{2}$/.test(str(o, 2));
+  try {
+    while (off + 8 <= buf.byteLength) {
+      const g = v.getUint16(off, true), e = v.getUint16(off + 2, true); let vr = null, len, hdr;
+      const useExplicit = g === 2 || explicit;
+      if (useExplicit && isVR(off + 4)) { vr = str(off + 4, 2);
+        if (LONG.has(vr)) { len = v.getUint32(off + 8, true); hdr = 12; } else { len = v.getUint16(off + 6, true); hdr = 8; } }
+      else { len = v.getUint32(off + 4, true); hdr = 8; }
+      const data = off + hdr;
+      if (g === 0x7FE0 && e === 0x0010) { if (len === 0xFFFFFFFF) throw new Error("compressed"); pix = {off: data, len}; break; }
+      if (len === 0xFFFFFFFF) { // undefined-length sequence: skip to its delimiter (FFFE,E0DD) at the same depth
+        let o = data, depth = 1;
+        while (o + 8 <= buf.byteLength && depth > 0) { const gg = v.getUint16(o, true), ee = v.getUint16(o + 2, true);
+          if (gg === 0xFFFE && ee === 0xE0DD) depth--; o += 2; }
+        off = o + 6; continue; }
+      const key = (g << 16 | e) >>> 0;
+      if (len <= 64) tags[key] = {off: data, len, vr};
+      if (g === 2 && e === 0x10) { ts = str(data, len); explicit = ts !== "1.2.840.10008.1.2"; }
+      off = data + len;
+    }
+  } catch (err) { if (err.message === "compressed") throw new Error("this DICOM file is compressed; export it as an uncompressed DICOM, PNG or JPEG"); }
+  if (/^1\.2\.840\.10008\.1\.2\.4|^1\.2\.840\.10008\.1\.2\.5/.test(ts)) throw new Error("this DICOM file is compressed; export it as an uncompressed DICOM, PNG or JPEG");
+  const u16 = k => tags[k] ? v.getUint16(tags[k].off, true) : null, num = k => tags[k] ? parseFloat(str(tags[k].off, tags[k].len)) : null;
+  const rows = u16(0x00280010), cols = u16(0x00280011), bits = u16(0x00280100) || 16, signed = u16(0x00280103) === 1;
+  const spp = u16(0x00280002) || 1;
+  if (!rows || !cols) throw new Error("no image size found in this DICOM file");
+  if (spp !== 1) throw new Error("this DICOM file is not greyscale");
+  const bpp = bits / 8, need = rows * cols * bpp;
+  if (!pix) pix = {off: buf.byteLength - need, len: need};          // fallback: pixel data is the last element
+  if (pix.off < 0 || pix.off + need > buf.byteLength) throw new Error("the pixel data could not be found");
+  const slope = num(0x00281053) ?? 1, icpt = num(0x00281052) ?? 0;
+  const inv = tags[0x00280004] && str(tags[0x00280004].off, tags[0x00280004].len) === "MONOCHROME1";
+  const out = new Float32Array(rows * cols);
+  for (let i = 0; i < rows * cols; i++) {
+    const o = pix.off + i * bpp;
+    const raw = bpp === 1 ? (signed ? v.getInt8(o) : v.getUint8(o)) : bpp === 2 ? (signed ? v.getInt16(o, true) : v.getUint16(o, true)) : (signed ? v.getInt32(o, true) : v.getUint32(o, true));
+    out[i] = raw * slope + icpt; }
+  if (inv) { let mx = -Infinity; for (const x of out) mx = Math.max(mx, x); for (let i = 0; i < out.length; i++) out[i] = mx - out[i]; }
+  return {w: cols, h: rows, data: out};
+}
+
+function scaleUnit(a){ // as prepare_data.py: divide by the 99.8th percentile of the non-zero pixels, clip to [0, 1]
+  const nz = []; let mn = Infinity; for (const x of a) mn = Math.min(mn, x);
+  for (let i = 0; i < a.length; i += Math.max(1, Math.floor(a.length / 200000))) nz.push(a[i] - mn);
+  nz.sort((p, q) => p - q); const pos = nz.filter(x => x > 0); const ref = pos.length ? pos[Math.floor(0.998 * (pos.length - 1))] : 1;
+  const out = new Float32Array(a.length); for (let i = 0; i < a.length; i++) out[i] = Math.min(1, Math.max(0, (a[i] - mn) / (ref || 1)));
+  return out;
+}
+
+function resizeTo(img, w, h, W, H){ // bilinear, used only to cap very large scans
+  if (w === W && h === H) return img; const out = new Float32Array(W * H);
+  for (let y = 0; y < H; y++) { const sy = Math.min(h - 1, (y + .5) * h / H - .5), y0 = Math.max(0, Math.floor(sy)), y1 = Math.min(h - 1, y0 + 1), fy = Math.max(0, sy - y0);
+    for (let x = 0; x < W; x++) { const sx = Math.min(w - 1, (x + .5) * w / W - .5), x0 = Math.max(0, Math.floor(sx)), x1 = Math.min(w - 1, x0 + 1), fx = Math.max(0, sx - x0);
+      out[y*W + x] = (1-fy)*((1-fx)*img[y0*w+x0] + fx*img[y0*w+x1]) + fy*((1-fx)*img[y1*w+x0] + fx*img[y1*w+x1]); } }
+  return out;
+}
+
+function noiseSigma(x, w, h){
+  // Two stages. (1) Rough sigma from the finest diagonal detail on the signal area (biased up by anatomy).
+  // (2) Precise sigma from the dark background, where magnitude-MRI noise is Rayleigh: the detail there has
+  // std 0.655 sigma. "Dark" = 5x5 local mean below max(0.08, 2 x rough sigma). Checked against known added
+  // noise (sigma 0.01-0.15) on IXI and MSD slices: within about 5 %.
+  const med = a => { if (!a.length) return null; a.sort((p, q) => p - q); return a[Math.floor(a.length / 2)]; };
+  const det = (y, c) => Math.abs(x[y*w+c] - x[y*w+c+1] - x[(y+1)*w+c] + x[(y+1)*w+c+1]) / 2;
+  const sig = [];
+  for (let y = 0; y + 1 < h; y++) for (let c = 0; c + 1 < w; c++)
+    if (Math.max(x[y*w+c], x[y*w+c+1], x[(y+1)*w+c], x[(y+1)*w+c+1]) > 0.02) sig.push(det(y, c));
+  const s1 = sig.length > 100 ? med(sig) / 0.6745 : 0;
+  const ii = new Float64Array((w + 1) * (h + 1)); // integral image for the 5x5 local mean
+  for (let y = 0; y < h; y++) { let row = 0; for (let c = 0; c < w; c++) { row += x[y*w+c]; ii[(y+1)*(w+1) + c+1] = ii[y*(w+1) + c+1] + row; } }
+  const box = (y, c) => { const y0 = Math.max(0, y-2), y1 = Math.min(h, y+3), x0 = Math.max(0, c-2), x1 = Math.min(w, c+3);
+    return (ii[y1*(w+1)+x1] - ii[y0*(w+1)+x1] - ii[y1*(w+1)+x0] + ii[y0*(w+1)+x0]) / ((y1-y0)*(x1-x0)); };
+  const thr = Math.max(0.08, 2 * s1), dark = [];
+  for (let y = 0; y + 1 < h; y++) for (let c = 0; c + 1 < w; c++) if (box(y, c) < thr) dark.push(det(y, c));
+  if (dark.length < 2000) return s1 || null;
+  return med(dark) / 0.6745 / 0.655;
+}
+
+async function enhanceDemo(data){
+  const E = {}; ["file","name","level","save","compare","before","after","range","readout","status","removed","unc"].forEach(k => E[k] = document.getElementById("enh-" + k));
+  const set = data.models; if (!set) { E.status.textContent = "The in-browser network has not been exported yet."; return; }
+  let man; try { man = await (await fetch(set)).json(); } catch (e) { E.status.textContent = "The network list could not be loaded."; return; }
+  if (!man.models.denoise_hetero) { E.status.textContent = "No denoising network is available."; return; }
+  const n = man.size, base = set.replace(/models\.json$/, ""), MAXSIDE = 512, STRIDE = 96;
+  const LEVELS = [{id:"auto", label:"Auto"}, {id:0.03, label:"Light"}, {id:0.06, label:"Medium"}, {id:0.10, label:"Strong"}, {id:0.15, label:"Very strong"}];
+  const fmtS = v => v == null ? "–" : v < 0.005 ? "below 0.005" : "≈ " + v.toFixed(3);
+  const LOW = 0.015; // below this the scan is essentially clean for this network (trained on sigma 0.03-0.15)
+  const st = {level: "auto", img: null, est: null, busy: false, url: null};
+  let sess = null;
+  async function session(){
+    if (sess) return sess;
+    sess = (async () => {
+      if (!window.ort) await new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "vendor/ort.wasm.min.js"; sc.onload = res; sc.onerror = () => rej(new Error("the runtime could not be loaded")); document.head.append(sc); });
+      ort.env.wasm.numThreads = 1; ort.env.wasm.proxy = false; ort.env.wasm.wasmPaths = ort.env.wasm.wasmPaths || "vendor/";
+      const bytes = new Uint8Array(await (await fetch(base + man.models.denoise_hetero.file)).arrayBuffer());
+      return ort.InferenceSession.create(bytes, {executionProviders:["wasm"]}); })();
+    return sess; }
+  // separable taper so overlapping patches blend without seams
+  const win = new Float32Array(n * n); { const w1 = Array.from({length: n}, (_, i) => 0.05 + Math.sin(Math.PI * (i + .5) / n) ** 2);
+    for (let y = 0; y < n; y++) for (let c = 0; c < n; c++) win[y*n+c] = w1[y] * w1[c]; }
+  const starts = L => { if (L <= n) return [0]; const s = []; for (let o = 0; o + n < L; o += STRIDE) s.push(o); s.push(L - n); return s; };
+  async function run(){
+    if (!st.img || st.busy) return; st.busy = true;
+    const {w, h, x} = st.img;
+    const dd = (t, v) => el("div",{}, el("dt",{},t), el("dd",{},v));
+    E.compare.style.aspectRatio = w + " / " + h;
+    if (st.level === "auto" && st.est != null && st.est < LOW) { // clean scan: say so instead of smoothing it
+      paintWH(E.before, w, h, i => grey(x[i])); paintWH(E.after, w, h, i => grey(x[i]));
+      paintWH(E.removed, w, h, () => [128, 128, 128]); paintWH(E.unc, w, h, () => [0, 0, 0]);
+      E.readout.replaceChildren(dd("Size", `${w} × ${h} px`), dd("Estimated noise σ", fmtS(st.est)), dd("Strength used", "none"));
+      E.save.setAttribute("aria-disabled", "true"); E.save.href = "#";
+      E.status.textContent = `This scan has very little noise (σ ${fmtS(st.est)}), far below the noise the network was trained on (σ 0.03–0.15). Denoising it would mostly remove real detail, so nothing was changed. Pick a strength above to see what that would do, and watch the Removed map.`;
+      st.busy = false; return; }
+    const sigma = st.level === "auto" ? Math.min(0.15, Math.max(0.02, st.est ?? 0.03)) : st.level;
+    E.status.textContent = sess ? "Enhancing…" : "Loading the network…";
+    try {
+      const s = await session(); const t0 = performance.now();
+      // pad to at least one patch in each direction
+      const W = Math.max(w, n), H = Math.max(h, n), pad = new Float32Array(W * H);
+      for (let y = 0; y < h; y++) pad.set(x.subarray(y*w, y*w + w), y*W);
+      const acc = new Float32Array(W*H), accS = new Float32Array(W*H), accW = new Float32Array(W*H);
+      const inp = new Float32Array(n*n), cond = new Float32Array(n*n).fill(sigma);
+      const ys = starts(H), xs = starts(W); let k = 0;
+      for (const oy of ys) for (const ox of xs) {
+        for (let y = 0; y < n; y++) inp.set(pad.subarray((oy+y)*W + ox, (oy+y)*W + ox + n), y*n);
+        const out = await s.run({inp: new ort.Tensor("float32", inp, [1,1,n,n]), cond: new ort.Tensor("float32", cond, [1,1,n,n])});
+        const m = out.mean.data, sd = out.sd.data;
+        for (let y = 0; y < n; y++) for (let c = 0; c < n; c++) { const i = (oy+y)*W + ox + c, q = y*n + c, ww = win[q];
+          acc[i] += ww * m[q]; accS[i] += ww * sd[q]; accW[i] += ww; }
+        if (++k % 8 === 0) { E.status.textContent = `Enhancing… ${k} of ${ys.length * xs.length} patches`; await new Promise(r => setTimeout(r)); }
+      }
+      const mean = new Float32Array(w*h), sd = new Float32Array(w*h);
+      for (let y = 0; y < h; y++) for (let c = 0; c < w; c++) { const i = y*W + c; mean[y*w+c] = Math.min(1, Math.max(0, acc[i] / accW[i])); sd[y*w+c] = accS[i] / accW[i]; }
+      const ms = performance.now() - t0;
+      paintWH(E.before, w, h, i => grey(x[i])); paintWH(E.after, w, h, i => grey(mean[i]));
+      let rms = 0; for (let i = 0; i < w*h; i++) { const r = x[i] - mean[i]; rms += r*r; } rms = Math.sqrt(rms / (w*h));
+      const rs = Math.max(1e-6, 3 * rms); paintWH(E.removed, w, h, i => grey(0.5 + (x[i] - mean[i]) / (2 * rs)));
+      paintWH(E.unc, w, h, i => lut(Z90 * sd[i] / 0.15));
+      E.readout.replaceChildren(dd("Size", `${w} × ${h} px`), dd("Estimated noise σ", fmtS(st.est)),
+        dd("Strength used", "σ " + sigma.toFixed(3)), dd("Removed (RMS)", rms.toFixed(3)));
+      E.after.toBlob(b => { if (st.url) URL.revokeObjectURL(st.url); st.url = URL.createObjectURL(b); E.save.href = st.url; E.save.removeAttribute("aria-disabled"); });
+      E.status.textContent = `Enhanced in ${(ms/1000).toFixed(1)} s on your device, ${ys.length * xs.length} patches of ${n} × ${n}.` +
+        (st.est != null && st.est < LOW && st.level !== "auto" ? " This scan has very little noise: the Removed map shows how much real structure was taken out." : "") +
+        (st.est != null && st.est >= LOW && st.est < 0.03 ? " The noise is below the range the network was trained on (σ 0.03–0.15); check the Removed map for structure." : "") +
+        (st.est != null && st.est > 0.15 ? " The noise is above anything the network was trained on; expect over-smoothing." : "");
+    } catch (e) { E.status.textContent = "The network could not run in this browser (" + (e.message || e) + "). It needs WebAssembly."; }
+    st.busy = false; }
+  function useArray(a, w, h, label){
+    let W = w, H = h; const big = Math.max(w, h); if (big > MAXSIDE) { W = Math.round(w * MAXSIDE / big); H = Math.round(h * MAXSIDE / big); }
+    const x = scaleUnit(resizeTo(a, w, h, W, H));
+    st.img = {w: W, h: H, x}; st.est = noiseSigma(x, W, H);
+    E.name.textContent = label + (big > MAXSIDE ? ` (scaled from ${w} × ${h})` : ""); run(); }
+  function useImage(im, label){
+    const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
+    const g = c.getContext("2d"); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data;
+    const a = new Float32Array(c.width * c.height); for (let i = 0; i < a.length; i++) a[i] = 0.299*d[4*i] + 0.587*d[4*i+1] + 0.114*d[4*i+2];
+    useArray(a, c.width, c.height, label); }
+  function useFile(f){
+    if (!f) return;
+    const isDicom = /\.dcm$/i.test(f.name) || f.type === "application/dicom" || !f.type;
+    if (isDicom) { f.arrayBuffer().then(buf => { try { const d = readDicom(buf); useArray(d.data, d.w, d.h, f.name); }
+        catch (e) { if (f.type.startsWith("image/")) imgFile(f); else E.status.textContent = "That file could not be read: " + e.message + "."; } }); return; }
+    imgFile(f); }
+  function imgFile(f){ const u = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); };
+    im.onerror = () => { E.status.textContent = "That file could not be read as an image. Use PNG, JPEG or an uncompressed DICOM file."; }; im.src = u; }
+  E.file.addEventListener("change", () => useFile(E.file.files && E.file.files[0]));
+  const root = document.getElementById("enh-root");
+  ["dragenter","dragover"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.add("dropping"); }));
+  ["dragleave","drop"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.remove("dropping"); }));
+  root.addEventListener("drop", e => useFile(e.dataTransfer.files && e.dataTransfer.files[0]));
+  E.save.addEventListener("click", e => { if (E.save.getAttribute("aria-disabled")) e.preventDefault(); });
+  switcher(E.level, LEVELS, st.level, v => { st.level = v; run(); });
+  E.range.addEventListener("input", e => E.compare.style.setProperty("--cut", e.target.value + "%"));
+  const ex = data.enhance_example;
+  function example(noisy){
+    if (!ex) { E.status.textContent = "Choose a scan to start."; return; }
+    const im = new Image();
+    im.onload = () => {
+      if (!noisy) { useImage(im, ex.label + ", as acquired"); return; }
+      const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
+      const g = c.getContext("2d"); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data;
+      const r = rng(20261023), sgm = 0.06, a = new Float32Array(c.width * c.height);
+      for (let i = 0; i < a.length; i++) { const u = d[4*i] / 255 + sgm * r.g(), v = sgm * r.g(); a[i] = Math.min(1, Math.sqrt(u*u + v*v)) * 255; }
+      useArray(a, c.width, c.height, ex.label + ", with added noise σ 0.06"); };
+    im.src = ex.src; }
+  const exSw = document.getElementById("enh-example");
+  if (exSw && ex) switcher(exSw, [{id:"noisy", label:"Noisy example"}, {id:"clean", label:"As acquired"}], "noisy", v => example(v === "noisy"));
+  const start = () => example(true);
+  const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, {rootMargin:"400px"});
+  io.observe(root);
+}
+function paintWH(canvas, w, h, f){ const g = canvas.getContext("2d"); canvas.width = w; canvas.height = h; const id = g.createImageData(w, h);
+  for (let i = 0; i < w*h; i++) { const [r, gg, b] = f(i); id.data[4*i] = r; id.data[4*i+1] = gg; id.data[4*i+2] = b; id.data[4*i+3] = 255; } g.putImageData(id, 0, 0); }
+
 async function boot(){
   guilloche();
   let data;
@@ -952,6 +1198,7 @@ async function boot(){
   const s = done("phantom") + done("msd");
   viewer(data);
   tryDemo(data);
+  enhanceDemo(data);
   // rail: mark the section in view
   const links = [...document.querySelectorAll(".rail a")];
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.setAttribute("aria-current", String(a.getAttribute("href") === "#" + e.target.id))); }), {rootMargin:"-30% 0px -60% 0px"});
