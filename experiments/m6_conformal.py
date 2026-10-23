@@ -17,6 +17,7 @@ Writes results/<profile>/m6_conformal/<dataset>/{per_image.csv.gz, summary.csv, 
 """
 import argparse
 import json
+import shutil
 import pathlib
 import platform
 import time
@@ -26,7 +27,7 @@ import pandas as pd
 import torch
 import yaml
 
-from experiments.m3_nets import Z90, predict_all, type_tasks
+from experiments.m3_nets import Z90, load_block, predict_all, save_block, type_tasks
 from experiments.m5_hallucination import net_methods
 from experiments.run_task import _git_hash
 from src.conformal.risk import LAMBDA_GRID, crc_lambda, rcps_lambda, risk_curves
@@ -77,9 +78,17 @@ def main(cfg_path):
     out_dir.mkdir(parents=True, exist_ok=True)
     bs = cfg.get("eval_batch", 32)
     rows, lambdas = [], {}
+    cache = out_dir / ".partial"  # finished blocks; removed once the results are written
     for dtype in sorted({s["type"] for s in cfg["tasks"].values()}):
         methods = net_methods(cfg, dtype, dev)
         for task, spec in type_tasks(cfg["tasks"], dtype).items():
+            bkey = f"m6|{task}|{sorted(splits)}|" + "|".join(f"{m[0]}:{m[1]}" for m in methods)
+            done = load_block(cache, bkey)
+            if done is not None:  # finished before an interruption
+                rows.extend(done["rows"]); lambdas[task] = done["lambdas"]
+                print(f"  {task}: reused from cache", flush=True)
+                continue
+            n_rows = len(rows)
             curves = {}  # (split, name, mseed) -> (risk, width) over the lambda grid
             for split, sd in splits.items():
                 x = torch.from_numpy(sd.images)[:, None]
@@ -105,6 +114,7 @@ def main(cfg_path):
                     msg = "  ".join(f"{rule} cov {1 - r_ev[:, j].mean():.3f} w {w_ev[:, j].mean():.3f}"
                                     for rule, j in choice.items())
                     print(f"  {task} {ev:4s} {name:22s} m{mseed:2d}  {msg}", flush=True)
+            save_block(cache, bkey, rows=rows[n_rows:], lambdas=lambdas.get(task, {}))
 
     df = pd.DataFrame(rows)
     df.to_csv(out_dir / "per_image.csv.gz", index=False)
@@ -125,6 +135,7 @@ def main(cfg_path):
     print(summ[["split", "task", "method", "rule", "coverage", "width"]].to_string(
         index=False, float_format=lambda v: f"{v:.3f}"))
     print(f"wrote {out_dir} in {meta['wall_seconds']} s", flush=True)
+    shutil.rmtree(cache, ignore_errors=True)
 
 
 if __name__ == "__main__":

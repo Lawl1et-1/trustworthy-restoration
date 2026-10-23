@@ -48,11 +48,11 @@
   ],
   "eval_batch": 16
  },
- "git": "4855f9c",
+ "git": "5f1341f",
  "python": "3.12.9",
  "torch": "2.11.0+cu126",
  "device": "cpu",
- "wall_seconds": 17.2,
+ "wall_seconds": 5.9,
  "n_images": 5,
  "n_lesions": 11,
  "n_clipped": 0

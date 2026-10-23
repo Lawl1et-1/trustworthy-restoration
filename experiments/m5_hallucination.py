@@ -27,6 +27,7 @@ Writes results/<profile>/m5_halluc/<dataset>/{per_lesion.csv.gz, per_image.csv.g
 """
 import argparse
 import json
+import shutil
 import pathlib
 import platform
 import time
@@ -37,7 +38,7 @@ import pandas as pd
 import torch
 import yaml
 
-from experiments.m3_nets import Z90, load_model, method_tcfg, predict_all, type_tasks
+from experiments.m3_nets import Z90, load_block, load_model, method_tcfg, predict_all, save_block, type_tasks
 from experiments.run_task import _git_hash
 from src.data.datasets import ROOT, load_dataset
 from src.degradations.degrade import degrade, task_generator
@@ -213,10 +214,18 @@ def main(cfg_path):
     xt, xbt = torch.from_numpy(x)[:, None], torch.from_numpy(x_bg)[:, None]
 
     les_rows, img_rows = [], []
+    cache = out_dir / ".partial"  # finished blocks; removed once the results are written
     for dtype in sorted({s["type"] for s in cfg["tasks"].values()}):
         methods = [(nm, -1, None, {"weights": w}) for nm, w in classical.get(dtype, [])] + net_methods(cfg, dtype, dev)
         for task, spec in type_tasks(cfg["tasks"], dtype).items():
             for ds in cfg["eval_dseeds"]:
+                bkey = f"m5|{task}|{ds}|" + "|".join(f"{m[0]}:{m[1]}" for m in methods)
+                done = load_block(cache, bkey)
+                if done is not None:  # finished before an interruption
+                    les_rows.extend(done["les"]); img_rows.extend(done["img"])
+                    print(f"  {task} d{ds}: reused from cache", flush=True)
+                    continue
+                n_les, n_img = len(les_rows), len(img_rows)
                 dp = degrade(xt, spec, task_generator(task, "test", ds))
                 da = degrade(xbt, spec, task_generator(task, "test", ds))
                 for meth in methods:
@@ -239,6 +248,7 @@ def main(cfg_path):
                         print(f"  {task} d{ds} {name:16s} m{meth[1]:2d} recovery {g.recovery.mean():5.2f} "
                               f"erased {(g.recovery < 0.5).mean():4.2f} fab_absent {s['fab_absent'].mean():5.2f} "
                               f"({time.time() - t0:.0f} s)", flush=True)
+                save_block(cache, bkey, les=les_rows[n_les:], img=img_rows[n_img:])
         # the degraded input itself is the reference for detectability
         for task, spec in type_tasks(cfg["tasks"], dtype).items():
             for ds in cfg["eval_dseeds"]:
@@ -266,6 +276,7 @@ def main(cfg_path):
     cols = ["task", "method", "recovery", "erased_frac", "detect_auc", "fab_absent", "core_cov90"]
     print(summ[cols].to_string(index=False, float_format=lambda v: f"{v:.3f}"))
     print(f"wrote {out_dir} in {meta['wall_seconds']} s", flush=True)
+    shutil.rmtree(cache, ignore_errors=True)
 
 
 if __name__ == "__main__":

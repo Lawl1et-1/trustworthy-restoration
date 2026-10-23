@@ -22,6 +22,9 @@ With `dc_eta` > 0 the same network is also sampled with data consistency at ever
 and scored as "diffusion_dc" / "diffusion_dc_sample"; `plain: false` skips the plain variant.
 """
 import argparse
+import hashlib
+import os
+import shutil
 import zlib
 import json
 import pathlib
@@ -94,6 +97,34 @@ def val_psnr(model, x, vd, tasks, dev, bs, tcfg=None):
     return float(np.mean(out))
 
 
+def atomic_save(obj, path):
+    """torch.save to a temporary file, then rename: a power cut never leaves a half-written file."""
+    path = pathlib.Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    torch.save(obj, tmp)
+    os.replace(tmp, path)
+
+
+def load_block(cache, key):
+    """Rows (list of dicts) and extra JSON of a finished block saved by save_block, or None."""
+    if cache is None:
+        return None
+    f = cache / (hashlib.sha1(key.encode()).hexdigest()[:16] + ".json")
+    return json.loads(f.read_text()) if f.exists() else None
+
+
+def save_block(cache, key, **parts):
+    """Atomically stores a finished block (any JSON-serialisable parts) so an interrupted run can skip it."""
+    if cache is None:
+        return
+    cache.mkdir(parents=True, exist_ok=True)
+    f = cache / (hashlib.sha1(key.encode()).hexdigest()[:16] + ".json")
+    tmp = f.with_name(f.name + ".tmp")
+    tmp.write_text(json.dumps(parts, default=lambda v: v.item() if hasattr(v, "item") else str(v)))
+    os.replace(tmp, f)
+
+
 def make_model(method, tcfg):
     return Restorer(method, base=tcfg["base"], p_drop=tcfg.get("p_drop", 0.1), nll_mode=tcfg.get("nll_mode", "plain"),
                     nll_beta=tcfg.get("nll_beta", 0.5), gan_l1=tcfg.get("gan_l1", 100.0))
@@ -117,8 +148,21 @@ def train_one(method, seed, tasks, data, tcfg, dev, ckpt):
     names = list(tasks)
     warm = int(tcfg.get("warmup_frac", 0.1) * steps)
     best, best_state, curve, losses = -np.inf, None, [], []
-    t0 = time.time()
-    for step in range(steps):
+    t0, start, spent = time.time(), 0, 0.0
+    # resumable: a ".partial.pt" next to the checkpoint holds everything needed to continue (written atomically
+    # at every validation step); an interrupted run restarts from there instead of from step 0
+    partial = ckpt.with_name(ckpt.stem + ".partial.pt")
+    if partial.exists():
+        r = torch.load(partial, map_location=dev, weights_only=False)
+        model.load_state_dict(r["model"]); opt.load_state_dict(r["opt"]); sched.load_state_dict(r["sched"])
+        if opt_d is not None:
+            opt_d.load_state_dict(r["opt_d"])
+        gen.set_state(r["gen"]); torch.set_rng_state(r["torch_rng"])
+        if dev == "cuda" and r.get("cuda_rng") is not None:
+            torch.cuda.set_rng_state(r["cuda_rng"])
+        best, best_state, curve, start, spent = r["best"], r["best_state"], r["curve"], r["step"], r["seconds"]
+        print(f"    resumed from step {start} ({partial.name})", flush=True)
+    for step in range(start, steps):
         model.train()
         idx = torch.randint(0, len(train), (bs,), generator=gen)
         x = train[idx]
@@ -151,11 +195,18 @@ def train_one(method, seed, tasks, data, tcfg, dev, ckpt):
             if p > best and (method != "hetero" or step >= warm):  # select only after the NLL phase starts
                 best, best_state = p, {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
             print(f"    step {step + 1:6d} loss {curve[-1]['train_loss']:.4f} val PSNR {p:.2f} "
-                  f"({time.time() - t0:.0f} s)", flush=True)
+                  f"({spent + time.time() - t0:.0f} s)", flush=True)
+            if step + 1 < steps:
+                atomic_save({"model": model.state_dict(), "opt": opt.state_dict(), "sched": sched.state_dict(),
+                             "opt_d": opt_d.state_dict() if opt_d is not None else None,
+                             "gen": gen.get_state(), "torch_rng": torch.get_rng_state(),
+                             "cuda_rng": torch.cuda.get_rng_state() if dev == "cuda" else None,
+                             "best": best, "best_state": best_state, "curve": curve, "step": step + 1,
+                             "seconds": spent + time.time() - t0}, partial)
     log = {"method": method, "seed": seed, "best_val_psnr": best, "curve": curve,
-           "seconds": round(time.time() - t0, 1), "steps": steps}
-    ckpt.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"state": best_state, "log": log, "tcfg": tcfg}, ckpt)
+           "seconds": round(spent + time.time() - t0, 1), "steps": steps, "resumed_at": start or None}
+    atomic_save({"state": best_state, "log": log, "tcfg": tcfg}, ckpt)
+    partial.unlink(missing_ok=True)
     return log
 
 
@@ -180,6 +231,8 @@ def predict_all(models, d, spec, dev, bs, mc=0, gen_kw=None, seed_key=""):
             g = torch.Generator(device=dev).manual_seed(zlib.crc32(f"{seed_key}|{i}".encode()))
             p = models.predict(di, c, gen=g, **gen_kw)
         else:
+            if mc:  # MC-dropout: seeded per batch, so results do not depend on what ran before (or on resuming)
+                torch.manual_seed(zlib.crc32(f"{seed_key}|mc|{i}".encode()))
             p = ensemble([m.predict(di, c) for m in models]) if isinstance(models, list) else models.predict(di, c, mc)
         outs.append({k: v.cpu() for k, v in p.items()})
     return {k: torch.cat([o[k] for o in outs]) for k in outs[0]}
@@ -200,7 +253,7 @@ def uncert_scores(x, p, region):
     return {"cov90": cov, "mean_spread": msp, "spread_err_spearman": rho}
 
 
-def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag):
+def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag, cache=None):
     tasks = type_tasks(cfg["tasks"], dtype)
     x_np = data_split.images
     x = torch.from_numpy(x_np)[:, None]
@@ -210,6 +263,14 @@ def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag)
         for ds in dseeds:
             d = degrade(x, spec, task_generator(task, split_name, ds))
             for name, mseed, m, kw in models:
+                key = f"{split_name}|{tag}|{task}|{ds}|{name}|{mseed}|{json.dumps(kw.get('gen_kw'), sort_keys=True)}"
+                cfile = cache / (hashlib.sha1(key.encode()).hexdigest()[:16] + ".csv.gz") if cache else None
+                if cfile is not None and cfile.exists():  # finished before an interruption: reuse
+                    old = pd.read_csv(cfile, dtype={"pid": str, "site": str})
+                    rows.extend(old.to_dict("records"))
+                    print(f"  [{tag}] {task} d{ds} {name:10s} m{mseed} reused from cache", flush=True)
+                    continue
+                n_before = len(rows)
                 t0 = time.time()
                 p = predict_all(m, d, spec, dev, kw.get("bs", bs), mc=kw.get("mc", 0), gen_kw=kw.get("gen_kw"),
                                 seed_key=f"{task}|{split_name}|{ds}|{mseed}")
@@ -230,6 +291,11 @@ def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag)
                           f"SSIM {s['ssim'].mean():.3f}"
                           + (f" cov90 {np.nanmean(s['cov90']):.3f}" if "cov90" in s else "")
                           + f" ({sec * 1000:.0f} ms/img)", flush=True)
+                if cfile is not None:
+                    cfile.parent.mkdir(parents=True, exist_ok=True)
+                    tmp = cfile.with_name(cfile.name + ".tmp.csv.gz")
+                    pd.DataFrame(rows[n_before:]).to_csv(tmp, index=False)
+                    os.replace(tmp, cfile)
 
 
 def summarise_nets(df):
@@ -259,6 +325,7 @@ def main(cfg_path):
     ckdir = ROOT / "checkpoints" / cfg["profile"] / ds_tag
     out_dir = ROOT / "results" / cfg["profile"] / cfg.get("out_name", "m3_nets") / ds_tag
     out_dir.mkdir(parents=True, exist_ok=True)
+    cache = out_dir / ".partial"  # finished evaluation blocks; removed once the run has written its results
     tcfg = cfg["train"]
     types = sorted({s["type"] for s in cfg["tasks"].values()})
     ood = []
@@ -301,11 +368,11 @@ def main(cfg_path):
             models.append(("ensemble", -1, [m for _, m in trained["hetero"]], {}))
         if cfg.get("eval_split", "test") == "val":
             # pilots: score on validation patients only, so no test number is seen while choosing settings
-            evaluate(cfg, data["val"], "val", dtype, models, cfg["eval_dseeds"], dev, rows, "val")
+            evaluate(cfg, data["val"], "val", dtype, models, cfg["eval_dseeds"], dev, rows, "val", cache)
             continue
-        evaluate(cfg, data["test"], "test", dtype, models, cfg["eval_dseeds"], dev, rows, "test")
+        evaluate(cfg, data["test"], "test", dtype, models, cfg["eval_dseeds"], dev, rows, "test", cache)
         for tag, od in ood:
-            evaluate(cfg, od, "ood", dtype, models, cfg.get("ood_dseeds", [0]), dev, rows, tag)
+            evaluate(cfg, od, "ood", dtype, models, cfg.get("ood_dseeds", [0]), dev, rows, tag, cache)
 
     df = pd.DataFrame(rows)
     df.to_csv(out_dir / "per_image.csv.gz", index=False)
@@ -321,6 +388,7 @@ def main(cfg_path):
            [c for c in ("cov90",) if c in summ.columns]
     print(summ[cols].to_string(index=False, float_format=lambda v: f"{v:.3f}"))
     print(f"wrote {out_dir} in {meta['wall_seconds']} s", flush=True)
+    shutil.rmtree(cache, ignore_errors=True)
 
 
 if __name__ == "__main__":

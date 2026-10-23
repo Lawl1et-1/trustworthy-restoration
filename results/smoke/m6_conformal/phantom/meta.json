@@ -36,11 +36,11 @@
   "delta": 0.1,
   "eval_batch": 16
  },
- "git": "4855f9c",
+ "git": "5f1341f",
  "python": "3.12.9",
  "torch": "2.11.0+cu126",
  "device": "cpu",
- "wall_seconds": 7.9,
+ "wall_seconds": 30.1,
  "n_slices": {
   "cal": 9,
   "test": 9
