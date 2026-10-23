@@ -1,0 +1,13 @@
+task,method,gain_db_test,gain_db_ood,gain_change_db
+inpaint_mixed,biharmonic (M2),10.6195,7.7318,-2.8877
+inpaint_mixed,diffusion_dc,11.6635,8.1705,-3.4930
+inpaint_mixed,diffusion_dc_sample,9.7903,6.7814,-3.0089
+mri_R2,tv (M2),6.2434,2.0238,-4.2196
+mri_R2,diffusion_dc,6.6632,3.1022,-3.5610
+mri_R2,diffusion_dc_sample,5.7460,2.2969,-3.4491
+mri_R4,tv (M2),3.7270,0.6524,-3.0746
+mri_R4,diffusion_dc,5.1229,1.7122,-3.4107
+mri_R4,diffusion_dc_sample,3.6912,0.8090,-2.8822
+mri_R8,tv (M2),2.1888,0.2981,-1.8907
+mri_R8,diffusion_dc,3.6814,0.7345,-2.9469
+mri_R8,diffusion_dc_sample,2.0883,-0.1360,-2.2243

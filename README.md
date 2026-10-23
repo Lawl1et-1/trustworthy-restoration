@@ -23,7 +23,10 @@ Research demonstration only, not for diagnosis.
   k-space 4 %), and their uncertainty is *more* confident on the lesions they erase.
 - **Generative models are no free lunch.** Diffusion is the strongest learned denoiser on phantoms and,
   for denoising, degrades least at new hospitals, but a single diffusion sample invents lesion-like structure, and
-  without data consistency both diffusion and the GAN lose to classical TV in accelerated MRI.
+  without data consistency both diffusion and the GAN lose to classical TV in accelerated MRI. With a
+  data-consistency step at every sampling step, diffusion gains 4-9 dB in MRI, nearly matches the unrolled
+  network on MSD and is the best MRI method at the IXI hospitals, but its stated uncertainty becomes far too
+  narrow (35-73 % coverage for a 90 % interval).
 - **Calibration fixes stated uncertainty at home only.** Conformal risk control brings every method to
   89-91 % coverage on new MSD patients (MC-dropout starts at 20-28 %), but the same calibration covers
   only 69-90 % of pixels at the IXI hospitals. A constant-width band around a good network is about as
@@ -49,7 +52,7 @@ Sources, checksums and preparation: [DATA.md](DATA.md).
 |---|---|
 | Classical (M2) | TV, wavelet-L1, BM3D, biharmonic inpainting; weights tuned on validation patients |
 | Discriminative (M3) | U-Net, MC-dropout, heteroscedastic (Stirn et al. 2023), deep ensemble, quantile, unrolled (MRI) |
-| Generative (M4) | conditional diffusion (SR3-style, DDIM), pix2pix GAN |
+| Generative (M4) | conditional diffusion (SR3-style, DDIM; optionally with data consistency at every step), pix2pix GAN |
 | Analyses | paired lesion test (M5), conformal risk control and RCPS (M6), shift study (M7) |
 
 One network per degradation type covers all its severities. Test, calibration and IXI data are never used
@@ -89,7 +92,7 @@ tests/          unit tests (python -m pytest)
 ## Limits
 
 MRI k-space is simulated single-coil from magnitude images. The lesion test uses synthetic phantoms.
-One diffusion model and three GANs per degradation type were trained, without a data-consistency step.
+The GAN has no data-consistency step; diffusion is reported with and without one.
 Conformal guarantees are marginal (on average over pixels and patients) and assume exchangeable data.
 This is research code with no clinical or diagnostic value.
 

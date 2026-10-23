@@ -1,0 +1,5 @@
+split,task,method,cov90,mean_spread,spread_err_spearman
+test,inpaint_mixed,diffusion_dc,0.3476,0.0045,0.3274
+test,mri_R2,diffusion_dc,0.4768,0.0051,0.2993
+test,mri_R4,diffusion_dc,0.6278,0.0077,0.3836
+test,mri_R8,diffusion_dc,0.6859,0.0093,0.4362
