@@ -1,0 +1,13 @@
+# M5b: real tumours on the MSD test patients (tumour masks from MSD). Methods loaded, not retrained.
+profile: full
+data: {name: msd, path: data/processed/msd_t2_128.npz}
+classical: {denoise: [bm3d], mri: [tv], inpaint: [biharmonic]}
+nets: [configs/m3_full_msd.yaml, configs/m4_full_msd.yaml]
+eval_dseeds: [0]
+min_area: 10      # tumour pixels inside the brain needed for a slice to count
+ring: 5           # px of surrounding brain used as the contrast reference
+eval_batch: 32
+tasks:
+  denoise_s0.10: {type: denoise, sigma: 0.10}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}
