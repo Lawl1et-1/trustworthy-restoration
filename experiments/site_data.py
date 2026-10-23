@@ -4,6 +4,8 @@
 
 Nothing on the page is typed in by hand: every number comes from results/<profile>/... through this script.
 Datasets whose M3 tables are missing are written as {"status": "pending"} so the page says so.
+M4 (generative restorers) rows are merged into the M3 comparison / uncertainty / shift tables; M5 (lesions),
+M6 (conformal) and M7 (shift study) are added when their result files exist.
 """
 import argparse
 import datetime as dt
@@ -52,6 +54,30 @@ def collect(profile):
             entry["device"] = meta.get("device")
             if (m3 / "train_logs.json").exists():
                 entry["n_networks"] = len(json.loads((m3 / "train_logs.json").read_text()))
+            m4 = ROOT / "results" / profile / "m4_gen" / ds
+            if (m4 / "comparison.csv").exists():  # M4 rows next to M3's; the M2 reference rows are already there
+                c4 = pd.read_csv(m4 / "comparison.csv")
+                entry["comparison"] += _records(c4[~c4.method.str.endswith("(M2)")])
+                entry["uncertainty"] += _records(pd.read_csv(m4 / "uncertainty.csv"))
+                if "shift" in entry and (m4 / "shift.csv").exists():
+                    s4 = pd.read_csv(m4 / "shift.csv")
+                    entry["shift"] += _records(s4[~s4.method.str.endswith("(M2)")])
+                if (m4 / "train_logs.json").exists():
+                    entry["n_networks"] = entry.get("n_networks", 0) + len(json.loads((m4 / "train_logs.json").read_text()))
+            m5 = ROOT / "results" / profile / "m5_halluc" / ds / "summary.csv"
+            if m5.exists():
+                l5 = pd.read_csv(m5)
+                entry["lesions"] = _records(l5[[c for c in ["task", "method", "n_lesions", "recovery", "erased_frac",
+                                                             "detect_auc", "fab_absent", "core_cov90", "erased_flag_auroc"]
+                                                if c in l5.columns]])
+                m5meta = m5.parent / "meta.json"
+                if m5meta.exists():
+                    mm = json.loads(m5meta.read_text())
+                    entry["n_lesions"], entry["n_lesion_images"] = mm["n_lesions"], mm["n_images"]
+            m6 = ROOT / "results" / profile / "m6_conformal" / ds / "summary.csv"
+            if m6.exists():
+                entry["conformal"] = _records(pd.read_csv(m6)[["split", "task", "method", "rule", "coverage", "width",
+                                                               "frac_images_over_alpha"]])
             entry["status"] = "done"
         else:
             entry["status"] = "pending"
@@ -59,6 +85,12 @@ def collect(profile):
         if demo.exists():
             entry["demo"] = f"demo/{ds}/manifest.json"
         out["datasets"][ds] = entry
+    m7 = ROOT / "results" / profile / "m7_shift"
+    if (m7 / "region.csv").exists():
+        out["m7"] = {"region": _records(pd.read_csv(m7 / "region.csv")),
+                     "recal": _records(pd.read_csv(m7 / "recal.csv")),
+                     "site": _records(pd.read_csv(m7 / "site.csv")),
+                     "noise": json.loads((m7 / "noise.json").read_text())}
     # in-browser networks for "try your own image": the MSD (real MRI) set when exported, else the phantom set
     for ds in ("msd", "phantom"):
         if (ROOT / "docs" / "models" / ds / "models.json").exists():

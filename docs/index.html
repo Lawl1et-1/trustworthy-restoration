@@ -202,14 +202,14 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
 <header class="mast wrap">
   <div class="frame">
     <canvas class="guilloche" aria-hidden="true"></canvas>
-    <div class="mast-top"><span>Test report <span id="report-no" class="num">TR-M3</span></span><span>Learned MRI restoration · uncertainty</span></div>
+    <div class="mast-top"><span>Test report <span id="report-no" class="num">TR-M7</span></span><span>Learned MRI restoration · uncertainty</span></div>
     <h1>Trustworthy Restoration</h1>
-    <p class="lede">Neural networks clean up noisy, undersampled and damaged brain MRI. This report measures two things for each method: how close the restored image is to the truth, and whether the uncertainty the method reports is honest.</p>
+    <p class="lede">Neural networks clean up noisy, undersampled and damaged brain MRI. This report measures, for each method, how close the restored image is to the truth, whether it erases or invents lesions, and whether the uncertainty it reports is honest, before and after calibration, at the training hospital and at others.</p>
     <dl class="fields">
       <div><dt>Author</dt><dd id="f-author">Rayan (<a href="https://github.com/Lawl1et-1/trustworthy-restoration" style="color:inherit">Lawl1et-1</a>)</dd></div>
       <div><dt>Issued</dt><dd id="f-issued" class="num">…</dd></div>
       <div><dt>Specimens</dt><dd id="f-specimens">Phantoms · MSD BrainTumour T2 · IXI T2</dd></div>
-      <div><dt>Status</dt><dd id="f-status">M0–M3 done · M4–M7 planned</dd></div>
+      <div><dt>Status</dt><dd id="f-status">M0–M6 done · M7 in progress</dd></div>
     </dl>
   </div>
 </header>
@@ -223,8 +223,11 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <li><a href="#viewer">Specimen viewer</a></li>
         <li><a href="#try">Your own image</a></li>
         <li><a href="#accuracy">Accuracy</a></li>
+        <li><a href="#lesions">Lesions</a></li>
         <li><a href="#calibration">Stated vs measured</a></li>
+        <li><a href="#conformal">Calibrated</a></li>
         <li><a href="#shift">Under shift</a></li>
+        <li><a href="#why-shift">Why it shifts</a></li>
         <li><a href="#method">Method</a></li>
         <li><a href="#limits">Limits and next</a></li>
         <li><a href="#reproduce">Reproduce</a></li>
@@ -296,6 +299,14 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <div id="acc-table"></div>
       </section>
 
+      <section id="lesions" aria-labelledby="h-lesions">
+        <p class="clause">Lesions</p>
+        <h2 id="h-lesions">Does a method erase real lesions or invent new ones?</h2>
+        <div class="prose"><p>Each test phantom with lesions is paired with an exact lesion-free copy. Both get identical damage and both are restored. A lesion counts as erased when less than half of its contrast survives. Invented blobs are lesion-like spots in the restored lesion-free copy. The last two columns ask whether the method's own uncertainty notices: how often its 90 % interval covers the true lesion, and whether it is less confident on the lesions it erased than on those it kept (0.5 = no better than chance; below 0.5 = more confident where it erased).</p></div>
+        <div class="switch" role="group" aria-label="Degradation" id="les-switch"></div>
+        <div id="les-table"></div>
+      </section>
+
       <section id="calibration" aria-labelledby="h-cal">
         <p class="clause">Stated vs measured</p>
         <h2 id="h-cal">Does a 90 % interval cover 90 % of pixels?</h2>
@@ -304,11 +315,27 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <div class="scales" id="cal-scales"></div>
       </section>
 
+      <section id="conformal" aria-labelledby="h-conformal">
+        <p class="clause">Calibrated</p>
+        <h2 id="h-conformal">Can the intervals be repaired?</h2>
+        <div class="prose"><p>Conformal risk control rescales each method's intervals on held-out calibration patients so that, on average, at most 10 % of pixels fall outside. Networks without an uncertainty estimate get a constant-width band around their output. The calibrated scale is then applied, unchanged, to the test patients and to the IXI hospitals. Width is the mean interval width in intensity units: for the same coverage, narrower is better.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" id="conf-switch"></div>
+        <div class="switch" role="group" aria-label="Degradation" id="conf-task"></div>
+        <div id="conf-table"></div>
+      </section>
+
       <section id="shift" aria-labelledby="h-shift">
         <p class="clause">Under shift</p>
         <h2 id="h-shift">Trained at one site, tested at three others</h2>
         <div class="prose"><p>Models trained and tuned on MSD BrainTumour scans are tested, untouched, on IXI scans from three London hospitals. Raw PSNR is not comparable across datasets, because even the degraded input scores differently, so this compares each method's gain over its own input.</p></div>
         <div id="shift-root"></div>
+      </section>
+
+      <section id="why-shift" aria-labelledby="h-why">
+        <p class="clause">Why it shifts</p>
+        <h2 id="h-why">Noise, skull or site?</h2>
+        <div class="prose"><p>Three suspects, each tested with the same trained models. Noise: IXI images carry their own acquisition noise, MSD images do not, so MSD test scans are given noise at IXI's level. Skull: IXI is not skull-stripped, so every method is also scored on the brain interior only. Site: IXI results per hospital, and how many patients of a new hospital it takes to recalibrate the intervals.</p></div>
+        <div id="why-root"></div>
       </section>
 
       <section id="method" aria-labelledby="h-method">
@@ -323,6 +350,13 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
           <div><dt>Deep ensemble</dt><dd>Five heteroscedastic networks; total variance is the mean variance plus the variance of the means.</dd></div>
           <div><dt>Quantile</dt><dd>U-Net predicting the 5, 50 and 95 % quantiles with the pinball loss; the median is the image.</dd></div>
           <div><dt>Unrolled</dt><dd>MRI only: five cascades of a small U-Net and a learned data-consistency step that keeps the measured k-space.</dd></div>
+          <div><dt>Diffusion</dt><dd>Conditional diffusion model (SR3-style) sampled with 25 DDIM steps; eight samples per image give the mean and a per-pixel spread. "1 sample" is a single draw, what a user of a generative model would see. No data-consistency step.</dd></div>
+          <div><dt>GAN</dt><dd>pix2pix: U-Net generator and patch discriminator, L1 plus adversarial loss. No uncertainty.</dd></div>
+        </dl>
+        <h3>Analyses</h3>
+        <dl class="deflist">
+          <div><dt>Lesion test</dt><dd>Phantoms only, where the truth is exact: each lesion phantom against its lesion-free copy under identical damage, for every method.</dd></div>
+          <div><dt>Conformal</dt><dd>Conformal risk control (Angelopoulos et al. 2024) and RCPS (Bates et al. 2021) on the calibration patients, target 10 % of pixels outside.</dd></div>
         </dl>
         <h3>Degradations</h3>
         <dl class="deflist">
@@ -345,7 +379,9 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <h2 id="h-limits">What this report does not show yet</h2>
         <div class="prose">
           <p>The MRI acquisitions are simulated from magnitude images, single-coil, so they are cleaner than real scanner k-space. Results on fastMRI or raw multi-coil data may differ.</p>
-          <p>Coverage is raw. Conformal calibration on the held-out calibration patients, which can repair overconfident intervals with a finite-sample guarantee, is the next milestone. So are the hallucination tests on phantom lesions (does a method erase a real lesion or invent one) and the shift experiments that separate skull, site and noise effects.</p>
+          <p>The conformal guarantee is on average over pixels and patients. Individual images, and lesions in particular, can still be missed far more often, and the guarantee does not carry over to another hospital.</p>
+          <p>The lesion test uses synthetic phantoms, because only there is the truth about every lesion exact. Real tumours are larger and more varied; whether the same erasure rates hold for small real lesions is not shown here.</p>
+          <p>The diffusion model and the GAN have no data-consistency step, which explains much of their weakness in MRI. One diffusion model and three GANs per damage type were trained; more seeds would tighten their numbers.</p>
           <p>This is research code. Nothing here is a clinical tool or has diagnostic value.</p>
         </div>
       </section>
@@ -353,9 +389,13 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
       <section id="reproduce" aria-labelledby="h-repro">
         <p class="clause">Reproduce</p>
         <h2 id="h-repro">Run it again</h2>
-        <div class="prose"><p>Data sources, sizes and checksums are in <code>DATA.md</code>. The full profile trains 72 networks; on a 6 GB laptop GPU this took several hours.</p></div>
+        <div class="prose"><p>Data sources, sizes and checksums are in <code>DATA.md</code>. The full profile trains <span class="num" id="n-nets">96</span> networks; on a 6 GB laptop GPU this took about a day in total.</p></div>
         <pre><code>python -m experiments.pipeline data        # MSD + IXI slice sets from the public archives
 python -m experiments.pipeline reproduce   # tests, classical baselines, learned restorers, tables
+python -m experiments.m3_nets --config configs/m4_full_msd.yaml       # M4: diffusion, GAN
+python -m experiments.m5_hallucination --config configs/m5_full_phantom.yaml
+python -m experiments.m6_conformal --config configs/m6_full_msd.yaml
+python -m experiments.m7_shift --config configs/m7_full.yaml
 python -m experiments.m3_demo --config configs/m3_full_msd.yaml
 python -m experiments.site_data            # rebuilds this page's data</code></pre>
       </section>
@@ -374,11 +414,14 @@ python -m experiments.site_data            # rebuilds this page's data</code></p
 (() => {
 "use strict";
 const METHOD = {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Heteroscedastic", ensemble:"Ensemble", quantile:"Quantile", unrolled:"Unrolled",
+  diffusion:"Diffusion", diffusion_sample:"Diffusion, 1 sample", gan:"GAN",
+  unet_const:"U-Net + band", unrolled_const:"Unrolled + band", gan_const:"GAN + band", diffusion_sample_const:"Diffusion sample + band",
   bm3d:"BM3D", tv:"TV", biharmonic:"Biharmonic", wavelet:"Wavelet", noisy:"Input", zero_filled:"Input", masked:"Input", input:"Input"};
 const TASK = {"denoise_s0.03":"Denoising σ 0.03","denoise_s0.06":"Denoising σ 0.06","denoise_s0.10":"Denoising σ 0.10","denoise_s0.15":"Denoising σ 0.15",
   mri_R2:"MRI, R = 2", mri_R4:"MRI, R = 4", mri_R8:"MRI, R = 8", inpaint_mixed:"Inpainting"};
 const DSNAME = {phantom:"Phantoms", msd:"MSD BrainTumour", ixi:"IXI (other sites)"};
-const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled"];
+const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","gan"];
+const UNCERT = ["mcdropout","hetero","ensemble","quantile","diffusion"];
 const TASKORDER = Object.keys(TASK);
 const $ = (s, r=document) => r.querySelector(s);
 const el = (tag, attrs={}, ...kids) => { const e = document.createElement(tag);
@@ -454,7 +497,7 @@ function calibration(data, ds){
     if (!["denoise_s0.10","mri_R4","mri_R8","inpaint_mixed"].includes(t)) continue;
     const title = TASK[t] + (sp === "ood" ? " · IXI" : "");
     groups.push(el("div",{class:"scale-group"}, el("h3",{}, title),
-      ["mcdropout","hetero","ensemble","quantile"].map(m => rs.find(r => r.method === m)).filter(Boolean).map(r => {
+      UNCERT.map(m => rs.find(r => r.method === m)).filter(Boolean).map(r => {
         const [cls, word] = verdict(r.cov90, band);
         return el("div",{class:"scale-row"}, el("span",{class:"m"}, METHOD[r.method]),
           el("div",{class:"track", role:"img", "aria-label": `${METHOD[r.method]}: measured coverage ${pct(r.cov90)} against nominal 90 %`},
@@ -483,6 +526,75 @@ function shift(data){
         el("div",{class:"bars", role:"img", "aria-label": `${r.method}: gain ${f2(r.gain_db_test)} dB in distribution, ${f2(r.gain_db_ood)} dB on IXI`},
           el("div",{class:"bar", style:`width:${W(r.gain_db_test)}`}, el("span",{}, sgn(r.gain_db_test)+" dB")),
           el("div",{class:"bar ood", style:`width:${W(r.gain_db_ood)}`}, el("span",{}, sgn(r.gain_db_ood)+" dB")))))))));
+}
+
+/* ---------- lesions (M5) ---------- */
+const LES_TASKS = ["denoise_s0.06","denoise_s0.10","mri_R2","mri_R4","inpaint_mixed"];
+const LES_METHODS = ["bm3d","tv","biharmonic","unet","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","gan","input"];
+function lesions(data, task){
+  const root = $("#les-table"); const d = data.datasets.phantom;
+  if (!d || !d.lesions) { root.replaceChildren(el("p",{class:"pending"},"The lesion test appears here when its run has finished.")); return; }
+  const rows = LES_METHODS.map(m => d.lesions.find(r => r.task === task && r.method === m)).filter(Boolean);
+  const learned = rows.filter(r => !["input"].includes(r.method));
+  const minE = Math.min(...learned.map(r => r.erased_frac));
+  const head = el("tr",{}, ["Method","Erased","Contrast kept","Invented / image","Covers lesion","Flags erasures"].map((h,i) => el("th",{scope:"col"}, h)));
+  const body = rows.map(r => el("tr",{}, el("th",{scope:"row"}, METHOD[r.method] || r.method),
+    el("td",{class: r.erased_frac === minE ? "best" : null}, pct(r.erased_frac)),
+    el("td",{}, pct(r.recovery)), el("td",{}, f2(r.fab_absent)),
+    el("td",{}, r.core_cov90 == null ? "–" : pct(r.core_cov90)),
+    el("td",{class: r.erased_flag_auroc == null ? null : (r.erased_flag_auroc < .5 ? "neg" : "")}, r.erased_flag_auroc == null ? "–" : f2(r.erased_flag_auroc))));
+  root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"les-cap"}, el("thead",{},head), el("tbody",{},body))),
+    el("p",{class:"small", id:"les-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `Phantom test set, ${d.n_lesions} lesions in ${d.n_lesion_images} phantoms, 3 damage draws each. Dot: fewest erased lesions. "Input" is the damaged image itself. The blob counter also fires on leftover noise, so compare blob counts within one degradation, not across. Erased: lesions with less than half their contrast left. Invented: lesion-like blobs per lesion-free image. Covers lesion: share of lesion pixels inside the 90 % interval. Flags erasures: area under the ROC curve of the method's stated spread at the lesion, erased against kept lesions.`));
+}
+
+/* ---------- conformal (M6) ---------- */
+const CONF_TASKS = ["denoise_s0.10","mri_R4","inpaint_mixed"];
+const CONF_METHODS = ["mcdropout","hetero","ensemble","quantile","diffusion","unet_const","unrolled_const","gan_const","diffusion_sample_const"];
+function conformal(data, ds, task){
+  const root = $("#conf-table"); const d = data.datasets[ds]; const band = data.verdict_band;
+  if (!d || !d.conformal) { root.replaceChildren(el("p",{class:"pending"},"Calibration results for "+DSNAME[ds]+" appear here when the run has finished.")); return; }
+  const C = d.conformal.filter(r => r.task === task);
+  const get = (m, split, rule) => C.find(r => r.method === m && r.split === split && r.rule === rule);
+  const hasOod = C.some(r => r.split === "ood");
+  const methods = CONF_METHODS.filter(m => get(m, "test", "crc"));
+  const minW = Math.min(...methods.map(m => get(m,"test","crc").width));
+  const covCell = r => { if (!r) return el("td",{},"–"); const [cls] = verdict(r.coverage, band); return el("td",{class: cls === "fail" ? "neg" : (cls === "hold" ? "pos" : "")}, pct(r.coverage)); };
+  const head = el("tr",{}, el("th",{scope:"col"},"Method"), el("th",{scope:"col"},"Raw coverage"), el("th",{scope:"col"},"Calibrated coverage"), el("th",{scope:"col"},"Width"),
+    hasOod ? el("th",{scope:"col"},"Calibrated, at IXI") : null);
+  const body = methods.map(m => { const c = get(m,"test","crc");
+    return el("tr",{}, el("th",{scope:"row"}, METHOD[m] || m), covCell(get(m,"test","raw")), covCell(c),
+      el("td",{class: c.width === minW ? "best" : null}, c.width.toFixed(3)), hasOod ? covCell(get(m,"ood","crc")) : null); });
+  root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"conf-cap"}, el("thead",{},head), el("tbody",{},body))),
+    el("p",{class:"small", id:"conf-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `${DSNAME[ds]} test patients, ${TASK[task]}. Green: within ${Math.round(band.lo*100)}–${Math.round(band.hi*100)} %, red: below. Dot: narrowest calibrated band. "+ band": a constant-width band calibrated around a network that states no uncertainty.` + (hasOod ? " The IXI column keeps the scale calibrated on MSD patients." : "")));
+}
+
+/* ---------- why it shifts (M7) ---------- */
+function whyShift(data){
+  const root = $("#why-root"); const m = data.m7;
+  if (!m) { root.replaceChildren(el("p",{class:"pending"},"The shift study is running; its results appear here when it finishes.")); return; }
+  const R = m.region; const get = (sp, t, me) => R.find(r => r.split === sp && r.task === t && r.method === me);
+  const ms = ["bm3d","tv","biharmonic","unet","ensemble","unrolled","diffusion","gan"];
+  const blocks = CONF_TASKS.map(t => {
+    const rows = ms.map(me => [me, get("msd",t,me), get("msd_acqnoise",t,me), get("ixi",t,me)]).filter(x => x[1]);
+    const head = el("tr",{}, ["Method","MSD","MSD + IXI noise","IXI, whole head","IXI, brain interior"].map(h => el("th",{scope:"col"},h)));
+    const body = rows.map(([me,a,b,c]) => el("tr",{}, el("th",{scope:"row"}, METHOD[me] || me), el("td",{}, sgn(a.gain_full)), el("td",{}, b ? sgn(b.gain_full) : "–"),
+      el("td",{}, c ? sgn(c.gain_full) : "–"), el("td",{}, c ? sgn(c.gain_interior) : "–")));
+    return el("div",{}, el("h3",{}, TASK[t] + ": gain over the input, dB"), el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},head), el("tbody",{},body))));
+  });
+  const ns = m.noise.ixi_background_sigma;
+  const rc = m.recal.filter(r => r.task === "mri_R4" && ["hetero","ensemble","unet_const","diffusion"].includes(r.method));
+  const ncal = [...new Set(rc.map(r => r.n_cal))].sort((a,b) => a-b);
+  const sites = [...new Set(rc.map(r => r.site))];
+  const rhead = el("tr",{}, el("th",{scope:"col"},"Method"), el("th",{scope:"col"},"Hospital"), ncal.map(n => el("th",{scope:"col"}, n + " patients")));
+  const rbody = [];
+  for (const me of ["hetero","ensemble","unet_const","diffusion"]) for (const s of sites) {
+    const cells = ncal.map(n => { const r = rc.find(x => x.method === me && x.site === s && x.n_cal === n); return el("td",{}, r ? pct(r.coverage) + " (" + pct(r.coverage_p10) + ")" : "–"); });
+    if (cells.length) rbody.push(el("tr",{}, el("th",{scope:"row"}, METHOD[me] || me), el("td",{}, s), cells));
+  }
+  root.replaceChildren(el("p",{class:"small", style:"max-width:72ch"}, `IXI background noise per hospital: ${Object.entries(ns).map(([k,v]) => k + " σ ≈ " + v.toFixed(4)).join(", ")}; MSD test scans were given σ = ${m.noise.msd_added_sigma.toFixed(4)}.`),
+    ...blocks, el("h3",{}, "MRI, R = 4: coverage after recalibrating on a few patients of each hospital"),
+    el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},rhead), el("tbody",{},rbody))),
+    el("p",{class:"small", style:"margin:.5rem 0 0;max-width:72ch"}, "Mean coverage over 50 random choices of calibration patients, with the 10th percentile in brackets. Target 90 %. This uses IXI patients for calibration, so it is an ablation, kept apart from every other result."));
 }
 
 /* ---------- findings (generated from the data) ---------- */
@@ -519,6 +631,25 @@ function findings(data){
         `Moving to other hospitals changes the classical gain over the input by ${sgn(avg(cls))} dB on average, and the learned methods' gain by ${sgn(avg(lrn))} dB.`),
         el("span",{class:"stamp info"}, "Measured")));
     }
+  }
+  const ph = data.datasets.phantom;
+  if (ph && ph.lesions) {
+    const L = (t, me) => ph.lesions.find(r => r.task === t && r.method === me);
+    const net = ["unet","hetero","ensemble","quantile"].map(me => L("mri_R2", me)).filter(Boolean);
+    const avgE = net.reduce((a,r) => a + r.erased_frac, 0) / (net.length || 1);
+    const tv = L("mri_R2","tv"), un = L("mri_R2","unrolled");
+    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Phantoms, lesions. "),
+      `In MRI at R = 2, the plain networks erase ${pct(avgE)} of small lesions on average; TV erases ${pct(tv.erased_frac)} and the unrolled network, which keeps the measured data, ${pct(un.erased_frac)}. Their uncertainty does not flag the erasures: they are more confident on the lesions they erase.`),
+      el("span",{class:"stamp fail"}, "Lesions erased")));
+  }
+  const ms = data.datasets.msd;
+  if (ms && ms.conformal) {
+    const crc = ms.conformal.filter(r => r.rule === "crc");
+    const rng2 = a => [Math.min(...a), Math.max(...a)].map(v => (v*100).toFixed(0)).join("–") + " %";
+    const t = crc.filter(r => r.split === "test").map(r => r.coverage), o = crc.filter(r => r.split === "ood").map(r => r.coverage);
+    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "MSD, calibrated. "),
+      `After conformal calibration every method covers ${rng2(t)} of pixels on new MSD patients, close to the 90 % target. The same calibration gives ${rng2(o)} at the IXI hospitals.`),
+      el("span",{class:"stamp warn"}, "Holds at home only")));
   }
   $("#findings-list").replaceChildren(...out);
 }
@@ -789,7 +920,7 @@ async function boot(){
   try { data = await (await fetch("data/results.json", {cache:"no-cache"})).json(); }
   catch(e) { $("#findings-list").replaceChildren(el("p",{class:"pending"},"The results file could not be loaded. Open this page through a web server (GitHub Pages, or python -m http.server in docs/).")); return; }
   $("#f-issued").textContent = data.generated;
-  $("#report-no").textContent = "TR-M3-" + (data.git || "").toUpperCase();
+  $("#report-no").textContent = "TR-M7-" + (data.git || "").toUpperCase();
   $("#band-text").textContent = Math.round(data.verdict_band.lo*100) + "–" + Math.round(data.verdict_band.hi*100) + " %";
   $("#foot-build").textContent = "Built from commit " + data.git + " on " + data.generated;
   const done = ds => data.datasets[ds] && data.datasets[ds].status === "done";
@@ -799,7 +930,15 @@ async function boot(){
   let calDs = accDs;
   const syncCal = v => $("#cal-switch").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", String(dsOpts[i].id === v)));
   switcher($("#cal-switch"), dsOpts, calDs, v => { calibration(data, v); });
-  accuracy(data, accDs); calibration(data, calDs); shift(data); findings(data);
+  accuracy(data, accDs); calibration(data, calDs); shift(data); findings(data); whyShift(data);
+  const nn = ["phantom","msd"].reduce((a, ds) => a + ((data.datasets[ds] || {}).n_networks || 0), 0); if (nn) $("#n-nets").textContent = nn;
+  let lesT = store.get("tr.les") || "mri_R2"; if (!LES_TASKS.includes(lesT)) lesT = "mri_R2";
+  switcher($("#les-switch"), LES_TASKS.map(t => ({id:t, label:TASK[t]})), lesT, v => { store.set("tr.les", v); lesions(data, v); });
+  lesions(data, lesT);
+  let confDs = done("msd") ? "msd" : "phantom", confT = "mri_R4";
+  switcher($("#conf-switch"), dsOpts, confDs, v => { confDs = v; conformal(data, confDs, confT); });
+  switcher($("#conf-task"), CONF_TASKS.map(t => ({id:t, label:TASK[t]})), confT, v => { confT = v; conformal(data, confDs, confT); });
+  conformal(data, confDs, confT);
   const s = done("phantom") + done("msd");
   viewer(data);
   tryDemo(data);

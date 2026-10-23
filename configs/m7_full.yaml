@@ -1,0 +1,17 @@
+# M7: separate noise, skull and site effects of the MSD -> IXI shift, with the M2-M4 models unchanged.
+profile: full
+data: {name: msd, path: data/processed/msd_t2_128.npz}
+ood: {name: ixi, path: data/processed/ixi_t2_128.npz}
+classical: {denoise: [bm3d], mri: [tv], inpaint: [biharmonic]}
+nets: [configs/m3_full_msd.yaml, configs/m4_full_msd.yaml]
+max_model_seed: 0          # one seed per method; the ensemble uses all five hetero seeds
+noise_factor: 1.0          # MSD gets Rician noise at the worst IXI site's background level
+erode: 8                   # interior = evaluation region eroded by 8 px (removes skull and scalp on IXI)
+alpha: 0.1
+n_cals: [3, 5, 10, 20]     # subjects per site used to recalibrate (40 subjects per site)
+n_splits: 50
+eval_batch: 32
+tasks:
+  denoise_s0.10: {type: denoise, sigma: 0.10}
+  mri_R4: {type: mri, R: 4, mask: mixed, sigma: 0.02}
+  inpaint_mixed: {type: inpaint, mask: mixed, sigma: 0.01}
