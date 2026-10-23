@@ -1,14 +1,16 @@
 # M4 full: generative restorers (diffusion, GAN), same protocol, splits and test degradations as M3.
 # Pilot (configs/m4_pilot.yaml, validation patients only): diffusion val PSNR 33.3 dB at 30k steps (still
 # creeping up), GAN plateaus by 4000 steps; DDIM 25 steps >= 50 steps, 8 samples give better coverage than 4.
+# Data consistency (dc_eta 0.5) for MRI and inpainting chosen on validation patients (logs/m4_dc_pilot.log);
+# seeds 1 and 2 of the diffusion model added after the first full run.
 profile: full
 out_name: m4_gen
 data: {name: phantom, n_images: 600, size: 128, seed: 1234}
 
-methods: {diffusion: [0], gan: [0, 1, 2]}
+methods: {diffusion: [0, 1, 2], gan: [0, 1, 2]}
 train: {base: 16, batch: 16, lr: 0.0005, steps: 4000, eval_every: 500, n_val: 32, eval_batch: 32}
 train_overrides:
-  diffusion: {steps: 30000, eval_every: 2500, val_steps: 20, n_samples: 8, sample_steps: 25, sample_batch: 64}
+  diffusion: {steps: 30000, eval_every: 2500, val_steps: 20, n_samples: 8, sample_steps: 25, sample_batch: 64, dc_eta: 0.5}
   gan: {lr_d: 0.0002, gan_l1: 100.0}
 eval_dseeds: [0, 1, 2]
 tasks:

@@ -34,7 +34,7 @@ from src.data.datasets import ROOT, load_dataset
 from src.degradations.degrade import degrade, task_generator
 from src.eval.stats import bootstrap_ci
 
-POINT = ("unet", "unrolled", "gan", "diffusion_sample")
+POINT = ("unet", "unrolled", "gan")
 
 
 def intervals(model_entry, d, spec, dev, bs, key):
@@ -51,7 +51,7 @@ def intervals(model_entry, d, spec, dev, bs, key):
         out[name] = (mean, p["lo"][:, 0].numpy(), p["hi"][:, 0].numpy(), raw)
     if "sample" in p:  # a single diffusion draw with a constant band, the way a user would see it
         s = p["sample"].clamp(0, 1)[:, 0].numpy()
-        out["diffusion_sample_const"] = (s, np.ones_like(s), np.ones_like(s), np.nan)
+        out[name + "_sample_const"] = (s, np.ones_like(s), np.ones_like(s), np.nan)
     return out
 
 

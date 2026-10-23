@@ -100,7 +100,10 @@ def net_methods(cfg, dtype, dev):
                 if method == "diffusion":
                     kw = {"gen_kw": {"n_samples": mt.get("n_samples", 8), "steps": mt.get("sample_steps", 25)},
                           "bs": mt.get("sample_batch", 64)}
-                out.append((method, seed, m, kw))
+                if method != "diffusion" or mt.get("plain", True):
+                    out.append((method, seed, m, kw))
+                if method == "diffusion" and mt.get("dc_eta") and dtype in ("mri", "inpaint"):
+                    out.append(("diffusion_dc", seed, m, {**kw, "gen_kw": {**kw["gen_kw"], "dc_eta": mt["dc_eta"]}}))
                 if method == "unet":
                     out.append(("mcdropout", seed, m, {"mc": mt.get("mc_samples", 16)}))
                 if method == "hetero":

@@ -30,13 +30,14 @@ def main(a):
     for task, spec in tasks.items():
         d = degrade(x, spec, task_generator(task, "val", 1))
         for steps in a.steps:
+          for eta in a.dc:
             for k in a.samples:
                 outs = []
                 t0 = time.time()
                 for i in range(0, len(x), a.bs):
                     di = to_dev(slice_d(d, slice(i, i + a.bs)), dev)
                     g = torch.Generator(device=dev).manual_seed(zlib.crc32(f"pilot|{task}|{i}".encode()))
-                    p = m.predict(di, condition(di, spec), n_samples=k, steps=steps, gen=g)
+                    p = m.predict(di, condition(di, spec), n_samples=k, steps=steps, gen=g, dc_eta=eta)
                     outs.append({kk: v.cpu() for kk, v in p.items()})
                 if dev == "cuda":
                     torch.cuda.synchronize()
@@ -45,7 +46,7 @@ def main(a):
                 mean = psnr(val.images, p["mean"].clamp(0, 1)[:, 0].numpy()).mean()
                 one = psnr(val.images, p["sample"].clamp(0, 1)[:, 0].numpy()).mean()
                 cov = np.nanmean(uncert_scores(val.images, p, val.region)["cov90"]) if k > 1 else float("nan")
-                print(f"{task} steps {steps:3d} K {k:2d}: mean PSNR {mean:6.2f}  one-sample {one:6.2f}  "
+                print(f"{task} steps {steps:3d} dc {eta:.2f} K {k:2d}: mean PSNR {mean:6.2f}  one-sample {one:6.2f}  "
                       f"cov90 {cov:.3f}  {sec * 1000:6.1f} ms/img", flush=True)
 
 
@@ -58,4 +59,5 @@ if __name__ == "__main__":
     ap.add_argument("--bs", type=int, default=64)
     ap.add_argument("--steps", type=int, nargs="+", default=[10, 25, 50])
     ap.add_argument("--samples", type=int, nargs="+", default=[4, 8])
+    ap.add_argument("--dc", type=float, nargs="+", default=[0.0], help="data-consistency strengths (MRI, inpainting)")
     main(ap.parse_args())

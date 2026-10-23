@@ -31,7 +31,7 @@ from src.eval.stats import paired_bootstrap
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 INPUT = {"denoise": "noisy", "mri": "zero_filled", "inpaint": "masked"}
-ORDER = ["unet", "mcdropout", "hetero", "ensemble", "quantile", "unrolled", "diffusion", "diffusion_sample", "gan"]
+ORDER = ["unet", "mcdropout", "hetero", "ensemble", "quantile", "unrolled", "diffusion", "diffusion_sample", "diffusion_dc", "diffusion_dc_sample", "gan"]
 
 
 def _ttype(task):

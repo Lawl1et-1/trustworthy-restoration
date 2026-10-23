@@ -139,7 +139,7 @@ def main(cfg_path):
                                          "psnr_full": pf[i], "psnr_interior": pi[i],
                                          "gain_full": pf[i] - in_full[i], "gain_interior": pi[i] - in_int[i],
                                          "cov_full": cf[i], "cov_interior": ci[i]})
-                        if sname == "ixi" and name not in ("diffusion_sample",):
+                        if sname == "ixi" and not name.endswith("_sample"):
                             lo = unc[1] if unc is not None else np.ones_like(xh)
                             hi = unc[2] if unc is not None else np.ones_like(xh)
                             label = name if unc is not None else name + "_const"

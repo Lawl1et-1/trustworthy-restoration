@@ -142,3 +142,32 @@ def test_gan_step_order_updates_both_networks():
     assert any(not torch.equal(a, b) for a, b in zip(d0, m.disc.parameters()))
     p = m.eval().predict(d, c)
     assert p["mean"].shape == X.shape and (p["lo"] == 0).all()
+
+
+def test_ddim_with_hard_dc_and_oracle_still_recovers_x0():
+    from src.models.diffusion import Diffusion
+    D = Diffusion()
+    x0 = torch.rand(2, 1, 16, 16) * 2 - 1
+    oracle = lambda inp, t: (inp[:, :1] - D.abar[t].view(-1, 1, 1, 1).sqrt() * x0) / (1 - D.abar[t].view(-1, 1, 1, 1)).sqrt()
+    out = D.sample(oracle, torch.zeros(2, 2, 16, 16), 10, torch.Generator().manual_seed(0), dc=lambda v: v)
+    assert (out - x0).abs().max() < 1e-5
+
+
+def test_diffusion_with_hard_dc_fits_the_measurements():
+    """With eta = 1 the output's measured part equals A^+ y, whatever the (untrained) network predicts."""
+    torch.manual_seed(0)
+    m = Restorer("diffusion", base=8).eval()
+    for kind in ("inpaint", "mri"):
+        d = _d(kind)
+        c = condition(d, SPECS[kind])
+        p = m.predict(d, c, n_samples=2, steps=5, gen=torch.Generator().manual_seed(1), dc_eta=1.0)
+        aty = d["op"].AT(d["y"])
+        ok = (aty > 0.02) & (aty < 0.98)  # away from the [0, 1] clamp
+        if kind == "inpaint":
+            ok &= d["op"].mask.bool()
+            err = (p["sample"] - aty)[ok].abs().max()
+        else:  # MRI: compare range-space parts; the clamp can move pixels, so check on average
+            err = (d["op"].P_R(p["sample"]) - aty).abs().mean()
+        assert err < (1e-4 if kind == "inpaint" else 0.05), (kind, float(err))
+        p0 = m.predict(d, c, n_samples=2, steps=5, gen=torch.Generator().manual_seed(1))
+        assert (d["op"].P_R(p0["sample"]) - aty).abs().mean() > (d["op"].P_R(p["sample"]) - aty).abs().mean()

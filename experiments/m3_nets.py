@@ -18,6 +18,8 @@ out_name = "m3_nets" by default; the M4 configs (diffusion, gan) set "m4_gen".
 M4 generative methods use the same protocol. Per-method training settings come from `train_overrides`.
 Diffusion is selected on val PSNR of one DDIM sample (`val_steps` steps) and evaluated with `n_samples`
 draws of `sample_steps` steps; its mean is scored as "diffusion" and its first draw as "diffusion_sample".
+With `dc_eta` > 0 the same network is also sampled with data consistency at every step (MRI, inpainting)
+and scored as "diffusion_dc" / "diffusion_dc_sample"; `plain: false` skips the plain variant.
 """
 import argparse
 import zlib
@@ -217,7 +219,7 @@ def evaluate(cfg, data_split, split_name, dtype, models, dseeds, dev, rows, tag)
                 for vname, img in variants:
                     xh = img.clamp(0, 1)[:, 0].numpy()
                     s = score(x_np, xh, data_split.region, d)
-                    if vname not in ("unet", "unrolled", "gan", "diffusion_sample"):
+                    if vname not in ("unet", "unrolled", "gan") and not vname.endswith("_sample"):
                         s.update(uncert_scores(x_np, p, data_split.region))
                     for i in range(len(x_np)):
                         rows.append({"split": split_name, "task": task, "type": dtype, "method": vname, "seed": ds,
@@ -288,7 +290,11 @@ def main(cfg_path):
                 mt = method_tcfg(cfg, method)
                 kw = ({"gen_kw": {"n_samples": mt.get("n_samples", 8), "steps": mt.get("sample_steps", 50)},
                        "bs": mt.get("sample_batch", mt.get("eval_batch", 32))} if method == "diffusion" else {})
-                models.append((method, seed, m, kw))
+                if method != "diffusion" or mt.get("plain", True):
+                    models.append((method, seed, m, kw))
+                if method == "diffusion" and mt.get("dc_eta") and dtype in ("mri", "inpaint"):
+                    # the same network sampled with data consistency at every DDIM step
+                    models.append(("diffusion_dc", seed, m, {**kw, "gen_kw": {**kw["gen_kw"], "dc_eta": mt["dc_eta"]}}))
                 if method == "unet" and cfg.get("mc_dropout", True):
                     models.append(("mcdropout", seed, m, {"mc": tcfg.get("mc_samples", 16)}))
         if len(trained.get("hetero", [])) >= 2:

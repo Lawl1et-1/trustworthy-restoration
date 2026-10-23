@@ -109,11 +109,25 @@ class Restorer(nn.Module):
         logit = self.disc(torch.cat([d["inp"], cond, fake], 1))
         return self.gan_l1 * F.l1_loss(fake, x) + F.binary_cross_entropy_with_logits(logit, torch.ones_like(logit))
 
+    @staticmethod
+    def dc_step(d, eta):
+        """Data consistency on the predicted clean image u in [0, 1]: u + eta * (A^+ y - P_R u).
+        eta = 1 replaces the measured part by the measurement (hard DC); linear degradations only."""
+        op, y = d["op"], d["y"]
+        aty = op.AT(y)
+
+        def f(x0_pm1):
+            u = (x0_pm1 + 1) / 2
+            return 2 * (u + eta * (aty - op.P_R(u))) - 1
+        return f
+
     @torch.no_grad()
-    def sample(self, d, cond, n_samples, steps, gen):
-        """(n_samples, B, 1, H, W) diffusion samples in [0, 1]-scale (not clipped)."""
+    def sample(self, d, cond, n_samples, steps, gen, dc_eta=0.0):
+        """(n_samples, B, 1, H, W) diffusion samples in [0, 1]-scale (not clipped).
+        dc_eta > 0 enforces data consistency at every DDIM step (MRI, inpainting)."""
         c = torch.cat([self._to_pm1(d["inp"]), cond], 1)
-        return torch.stack([(self.diff.sample(self.net, c, steps, gen) + 1) / 2 for _ in range(n_samples)])
+        dc = self.dc_step(d, dc_eta) if dc_eta and d["op"] is not None else None
+        return torch.stack([(self.diff.sample(self.net, c, steps, gen, dc) + 1) / 2 for _ in range(n_samples)])
 
     def loss(self, out, x, step, warmup):
         if self.method in ("unet", "unrolled", "gan"):
@@ -137,11 +151,12 @@ class Restorer(nn.Module):
         raise ValueError(self.method)
 
     @torch.no_grad()
-    def predict(self, d, cond, mc_samples=0, n_samples=8, steps=50, gen=None):
+    def predict(self, d, cond, mc_samples=0, n_samples=8, steps=50, gen=None, dc_eta=0.0):
         """Prediction dict. mc_samples > 0 turns dropout on (unet only) for MC-dropout.
-        Diffusion: n_samples DDIM draws with `steps` steps from generator `gen` (on the input's device)."""
+        Diffusion: n_samples DDIM draws with `steps` steps from generator `gen` (on the input's device),
+        with data consistency of strength dc_eta (0 = none)."""
         if self.method == "diffusion":
-            s = self.sample(d, cond, n_samples, steps, gen)
+            s = self.sample(d, cond, n_samples, steps, gen, dc_eta)
             sd = s.std(0) if n_samples > 1 else torch.zeros_like(s[0])
             return {"mean": s.mean(0), "lo": sd, "hi": sd, "sample": s[0]}
         if self.method == "unet" and mc_samples:

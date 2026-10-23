@@ -10,5 +10,5 @@ tasks:
 methods: {diffusion: [0], gan: [0]}
 train: {base: 8, batch: 8, lr: 0.002, steps: 40, eval_every: 20, n_val: 4, mc_samples: 4, eval_batch: 16}
 train_overrides:
-  diffusion: {val_steps: 4, n_samples: 3, sample_steps: 5}
+  diffusion: {val_steps: 4, n_samples: 3, sample_steps: 5, dc_eta: 0.5}
 eval_dseeds: [0]

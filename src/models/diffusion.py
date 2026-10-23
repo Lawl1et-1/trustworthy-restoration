@@ -19,9 +19,10 @@ class Diffusion:
         return (net(torch.cat([xt, cond], 1), t) - eps).pow(2).mean()
 
     @torch.no_grad()
-    def sample(self, net, cond, steps, gen):
+    def sample(self, net, cond, steps, gen, dc=None):
         """Deterministic DDIM (eta = 0); sample diversity comes from the initial noise.
-        `gen` must live on cond's device."""
+        `gen` must live on cond's device. `dc`, if given, maps the predicted x0 (in [-1, 1]) to a version
+        consistent with the measurements; it is applied at every step before the next state is formed."""
         B, _, H, W = cond.shape
         dev = cond.device
         abar = self.abar.to(dev)
@@ -31,6 +32,8 @@ class Diffusion:
             a = abar[t]
             eps = net(torch.cat([x, cond], 1), t.repeat(B))
             x0 = ((x - (1 - a).sqrt() * eps) / a.sqrt()).clamp(-1, 1)
+            if dc is not None:
+                x0 = dc(x0).clamp(-1, 1)
             a_prev = abar[ts[i + 1]] if i + 1 < len(ts) else torch.tensor(1.0, device=dev)
             # recompute eps from the clamped x0 so the trajectory stays consistent with it
             eps = (x - a.sqrt() * x0) / (1 - a).sqrt()
