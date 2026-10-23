@@ -1,0 +1,33 @@
+task,method,gain_db_test,gain_db_ood,gain_change_db
+denoise_s0.03,bm3d (M2),10.0688,7.8448,-2.2239
+denoise_s0.03,diffusion,8.4055,6.0061,-2.3994
+denoise_s0.03,diffusion_sample,7.4534,4.7555,-2.6979
+denoise_s0.03,gan,6.9744,0.6918,-6.2826
+denoise_s0.06,bm3d (M2),11.3717,9.3601,-2.0115
+denoise_s0.06,diffusion,12.1742,9.1722,-3.0020
+denoise_s0.06,diffusion_sample,10.8229,7.8443,-2.9786
+denoise_s0.06,gan,10.9731,5.5358,-5.4373
+denoise_s0.10,bm3d (M2),12.2918,10.4389,-1.8529
+denoise_s0.10,diffusion,14.4051,10.8719,-3.5332
+denoise_s0.10,diffusion_sample,12.8749,9.5413,-3.3336
+denoise_s0.10,gan,13.1104,8.3306,-4.7798
+denoise_s0.15,bm3d (M2),12.7460,11.1569,-1.5891
+denoise_s0.15,diffusion,15.7179,11.9264,-3.7915
+denoise_s0.15,diffusion_sample,14.0961,10.6539,-3.4422
+denoise_s0.15,gan,14.3257,9.9907,-4.3349
+inpaint_mixed,biharmonic (M2),10.6195,7.7318,-2.8877
+inpaint_mixed,diffusion,10.5703,7.6332,-2.9372
+inpaint_mixed,diffusion_sample,8.6981,6.1710,-2.5271
+inpaint_mixed,gan,10.2045,7.2235,-2.9810
+mri_R2,tv (M2),6.2434,2.0238,-4.2196
+mri_R2,diffusion,-1.9565,-3.4415,-1.4851
+mri_R2,diffusion_sample,-1.9486,-4.0169,-2.0683
+mri_R2,gan,1.9016,0.2243,-1.6773
+mri_R4,tv (M2),3.7270,0.6524,-3.0746
+mri_R4,diffusion,-0.2539,-2.3749,-2.1210
+mri_R4,diffusion_sample,-1.0885,-3.1467,-2.0582
+mri_R4,gan,1.5058,-0.0929,-1.5987
+mri_R8,tv (M2),2.1888,0.2981,-1.8907
+mri_R8,diffusion,-0.3585,-2.4284,-2.0699
+mri_R8,diffusion_sample,-1.3268,-3.0545,-1.7278
+mri_R8,gan,1.2888,-0.3686,-1.6574

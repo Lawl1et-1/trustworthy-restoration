@@ -1,0 +1,17 @@
+split,task,method,cov90,mean_spread,spread_err_spearman
+test,denoise_s0.03,diffusion,0.6611,0.0135,0.1016
+test,denoise_s0.06,diffusion,0.6850,0.0206,0.2052
+test,denoise_s0.10,diffusion,0.7147,0.0291,0.2600
+test,denoise_s0.15,diffusion,0.7292,0.0380,0.2748
+ood,denoise_s0.03,diffusion,0.6583,0.0149,0.1090
+ood,denoise_s0.06,diffusion,0.6645,0.0230,0.2027
+ood,denoise_s0.10,diffusion,0.6677,0.0325,0.2402
+ood,denoise_s0.15,diffusion,0.6641,0.0425,0.2346
+test,inpaint_mixed,diffusion,0.7667,0.0234,0.3508
+ood,inpaint_mixed,diffusion,0.7258,0.0232,0.3584
+test,mri_R2,diffusion,0.7898,0.0428,0.1303
+test,mri_R4,diffusion,0.7761,0.0486,0.1978
+test,mri_R8,diffusion,0.7640,0.0541,0.2499
+ood,mri_R2,diffusion,0.6952,0.0559,0.1047
+ood,mri_R4,diffusion,0.6489,0.0597,0.1388
+ood,mri_R8,diffusion,0.6049,0.0610,0.1550
