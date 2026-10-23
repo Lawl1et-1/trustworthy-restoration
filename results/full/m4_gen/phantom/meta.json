@@ -10,7 +10,9 @@
   },
   "methods": {
    "diffusion": [
-    0
+    0,
+    1,
+    2
    ],
    "gan": [
     0,
@@ -34,7 +36,8 @@
     "val_steps": 20,
     "n_samples": 8,
     "sample_steps": 25,
-    "sample_batch": 64
+    "sample_batch": 64,
+    "dc_eta": 0.5
    },
    "gan": {
     "lr_d": 0.0002,
@@ -88,11 +91,11 @@
    }
   }
  },
- "git": "0ff22f8",
+ "git": "ec1e2a4",
  "python": "3.12.9",
  "torch": "2.11.0+cu126",
  "device": "NVIDIA GeForce GTX 1660 Ti with Max-Q Design",
- "wall_seconds": 12517.3,
+ "wall_seconds": 15315.7,
  "n_slices": {
   "train": 360,
   "val": 60,
