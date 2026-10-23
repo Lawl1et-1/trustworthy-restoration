@@ -1,0 +1,122 @@
+[
+ {
+  "method": "diffusion",
+  "seed": 0,
+  "best_val_psnr": 7.241607666015625,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 6.479264736175537,
+    "train_loss": 0.45880481153726577
+   },
+   {
+    "step": 40,
+    "val_psnr": 7.241607666015625,
+    "train_loss": 0.15021697841584683
+   }
+  ],
+  "seconds": 2.8,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "gan",
+  "seed": 0,
+  "best_val_psnr": 25.462753295898438,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 23.543489456176758,
+    "train_loss": 12.117211961746216
+   },
+   {
+    "step": 40,
+    "val_psnr": 25.462753295898438,
+    "train_loss": 5.380752086639404
+   }
+  ],
+  "seconds": 3.4,
+  "steps": 40,
+  "type": "denoise"
+ },
+ {
+  "method": "diffusion",
+  "seed": 0,
+  "best_val_psnr": 6.735995292663574,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 5.901117324829102,
+    "train_loss": 0.47897403985261916
+   },
+   {
+    "step": 40,
+    "val_psnr": 6.735995292663574,
+    "train_loss": 0.16356493532657623
+   }
+  ],
+  "seconds": 3.3,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "gan",
+  "seed": 0,
+  "best_val_psnr": 22.303787231445312,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 21.614559173583984,
+    "train_loss": 11.964297986030578
+   },
+   {
+    "step": 40,
+    "val_psnr": 22.303787231445312,
+    "train_loss": 4.7529932975769045
+   }
+  ],
+  "seconds": 4.0,
+  "steps": 40,
+  "type": "inpaint"
+ },
+ {
+  "method": "diffusion",
+  "seed": 0,
+  "best_val_psnr": 6.7503275871276855,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 6.412740230560303,
+    "train_loss": 0.4688235200941563
+   },
+   {
+    "step": 40,
+    "val_psnr": 6.7503275871276855,
+    "train_loss": 0.1352143332362175
+   }
+  ],
+  "seconds": 2.7,
+  "steps": 40,
+  "type": "mri"
+ },
+ {
+  "method": "gan",
+  "seed": 0,
+  "best_val_psnr": 18.0074520111084,
+  "curve": [
+   {
+    "step": 20,
+    "val_psnr": 17.945165634155273,
+    "train_loss": 12.79292573928833
+   },
+   {
+    "step": 40,
+    "val_psnr": 18.0074520111084,
+    "train_loss": 7.845867419242859
+   }
+  ],
+  "seconds": 3.3,
+  "steps": 40,
+  "type": "mri"
+ }
+]

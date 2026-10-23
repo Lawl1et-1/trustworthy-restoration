@@ -1,0 +1,48 @@
+{
+ "config": {
+  "profile": "smoke",
+  "cpu": true,
+  "data": {
+   "name": "phantom",
+   "n_images": 60,
+   "size": 64,
+   "seed": 1234,
+   "max_slices": {
+    "test": 12
+   }
+  },
+  "tasks": {
+   "denoise_s0.06": {
+    "type": "denoise",
+    "sigma": 0.06
+   },
+   "mri_R4": {
+    "type": "mri",
+    "R": 4,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "inpaint_mixed": {
+    "type": "inpaint",
+    "mask": "mixed",
+    "sigma": 0.01
+   }
+  },
+  "nets": [
+   "configs/m3_smoke.yaml",
+   "configs/m4_smoke.yaml"
+  ],
+  "alpha": 0.1,
+  "delta": 0.1,
+  "eval_batch": 16
+ },
+ "git": "619d722",
+ "python": "3.12.9",
+ "torch": "2.11.0+cu126",
+ "device": "cpu",
+ "wall_seconds": 7.8,
+ "n_slices": {
+  "cal": 9,
+  "test": 9
+ }
+}
