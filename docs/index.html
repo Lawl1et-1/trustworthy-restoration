@@ -209,7 +209,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
       <div><dt>Author</dt><dd id="f-author">Rayan (<a href="https://github.com/Lawl1et-1/trustworthy-restoration" style="color:inherit">Lawl1et-1</a>)</dd></div>
       <div><dt>Issued</dt><dd id="f-issued" class="num">…</dd></div>
       <div><dt>Specimens</dt><dd id="f-specimens">Phantoms · MSD BrainTumour T2 · IXI T2</dd></div>
-      <div><dt>Status</dt><dd id="f-status">M0–M6 done · M7 in progress</dd></div>
+      <div><dt>Status</dt><dd id="f-status">M0–M7 done</dd></div>
     </dl>
   </div>
 </header>
@@ -582,12 +582,12 @@ function whyShift(data){
     return el("div",{}, el("h3",{}, TASK[t] + ": gain over the input, dB"), el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},head), el("tbody",{},body))));
   });
   const ns = m.noise.ixi_background_sigma;
-  const rc = m.recal.filter(r => r.task === "mri_R4" && ["hetero","ensemble","unet_const","diffusion"].includes(r.method));
+  const rc = m.recal.filter(r => r.task === "mri_R4" && ["ensemble","diffusion","unet_const","unrolled_const"].includes(r.method));
   const ncal = [...new Set(rc.map(r => r.n_cal))].sort((a,b) => a-b);
   const sites = [...new Set(rc.map(r => r.site))];
   const rhead = el("tr",{}, el("th",{scope:"col"},"Method"), el("th",{scope:"col"},"Hospital"), ncal.map(n => el("th",{scope:"col"}, n + " patients")));
   const rbody = [];
-  for (const me of ["hetero","ensemble","unet_const","diffusion"]) for (const s of sites) {
+  for (const me of ["ensemble","diffusion","unet_const","unrolled_const"]) for (const s of sites) {
     const cells = ncal.map(n => { const r = rc.find(x => x.method === me && x.site === s && x.n_cal === n); return el("td",{}, r ? pct(r.coverage) + " (" + pct(r.coverage_p10) + ")" : "–"); });
     if (cells.length) rbody.push(el("tr",{}, el("th",{scope:"row"}, METHOD[me] || me), el("td",{}, s), cells));
   }
@@ -641,6 +641,16 @@ function findings(data){
     out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Phantoms, lesions. "),
       `In MRI at R = 2, the plain networks erase ${pct(avgE)} of small lesions on average; TV erases ${pct(tv.erased_frac)} and the unrolled network, which keeps the measured data, ${pct(un.erased_frac)}. Their uncertainty does not flag the erasures: they are more confident on the lesions they erase.`),
       el("span",{class:"stamp fail"}, "Lesions erased")));
+  }
+  if (data.m7) {
+    const R = data.m7.region; const g = (sp, t, me) => R.find(r => r.split === sp && r.task === t && r.method === me);
+    const dn = ["unet","ensemble"].map(me => [g("msd","denoise_s0.10",me), g("msd_acqnoise","denoise_s0.10",me), g("ixi","denoise_s0.10",me)]).filter(x => x.every(Boolean));
+    const noiseD = dn.reduce((a,[m,n]) => a + (n.gain_full - m.gain_full), 0) / (dn.length || 1);
+    const skullD = dn.reduce((a,[,,i]) => a + (i.gain_interior - i.gain_full), 0) / (dn.length || 1);
+    const rc = data.m7.recal.filter(r => r.n_cal === 5); const c5 = rc.reduce((a,r) => a + r.coverage, 0) / (rc.length || 1);
+    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Why it shifts (MSD → IXI). "),
+      `Adding IXI's own acquisition noise to MSD changes the networks' denoising gain by ${sgn(noiseD)} dB, so noise is not the cause. Scoring IXI on the brain interior only gives them back ${sgn(skullD)} dB: much of the loss is in skull and scalp, which the skull-stripped training scans never showed. Recalibrating on 5 patients of a new hospital restores ${pct(c5)} coverage.`),
+      el("span",{class:"stamp info"}, "Measured")));
   }
   const ms = data.datasets.msd;
   if (ms && ms.conformal) {

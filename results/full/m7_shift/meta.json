@@ -1,0 +1,67 @@
+{
+ "config": {
+  "profile": "full",
+  "data": {
+   "name": "msd",
+   "path": "data/processed/msd_t2_128.npz"
+  },
+  "ood": {
+   "name": "ixi",
+   "path": "data/processed/ixi_t2_128.npz"
+  },
+  "classical": {
+   "denoise": [
+    "bm3d"
+   ],
+   "mri": [
+    "tv"
+   ],
+   "inpaint": [
+    "biharmonic"
+   ]
+  },
+  "nets": [
+   "configs/m3_full_msd.yaml",
+   "configs/m4_full_msd.yaml"
+  ],
+  "max_model_seed": 0,
+  "noise_factor": 1.0,
+  "erode": 8,
+  "alpha": 0.1,
+  "n_cals": [
+   3,
+   5,
+   10,
+   20
+  ],
+  "n_splits": 50,
+  "eval_batch": 32,
+  "tasks": {
+   "denoise_s0.10": {
+    "type": "denoise",
+    "sigma": 0.1
+   },
+   "mri_R4": {
+    "type": "mri",
+    "R": 4,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "inpaint_mixed": {
+    "type": "inpaint",
+    "mask": "mixed",
+    "sigma": 0.01
+   }
+  }
+ },
+ "git": "419e247",
+ "python": "3.12.9",
+ "torch": "2.11.0+cu126",
+ "device": "NVIDIA GeForce GTX 1660 Ti with Max-Q Design",
+ "wall_seconds": 3711.7,
+ "n_slices": {
+  "msd": 584,
+  "msd_acqnoise": 584,
+  "ixi": 960
+ }
+}

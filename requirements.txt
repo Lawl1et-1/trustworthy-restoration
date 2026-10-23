@@ -13,3 +13,6 @@ bm3d==4.0.3
 lpips==0.1.4
 medmnist==3.0.2
 nibabel==5.4.2
+Pillow==12.3.0
+onnx==1.23.2
+onnxruntime==1.31.0
