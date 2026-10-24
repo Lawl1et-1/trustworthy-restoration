@@ -71,11 +71,11 @@
    }
   }
  },
- "git": "e804a0e",
+ "git": "4c2e295",
  "python": "3.12.9",
  "torch": "2.11.0+cu126",
  "device": "NVIDIA GeForce GTX 1660 Ti with Max-Q Design",
- "wall_seconds": 2372.7,
+ "wall_seconds": 4961.8,
  "n_images": 65,
  "n_lesions": 158,
  "n_clipped": 0
