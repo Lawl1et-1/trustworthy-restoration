@@ -1,6 +1,6 @@
 {
  "generated": "2026-10-24",
- "git": "e93c317",
+ "git": "2ed843e",
  "profile": "full",
  "verdict_band": {
   "lo": 0.87,
@@ -18179,11 +18179,13 @@
  },
  "enhance_example": {
   "src": "demo/enhance_example.png",
-  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 \u00d7 256)"
+  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 \u00d7 256)",
+  "label_fr": "Exemple : IXI002, Guys Hospital, un site que le r\u00e9seau n'a jamais vu (256 \u00d7 256)"
  },
  "models": "models/msd/models.json",
  "example": {
   "src": "demo/example.png",
-  "label": "Example: IXI test scan, Guys, a hospital the models never saw"
+  "label": "Example: IXI test scan, Guys, a hospital the models never saw",
+  "label_fr": "Exemple : examen de test IXI, Guys, un h\u00f4pital que les mod\u00e8les n'ont jamais vu"
  }
 }

@@ -111,7 +111,8 @@ def collect(profile):
                      "noise": json.loads((m7 / "noise.json").read_text())}
     if (ROOT / "docs" / "demo" / "enhance_example.png").exists():  # written by experiments/enhance_example.py
         out["enhance_example"] = {"src": "demo/enhance_example.png",
-                                  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 × 256)"}
+                                  "label": "Example: IXI002, Guys Hospital, a site the network never saw (256 × 256)",
+                                  "label_fr": "Exemple : IXI002, Guys Hospital, un site que le réseau n'a jamais vu (256 × 256)"}
     # in-browser networks for "try your own image": the MSD (real MRI) set when exported, else the phantom set
     for ds in ("msd", "phantom"):
         if (ROOT / "docs" / "models" / ds / "models.json").exists():
@@ -119,8 +120,10 @@ def collect(profile):
             break
     # example image for that demo: the first IXI gallery scan (a hospital the models never saw), else a phantom
     from PIL import Image
-    for ds, split, label in (("msd", "ood", "Example: IXI test scan, {site}, a hospital the models never saw"),
-                             ("phantom", "test", "Example: a test phantom")):
+    for ds, split, label, label_fr in (
+            ("msd", "ood", "Example: IXI test scan, {site}, a hospital the models never saw",
+             "Exemple : examen de test IXI, {site}, un hôpital que les modèles n'ont jamais vu"),
+            ("phantom", "test", "Example: a test phantom", "Exemple : un fantôme de test")):
         mf = ROOT / "docs" / "demo" / ds / "manifest.json"
         if mf.exists():
             th = json.loads(mf.read_text()).get("thumbs", {}).get(split)
@@ -128,7 +131,8 @@ def collect(profile):
                 im = Image.open(mf.parent / th["file"])
                 t = im.size[1]
                 im.crop((0, 0, t, t)).save(ROOT / "docs" / "demo" / "example.png")
-                out["example"] = {"src": "demo/example.png", "label": label.format(site=th["site"][0])}
+                out["example"] = {"src": "demo/example.png", "label": label.format(site=th["site"][0]),
+                                  "label_fr": label_fr.format(site=th["site"][0])}
                 break
     return out
 

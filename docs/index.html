@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Trustworthy Restoration</title>
 <meta name="description" content="Test report: learned MRI restoration against classical baselines, and whether each method's stated uncertainty holds.">
+<script>
+// language before first paint: ?lang= in the URL, else the visitor's last choice, else the browser's language
+(() => { let l = new URLSearchParams(location.search).get("lang");
+  try { l = l || localStorage.getItem("tr.lang"); } catch (e) {}
+  l = l || ((navigator.languages || [navigator.language || ""]).some(x => /^fr\b/i.test(x)) ? "fr" : "en");
+  if (l !== "fr") l = "en";
+  try { localStorage.setItem("tr.lang", l); } catch (e) {}
+  document.documentElement.lang = l;
+  if (l === "fr") { document.title = "Restauration digne de confiance";
+    document.querySelector('meta[name="description"]').content = "Rapport d'essai : restauration d'IRM par apprentissage face aux méthodes classiques, et l'incertitude annoncée par chaque méthode tient-elle ?"; } })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..650;1,8..60,400&display=swap">
@@ -29,6 +40,8 @@
 
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+/* both languages live in the page; the root's lang picks which one shows */
+html[lang="fr"] body [lang="en"],html[lang="en"] body [lang="fr"]{display:none!important}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 body{background:var(--paper);color:var(--ink);font:400 1.0625rem/1.6 var(--f-body);font-optical-sizing:auto;
@@ -46,8 +59,17 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .mast{background:var(--seal);color:var(--seal-ink)}
 .mast .frame{padding-block:var(--s5) var(--s6);display:grid;gap:var(--s5)}
 .guilloche{display:block;width:100%;height:28px;opacity:.55}
-.mast-top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s3);
+.mast-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:var(--s3) var(--s5);
   font:600 .78rem/1.2 var(--f-data);font-stretch:118%;letter-spacing:.14em;text-transform:uppercase}
+.mast-top .ids{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s3)}
+#report-no{white-space:nowrap}
+/* language switch: two links stamped like the report's verdicts, the current one inked in */
+.lang{display:flex;border:1.5px solid currentColor;border-radius:2px;margin-top:-.4rem}
+.lang a{font:700 .7rem/1 var(--f-data);font-stretch:120%;letter-spacing:.14em;color:inherit;text-decoration:none;padding:.45rem .55rem .45rem .69rem}
+.lang a+a{border-left:1.5px solid currentColor}
+.lang a[aria-current="true"]{background:var(--seal-ink);color:var(--seal)}
+.lang a:not([aria-current="true"]):hover{background:color-mix(in srgb,var(--seal-ink) 16%,transparent)}
+.mast :focus-visible{outline-color:var(--seal-ink)}
 .mast h1{font:780 clamp(2.3rem,6.4vw,4.6rem)/.95 var(--f-display);font-stretch:68%;letter-spacing:-.015em;margin:0;
   text-wrap:balance;max-width:16ch}
 .mast .lede{font:400 1.2rem/1.5 var(--f-body);max-width:56ch;margin:0}
@@ -87,6 +109,7 @@ h3{font:650 1.05rem/1.25 var(--f-data);font-stretch:104%;margin:var(--s4) 0 0;te
 .finding strong{font-weight:620}
 .stamp{justify-self:start;font:700 .7rem/1 var(--f-data);font-stretch:120%;letter-spacing:.14em;text-transform:uppercase;
   padding:.45rem .55rem;border:1.5px solid currentColor;border-radius:2px;transform:rotate(-1.5deg);white-space:nowrap}
+.finding .stamp{white-space:normal;max-width:100%;line-height:1.3;text-wrap:balance}
 .stamp.hold{color:var(--hold)} .stamp.fail{color:var(--fail)} .stamp.warn{color:var(--warn)} .stamp.info{color:var(--ink-2)}
 
 /* tabs (dataset switch) */
@@ -202,198 +225,215 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
 <header class="mast wrap">
   <div class="frame">
     <canvas class="guilloche" aria-hidden="true"></canvas>
-    <div class="mast-top"><span>Test report <span id="report-no" class="num">TR-M7</span></span><span>Learned MRI restoration · uncertainty</span></div>
-    <h1>Trustworthy Restoration</h1>
-    <p class="lede">Neural networks clean up noisy, undersampled and damaged brain MRI. This report measures, for each method, how close the restored image is to the truth, whether it erases or invents lesions, and whether the uncertainty it reports is honest, before and after calibration, at the training hospital and at others.</p>
+    <div class="mast-top">
+      <div class="ids"><span><span lang="en">Test report</span><span lang="fr">Rapport d'essai</span> <span id="report-no" class="num">TR-M7</span></span><span><span lang="en">Learned MRI restoration · uncertainty</span><span lang="fr">Restauration d'IRM apprise · incertitude</span></span></div>
+      <nav class="lang" aria-label="Language / Langue"><a href="?lang=en" hreflang="en" lang="en-GB" title="English">EN</a><a href="?lang=fr" hreflang="fr" lang="fr-FR" title="Français">FR</a></nav>
+    </div>
+    <h1><span lang="en">Trustworthy Restoration</span><span lang="fr">Restauration digne de confiance</span></h1>
+    <p class="lede" lang="en">Neural networks clean up noisy, undersampled and damaged brain MRI. This report measures, for each method, how close the restored image is to the truth, whether it erases or invents lesions, and whether the uncertainty it reports is honest, before and after calibration, at the training hospital and at others.</p>
+    <p class="lede" lang="fr">Des réseaux de neurones nettoient des IRM cérébrales bruitées, sous-échantillonnées ou endommagées. Ce rapport mesure, pour chaque méthode, à quel point l'image restaurée est proche de la vérité, si la méthode efface ou invente des lésions, et si l'incertitude qu'elle annonce est honnête, avant et après calibration, à l'hôpital d'entraînement comme ailleurs.</p>
     <dl class="fields">
-      <div><dt>Author</dt><dd id="f-author">BENSALEM Rayan (<a href="https://github.com/Lawl1et-1/trustworthy-restoration" style="color:inherit">Lawl1et-1</a>)</dd></div>
-      <div><dt>Issued</dt><dd id="f-issued" class="num">…</dd></div>
-      <div><dt>Specimens</dt><dd id="f-specimens">Phantoms · MSD BrainTumour T2 · IXI T2</dd></div>
-      <div><dt>Status</dt><dd id="f-status">M0–M7 done</dd></div>
+      <div><dt><span lang="en">Author</span><span lang="fr">Auteur</span></dt><dd id="f-author">BENSALEM Rayan (<a href="https://github.com/Lawl1et-1/trustworthy-restoration" style="color:inherit">Lawl1et-1</a>)</dd></div>
+      <div><dt><span lang="en">Issued</span><span lang="fr">Émis le</span></dt><dd id="f-issued" class="num">…</dd></div>
+      <div><dt><span lang="en">Specimens</span><span lang="fr">Échantillons</span></dt><dd id="f-specimens"><span lang="en">Phantoms</span><span lang="fr">Fantômes</span> · MSD BrainTumour T2 · IXI T2</dd></div>
+      <div><dt><span lang="en">Status</span><span lang="fr">Statut</span></dt><dd id="f-status"><span lang="en">M0–M7 done</span><span lang="fr">M0–M7 terminés</span></dd></div>
     </dl>
   </div>
 </header>
 
 <div class="body wrap">
   <div class="frame">
-    <nav class="rail" aria-label="Contents">
-      <p class="tag">Contents</p>
+    <nav class="rail" aria-label="Contents" data-aria-fr="Sommaire">
+      <p class="tag"><span lang="en">Contents</span><span lang="fr">Sommaire</span></p>
       <ol>
-        <li><a href="#findings">Findings</a></li>
-        <li><a href="#viewer">Specimen viewer</a></li>
-        <li><a href="#enhance">Enhance a scan</a></li>
-        <li><a href="#try">Your own image</a></li>
-        <li><a href="#accuracy">Accuracy</a></li>
-        <li><a href="#lesions">Lesions</a></li>
-        <li><a href="#tumours">Real tumours</a></li>
-        <li><a href="#calibration">Stated vs measured</a></li>
-        <li><a href="#conformal">Calibrated</a></li>
-        <li><a href="#shift">Under shift</a></li>
-        <li><a href="#why-shift">Why it shifts</a></li>
-        <li><a href="#method">Method</a></li>
-        <li><a href="#limits">Limits and next</a></li>
-        <li><a href="#reproduce">Reproduce</a></li>
+        <li><a href="#findings"><span lang="en">Findings</span><span lang="fr">Constats</span></a></li>
+        <li><a href="#viewer"><span lang="en">Specimen viewer</span><span lang="fr">Visionneuse</span></a></li>
+        <li><a href="#enhance"><span lang="en">Enhance a scan</span><span lang="fr">Améliorer un examen</span></a></li>
+        <li><a href="#try"><span lang="en">Your own image</span><span lang="fr">Votre image</span></a></li>
+        <li><a href="#accuracy"><span lang="en">Accuracy</span><span lang="fr">Exactitude</span></a></li>
+        <li><a href="#lesions"><span lang="en">Lesions</span><span lang="fr">Lésions</span></a></li>
+        <li><a href="#tumours"><span lang="en">Real tumours</span><span lang="fr">Tumeurs réelles</span></a></li>
+        <li><a href="#calibration"><span lang="en">Stated vs measured</span><span lang="fr">Annoncé et mesuré</span></a></li>
+        <li><a href="#conformal"><span lang="en">Calibrated</span><span lang="fr">Après calibration</span></a></li>
+        <li><a href="#shift"><span lang="en">Under shift</span><span lang="fr">Autres hôpitaux</span></a></li>
+        <li><a href="#why-shift"><span lang="en">Why it shifts</span><span lang="fr">Causes de l'écart</span></a></li>
+        <li><a href="#method"><span lang="en">Method</span><span lang="fr">Méthode</span></a></li>
+        <li><a href="#limits"><span lang="en">Limits and next</span><span lang="fr">Limites et suite</span></a></li>
+        <li><a href="#reproduce"><span lang="en">Reproduce</span><span lang="fr">Reproduire</span></a></li>
       </ol>
     </nav>
     <main>
       <section id="findings" aria-labelledby="h-findings">
-        <p class="clause">Findings</p>
-        <h2 id="h-findings">What the measurements say</h2>
-        <div class="findings" id="findings-list"><p class="small">Loading results…</p></div>
-        <p class="small">Every number on this page is read from the repository's result files (<code>docs/data/results.json</code>, built by <code>experiments/site_data.py</code>). Intervals are 95 % patient-level bootstrap intervals; differences are paired on identical test degradations.</p>
+        <p class="clause"><span lang="en">Findings</span><span lang="fr">Constats</span></p>
+        <h2 id="h-findings"><span lang="en">What the measurements say</span><span lang="fr">Ce que disent les mesures</span></h2>
+        <div class="findings" id="findings-list"><p class="small"><span lang="en">Loading results…</span><span lang="fr">Chargement des résultats…</span></p></div>
+        <p class="small" lang="en">Every number on this page is read from the repository's result files (<code>docs/data/results.json</code>, built by <code>experiments/site_data.py</code>). Intervals are 95 % patient-level bootstrap intervals; differences are paired on identical test degradations.</p>
+        <p class="small" lang="fr">Chaque nombre de cette page est lu dans les fichiers de résultats du dépôt (<code>docs/data/results.json</code>, construit par <code>experiments/site_data.py</code>). Les intervalles sont des intervalles bootstrap à 95 % par patient ; les différences sont appariées sur des dégradations de test identiques.</p>
       </section>
 
       <section id="viewer" aria-labelledby="h-viewer">
-        <p class="clause">Specimen viewer</p>
-        <h2 id="h-viewer">Pick a scan, see how it was restored</h2>
-        <div class="prose"><p>Choose a test scan from the gallery and a kind of damage. The scan is damaged exactly as in the evaluation and restored by the method you pick; drag across the image to compare the damaged input with the restoration. The maps show where the method was wrong, how wide it said its 90 % interval was, and the pixels where the truth fell outside that interval. The gallery follows a fixed rule set before any output was seen (the first test patients in id order), so it shows typical cases, good and bad.</p></div>
-        <div class="viewer" id="viewer-root"><p class="pending">Loading demo images…</p></div>
+        <p class="clause"><span lang="en">Specimen viewer</span><span lang="fr">Visionneuse</span></p>
+        <h2 id="h-viewer"><span lang="en">Pick a scan, see how it was restored</span><span lang="fr">Choisissez un examen, voyez comment il a été restauré</span></h2>
+        <div class="prose" lang="en"><p>Choose a test scan from the gallery and a kind of damage. The scan is damaged exactly as in the evaluation and restored by the method you pick; drag across the image to compare the damaged input with the restoration. The maps show where the method was wrong, how wide it said its 90 % interval was, and the pixels where the truth fell outside that interval. The gallery follows a fixed rule set before any output was seen (the first test patients in id order), so it shows typical cases, good and bad.</p></div>
+        <div class="prose" lang="fr"><p>Choisissez un examen de test dans la galerie et un type de dégradation. L'examen est dégradé exactement comme lors de l'évaluation, puis restauré par la méthode choisie ; faites glisser sur l'image pour comparer l'entrée dégradée et la restauration. Les cartes montrent où la méthode s'est trompée, la largeur annoncée de son intervalle à 90 %, et les pixels où la vérité est tombée hors de cet intervalle. La galerie suit une règle fixée avant de voir le moindre résultat (les premiers patients de test par identifiant) : elle montre des cas typiques, bons comme mauvais.</p></div>
+        <div class="viewer" id="viewer-root"><p class="pending"><span lang="en">Loading demo images…</span><span lang="fr">Chargement des images de démonstration…</span></p></div>
       </section>
 
       <section id="enhance" aria-labelledby="h-enhance">
-        <p class="clause">Enhance a scan</p>
-        <h2 id="h-enhance">Reduce the noise in an MRI scan of yours</h2>
-        <div class="prose"><p>Upload a brain MRI slice (PNG, JPEG or an uncompressed DICOM file). The denoising network trained on MSD brain scans runs in your browser, patch by patch at the scan's own resolution (up to 512 pixels), and the slider compares the original with the result. Nothing is uploaded anywhere: the scan never leaves your device.</p>
+        <p class="clause"><span lang="en">Enhance a scan</span><span lang="fr">Améliorer un examen</span></p>
+        <h2 id="h-enhance"><span lang="en">Reduce the noise in an MRI scan of yours</span><span lang="fr">Réduisez le bruit d'une de vos IRM</span></h2>
+        <div class="prose" lang="en"><p>Upload a brain MRI slice (PNG, JPEG or an uncompressed DICOM file). The denoising network trained on MSD brain scans runs in your browser, patch by patch at the scan's own resolution (up to 512 pixels), and the slider compares the original with the result. Nothing is uploaded anywhere: the scan never leaves your device.</p>
         <p class="small">What it does and does not do. It removes noise, which makes structures easier to see; it does not sharpen or add detail, because a network that makes structures look crisper than the data supports is inventing them (see Lesions). Check the "Removed" map: it should look like grain only. Anatomy in it means the network took out real structure. This is a research demonstration, not a medical device: do not use it for diagnosis.</p></div>
+        <div class="prose" lang="fr"><p>Chargez une coupe d'IRM cérébrale (PNG, JPEG ou fichier DICOM non compressé). Le réseau de débruitage entraîné sur les examens MSD tourne dans votre navigateur, bloc par bloc à la résolution de l'examen (jusqu'à 512 pixels), et le curseur compare l'original au résultat. Rien n'est envoyé nulle part : l'examen ne quitte jamais votre appareil.</p>
+        <p class="small">Ce qu'il fait et ne fait pas. Il retire du bruit, ce qui rend les structures plus lisibles ; il n'accentue pas et n'ajoute pas de détail, car un réseau qui rend les structures plus nettes que ne le permettent les données les invente (voir Lésions). Regardez la carte « Retiré » : elle ne doit contenir que du grain. Si l'on y voit de l'anatomie, le réseau a retiré de la vraie structure. C'est une démonstration de recherche, pas un dispositif médical : ne l'utilisez pas pour un diagnostic.</p></div>
         <div class="viewer" id="enh-root">
           <div class="controls">
-            <div class="ctl"><span>Scan</span>
+            <div class="ctl"><span><span lang="en">Scan</span><span lang="fr">Examen</span></span>
               <div class="pick">
-                <label class="filebtn" for="enh-file">Choose a scan…</label>
+                <label class="filebtn" for="enh-file"><span lang="en">Choose a scan…</span><span lang="fr">Choisir un examen…</span></label>
                 <input type="file" id="enh-file" accept="image/*,.dcm,application/dicom">
-                <span class="small" id="enh-name">Loading the example…</span>
+                <span class="small" id="enh-name"><span lang="en">Loading the example…</span><span lang="fr">Chargement de l'exemple…</span></span>
               </div>
             </div>
-            <div class="ctl"><span>Examples</span><div class="switch" role="group" aria-label="Example scan" id="enh-example"></div></div>
-            <div class="ctl"><span>Noise reduction</span><div class="switch" role="group" aria-label="Noise reduction strength" id="enh-level"></div></div>
-            <div><a class="act" id="enh-save" download="enhanced.png" href="#" aria-disabled="true">Save the enhanced image</a></div>
+            <div class="ctl"><span><span lang="en">Examples</span><span lang="fr">Exemples</span></span><div class="switch" role="group" aria-label="Example scan" data-aria-fr="Examen d'exemple" id="enh-example"></div></div>
+            <div class="ctl"><span><span lang="en">Noise reduction</span><span lang="fr">Réduction du bruit</span></span><div class="switch" role="group" aria-label="Noise reduction strength" data-aria-fr="Force de la réduction du bruit" id="enh-level"></div></div>
+            <div><a class="act" id="enh-save" download="enhanced.png" href="#" aria-disabled="true"><span lang="en">Save the enhanced image</span><span lang="fr">Enregistrer l'image améliorée</span></a></div>
           </div>
           <div class="stage">
             <div style="display:grid;gap:.75rem;min-width:0">
               <div class="compare" id="enh-compare">
                 <canvas id="enh-before" width="128" height="128" aria-hidden="true"></canvas>
                 <canvas id="enh-after" class="after" width="128" height="128" aria-hidden="true"></canvas>
-                <i class="handle"></i><span class="lab l">Original</span><span class="lab r">Enhanced</span>
-                <input type="range" min="0" max="100" value="50" id="enh-range" aria-label="Comparison position">
+                <i class="handle"></i><span class="lab l"><span lang="en">Original</span><span lang="fr">Original</span></span><span class="lab r"><span lang="en">Enhanced</span><span lang="fr">Amélioré</span></span>
+                <input type="range" min="0" max="100" value="50" id="enh-range" aria-label="Comparison position" data-aria-fr="Position de la comparaison">
               </div>
               <dl class="readout" id="enh-readout"></dl>
-              <p class="small" id="enh-status" role="status">The network loads when you reach this section (about 3 MB, once).</p>
+              <p class="small" id="enh-status" role="status"><span lang="en">The network loads when you reach this section (about 3 MB, once).</span><span lang="fr">Le réseau se charge quand vous arrivez à cette section (environ 3 Mo, une seule fois).</span></p>
             </div>
             <div style="display:grid;gap:.75rem;min-width:0;align-content:start">
               <div class="maps">
-                <figure class="map"><canvas id="enh-removed" width="128" height="128"></canvas><figcaption><b>Removed</b>: original minus enhanced (should look like grain only)</figcaption></figure>
-                <figure class="map"><canvas id="enh-unc" width="128" height="128"></canvas><figcaption><b>Uncertainty</b>: the network's stated 90 % half-width</figcaption></figure>
+                <figure class="map"><canvas id="enh-removed" width="128" height="128"></canvas><figcaption lang="en"><b>Removed</b>: original minus enhanced (should look like grain only)</figcaption><figcaption lang="fr"><b>Retiré</b> : original moins amélioré (ne doit contenir que du grain)</figcaption></figure>
+                <figure class="map"><canvas id="enh-unc" width="128" height="128"></canvas><figcaption lang="en"><b>Uncertainty</b>: the network's stated 90 % half-width</figcaption><figcaption lang="fr"><b>Incertitude</b> : demi-largeur à 90 % annoncée par le réseau</figcaption></figure>
               </div>
-              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num">≥ 0.15</span><span>of the intensity range (uncertainty map)</span></div>
+              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num"><span lang="en">≥ 0.15</span><span lang="fr">≥ 0,15</span></span><span><span lang="en">of the intensity range (uncertainty map)</span><span lang="fr">de la plage d'intensité (carte d'incertitude)</span></span></div>
             </div>
           </div>
         </div>
       </section>
 
       <section id="try" aria-labelledby="h-try">
-        <p class="clause">Your own image</p>
-        <h2 id="h-try">Damage a picture of yours, then restore it</h2>
-        <div class="prose"><p>Upload any image. The page turns it into a 128 × 128 greyscale picture, damages it the same way the test scans were damaged, and restores it with a trained network running in your browser. Your image never leaves your device. Because your picture is the truth, the page can show the real error and check whether the stated 90 % interval held.</p>
+        <p class="clause"><span lang="en">Your own image</span><span lang="fr">Votre image</span></p>
+        <h2 id="h-try"><span lang="en">Damage a picture of yours, then restore it</span><span lang="fr">Dégradez une de vos images, puis restaurez-la</span></h2>
+        <div class="prose" lang="en"><p>Upload any image. The page turns it into a 128 × 128 greyscale picture, damages it the same way the test scans were damaged, and restores it with a trained network running in your browser. Your image never leaves your device. Because your picture is the truth, the page can show the real error and check whether the stated 90 % interval held.</p>
         <p class="small">The networks were trained on brain MRI. Anything else (a photo, a drawing, a chest X-ray) is outside what they have seen, so expect worse restorations; watch whether the uncertainty map widens where the network is wrong.</p></div>
+        <div class="prose" lang="fr"><p>Chargez n'importe quelle image. La page la convertit en image 128 × 128 en niveaux de gris, la dégrade comme l'ont été les examens de test, puis la restaure avec un réseau entraîné qui tourne dans votre navigateur. Votre image ne quitte jamais votre appareil. Comme votre image est la vérité, la page peut montrer l'erreur réelle et vérifier si l'intervalle annoncé à 90 % a tenu.</p>
+        <p class="small">Les réseaux ont été entraînés sur des IRM cérébrales. Tout le reste (une photo, un dessin, une radio du thorax) sort de ce qu'ils ont vu : attendez-vous à de moins bonnes restaurations, et regardez si la carte d'incertitude s'élargit là où le réseau se trompe.</p></div>
         <div class="viewer" id="try-root">
           <div class="controls">
             <div class="ctl"><span>Image</span>
               <div class="pick">
-                <label class="filebtn" for="try-file">Choose an image…</label>
+                <label class="filebtn" for="try-file"><span lang="en">Choose an image…</span><span lang="fr">Choisir une image…</span></label>
                 <input type="file" id="try-file" accept="image/*">
-                <span class="small" id="try-name">Example: an IXI test scan</span>
+                <span class="small" id="try-name"><span lang="en">Example: an IXI test scan</span><span lang="fr">Exemple : un examen de test IXI</span></span>
               </div>
             </div>
-            <div class="ctl"><span>Damage</span><div class="switch" role="group" aria-label="Damage" id="try-task"></div></div>
-            <div class="ctl"><span>Strength</span><div class="switch" role="group" aria-label="Strength" id="try-level"></div></div>
-            <div class="ctl"><span>Network</span><div class="switch" role="group" aria-label="Network" id="try-net"></div></div>
-            <div><button type="button" class="act" id="try-again">Damage again</button></div>
+            <div class="ctl"><span><span lang="en">Damage</span><span lang="fr">Dégradation</span></span><div class="switch" role="group" aria-label="Damage" data-aria-fr="Dégradation" id="try-task"></div></div>
+            <div class="ctl"><span><span lang="en">Strength</span><span lang="fr">Intensité</span></span><div class="switch" role="group" aria-label="Strength" data-aria-fr="Intensité" id="try-level"></div></div>
+            <div class="ctl"><span><span lang="en">Network</span><span lang="fr">Réseau</span></span><div class="switch" role="group" aria-label="Network" data-aria-fr="Réseau" id="try-net"></div></div>
+            <div><button type="button" class="act" id="try-again"><span lang="en">Damage again</span><span lang="fr">Dégrader à nouveau</span></button></div>
           </div>
           <div class="stage" id="try-stage">
             <div style="display:grid;gap:.75rem;min-width:0">
               <div class="compare" id="try-compare">
                 <canvas id="try-before" width="128" height="128" aria-hidden="true"></canvas>
                 <canvas id="try-after" class="after" width="128" height="128" aria-hidden="true"></canvas>
-                <i class="handle"></i><span class="lab l">Damaged</span><span class="lab r" id="try-lab">Restored</span>
-                <input type="range" min="0" max="100" value="50" id="try-range" aria-label="Comparison position">
+                <i class="handle"></i><span class="lab l"><span lang="en">Damaged</span><span lang="fr">Dégradé</span></span><span class="lab r" id="try-lab"><span lang="en">Restored</span><span lang="fr">Restauré</span></span>
+                <input type="range" min="0" max="100" value="50" id="try-range" aria-label="Comparison position" data-aria-fr="Position de la comparaison">
               </div>
               <dl class="readout" id="try-readout"></dl>
-              <p class="small" id="try-status" role="status">The network loads when you reach this section (about 14 MB, once).</p>
+              <p class="small" id="try-status" role="status"><span lang="en">The network loads when you reach this section (about 14 MB, once).</span><span lang="fr">Le réseau se charge quand vous arrivez à cette section (environ 14 Mo, une seule fois).</span></p>
             </div>
             <div style="display:grid;gap:.75rem;min-width:0;align-content:start">
               <div class="maps">
-                <figure class="map"><canvas id="try-clean" width="128" height="128"></canvas><figcaption><b>Your image</b> (the truth)</figcaption></figure>
-                <figure class="map"><canvas id="try-err" width="128" height="128"></canvas><figcaption><b>|Error|</b> of the restoration</figcaption></figure>
-                <figure class="map" id="try-fhw"><canvas id="try-hw" width="128" height="128"></canvas><figcaption><b>Stated 90 % half-width</b></figcaption></figure>
-                <figure class="map" id="try-fmiss"><canvas id="try-miss" width="128" height="128"></canvas><figcaption><b>Misses</b>: truth outside the interval</figcaption></figure>
+                <figure class="map"><canvas id="try-clean" width="128" height="128"></canvas><figcaption lang="en"><b>Your image</b> (the truth)</figcaption><figcaption lang="fr"><b>Votre image</b> (la vérité)</figcaption></figure>
+                <figure class="map"><canvas id="try-err" width="128" height="128"></canvas><figcaption lang="en"><b>|Error|</b> of the restoration</figcaption><figcaption lang="fr"><b>|Erreur|</b> de la restauration</figcaption></figure>
+                <figure class="map" id="try-fhw"><canvas id="try-hw" width="128" height="128"></canvas><figcaption lang="en"><b>Stated 90 % half-width</b></figcaption><figcaption lang="fr"><b>Demi-largeur annoncée à 90 %</b></figcaption></figure>
+                <figure class="map" id="try-fmiss"><canvas id="try-miss" width="128" height="128"></canvas><figcaption lang="en"><b>Misses</b>: truth outside the interval</figcaption><figcaption lang="fr"><b>Manqués</b> : vérité hors de l'intervalle</figcaption></figure>
               </div>
-              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num">≥ 0.15</span><span>of the intensity range</span></div>
+              <div class="legend"><span class="num">0</span><i style="background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"></i><span class="num"><span lang="en">≥ 0.15</span><span lang="fr">≥ 0,15</span></span><span><span lang="en">of the intensity range</span><span lang="fr">de la plage d'intensité</span></span></div>
             </div>
           </div>
         </div>
       </section>
 
       <section id="accuracy" aria-labelledby="h-accuracy">
-        <p class="clause">Accuracy</p>
-        <h2 id="h-accuracy">How close each restoration is to the truth</h2>
-        <div class="prose"><p>Peak signal-to-noise ratio (PSNR, dB; higher is better) on the held-out test patients. The first row of each task is the strongest classical method from the previous milestone; under each learned method is its paired difference to that reference.</p></div>
-        <div class="switch" role="group" aria-label="Dataset" id="acc-switch"></div>
+        <p class="clause"><span lang="en">Accuracy</span><span lang="fr">Exactitude</span></p>
+        <h2 id="h-accuracy"><span lang="en">How close each restoration is to the truth</span><span lang="fr">À quel point chaque restauration est proche de la vérité</span></h2>
+        <div class="prose" lang="en"><p>Peak signal-to-noise ratio (PSNR, dB; higher is better) on the held-out test patients. The first row of each task is the strongest classical method from the previous milestone; under each learned method is its paired difference to that reference.</p></div>
+        <div class="prose" lang="fr"><p>Rapport signal sur bruit de crête (PSNR, en dB ; plus c'est haut, mieux c'est) sur les patients de test mis de côté. La première valeur de chaque tâche est la meilleure méthode classique de l'étape précédente ; sous chaque méthode apprise figure sa différence appariée avec cette référence.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" data-aria-fr="Jeu de données" id="acc-switch"></div>
         <div id="acc-table"></div>
       </section>
 
       <section id="lesions" aria-labelledby="h-lesions">
-        <p class="clause">Lesions</p>
-        <h2 id="h-lesions">Does a method erase real lesions or invent new ones?</h2>
-        <div class="prose"><p>Each test phantom with lesions is paired with an exact lesion-free copy. Both get identical damage and both are restored. A lesion counts as erased when less than half of its contrast survives. Invented blobs are lesion-like spots in the restored lesion-free copy. The last two columns ask whether the method's own uncertainty notices: how often its 90 % interval covers the true lesion, and whether it is less confident on the lesions it erased than on those it kept (0.5 = no better than chance; below 0.5 = more confident where it erased).</p></div>
-        <div class="switch" role="group" aria-label="Degradation" id="les-switch"></div>
+        <p class="clause"><span lang="en">Lesions</span><span lang="fr">Lésions</span></p>
+        <h2 id="h-lesions"><span lang="en">Does a method erase real lesions or invent new ones?</span><span lang="fr">Une méthode efface-t-elle de vraies lésions ou en invente-t-elle ?</span></h2>
+        <div class="prose" lang="en"><p>Each test phantom with lesions is paired with an exact lesion-free copy. Both get identical damage and both are restored. A lesion counts as erased when less than half of its contrast survives. Invented blobs are lesion-like spots in the restored lesion-free copy. The last two columns ask whether the method's own uncertainty notices: how often its 90 % interval covers the true lesion, and whether it is less confident on the lesions it erased than on those it kept (0.5 = no better than chance; below 0.5 = more confident where it erased).</p></div>
+        <div class="prose" lang="fr"><p>Chaque fantôme de test avec lésions est apparié à une copie exacte sans lésion. Les deux subissent la même dégradation et sont restaurés. Une lésion est comptée comme effacée quand moins de la moitié de son contraste subsiste. Les taches inventées sont des points ressemblant à des lésions dans la copie sans lésion restaurée. Les deux dernières colonnes demandent si l'incertitude de la méthode s'en aperçoit : à quelle fréquence son intervalle à 90 % couvre la vraie lésion, et si elle est moins sûre d'elle sur les lésions effacées que sur celles conservées (0,5 = pas mieux que le hasard ; sous 0,5 = plus sûre d'elle là où elle a effacé).</p></div>
+        <div class="switch" role="group" aria-label="Degradation" data-aria-fr="Dégradation" id="les-switch"></div>
         <div id="les-table"></div>
       </section>
 
       <section id="tumours" aria-labelledby="h-tumours">
-        <p class="clause">Real tumours</p>
-        <h2 id="h-tumours">Does a tumour survive restoration?</h2>
-        <div class="prose"><p>Real scans have no tumour-free twin, so here the MSD tumour outlines are used instead, on every test slice that shows tumour. Contrast kept compares how much the restored tumour stands out from the brain just around it with how much it does in the truth: 100 % is preserved, lower means flattened towards normal tissue. The error ratio is the error inside the tumour divided by the error in the rest of the brain: above 1, the method does worse exactly where the pathology is. The last three columns ask whether the stated uncertainty notices.</p></div>
-        <div class="switch" role="group" aria-label="Degradation" id="tum-switch"></div>
-        <div class="switch" role="group" aria-label="Tumour size" id="tum-size"></div>
+        <p class="clause"><span lang="en">Real tumours</span><span lang="fr">Tumeurs réelles</span></p>
+        <h2 id="h-tumours"><span lang="en">Does a tumour survive restoration?</span><span lang="fr">Une tumeur survit-elle à la restauration ?</span></h2>
+        <div class="prose" lang="en"><p>Real scans have no tumour-free twin, so here the MSD tumour outlines are used instead, on every test slice that shows tumour. Contrast kept compares how much the restored tumour stands out from the brain just around it with how much it does in the truth: 100 % is preserved, lower means flattened towards normal tissue. The error ratio is the error inside the tumour divided by the error in the rest of the brain: above 1, the method does worse exactly where the pathology is. The last three columns ask whether the stated uncertainty notices.</p></div>
+        <div class="prose" lang="fr"><p>Un vrai examen n'a pas de jumeau sans tumeur ; on utilise donc ici les contours de tumeur de MSD, sur chaque coupe de test qui montre une tumeur. Le contraste conservé compare à quel point la tumeur restaurée se détache du cerveau qui l'entoure avec ce qu'il en est dans la vérité : 100 % signifie préservé, moins signifie aplati vers le tissu normal. Le rapport d'erreur est l'erreur dans la tumeur divisée par l'erreur dans le reste du cerveau : au-dessus de 1, la méthode fait moins bien précisément là où se trouve la pathologie. Les trois dernières colonnes demandent si l'incertitude annoncée s'en aperçoit.</p></div>
+        <div class="switch" role="group" aria-label="Degradation" data-aria-fr="Dégradation" id="tum-switch"></div>
+        <div class="switch" role="group" aria-label="Tumour size" data-aria-fr="Taille de la tumeur" id="tum-size"></div>
         <div id="tum-table"></div>
       </section>
 
       <section id="calibration" aria-labelledby="h-cal">
-        <p class="clause">Stated vs measured</p>
-        <h2 id="h-cal">Does a 90 % interval cover 90 % of pixels?</h2>
-        <div class="prose"><p>Each method with an uncertainty estimate states a 90 % interval for every pixel. The mark shows the fraction of brain pixels where the true value actually fell inside it, before any conformal correction. Within the shaded band (<span class="num" id="band-text">87–93 %</span>) the claim holds; to the left the method is overconfident, to the right it is conservative.</p></div>
-        <div class="switch" role="group" aria-label="Dataset" id="cal-switch"></div>
+        <p class="clause"><span lang="en">Stated vs measured</span><span lang="fr">Annoncé et mesuré</span></p>
+        <h2 id="h-cal"><span lang="en">Does a 90 % interval cover 90 % of pixels?</span><span lang="fr">Un intervalle à 90 % couvre-t-il 90 % des pixels ?</span></h2>
+        <div class="prose" lang="en"><p>Each method with an uncertainty estimate states a 90 % interval for every pixel. The mark shows the fraction of brain pixels where the true value actually fell inside it, before any conformal correction. Within the shaded band (<span class="num band-text">87–93 %</span>) the claim holds; to the left the method is overconfident, to the right it is conservative.</p></div>
+        <div class="prose" lang="fr"><p>Chaque méthode qui estime son incertitude annonce un intervalle à 90 % pour chaque pixel. Le repère indique la part des pixels du cerveau où la vraie valeur est effectivement tombée dedans, avant toute correction conforme. Dans la bande grisée (<span class="num band-text">87–93 %</span>), l'annonce tient ; à gauche, la méthode est trop sûre d'elle, à droite, elle est prudente.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" data-aria-fr="Jeu de données" id="cal-switch"></div>
         <div class="scales" id="cal-scales"></div>
       </section>
 
       <section id="conformal" aria-labelledby="h-conformal">
-        <p class="clause">Calibrated</p>
-        <h2 id="h-conformal">Can the intervals be repaired?</h2>
-        <div class="prose"><p>Conformal risk control rescales each method's intervals on held-out calibration patients so that, on average, at most 10 % of pixels fall outside. Networks without an uncertainty estimate get a constant-width band around their output. The calibrated scale is then applied, unchanged, to the test patients and to the IXI hospitals. Width is the mean interval width in intensity units: for the same coverage, narrower is better.</p></div>
-        <div class="switch" role="group" aria-label="Dataset" id="conf-switch"></div>
-        <div class="switch" role="group" aria-label="Degradation" id="conf-task"></div>
+        <p class="clause"><span lang="en">Calibrated</span><span lang="fr">Après calibration</span></p>
+        <h2 id="h-conformal"><span lang="en">Can the intervals be repaired?</span><span lang="fr">Peut-on réparer les intervalles ?</span></h2>
+        <div class="prose" lang="en"><p>Conformal risk control rescales each method's intervals on held-out calibration patients so that, on average, at most 10 % of pixels fall outside. Networks without an uncertainty estimate get a constant-width band around their output. The calibrated scale is then applied, unchanged, to the test patients and to the IXI hospitals. Width is the mean interval width in intensity units: for the same coverage, narrower is better.</p></div>
+        <div class="prose" lang="fr"><p>Le contrôle conforme du risque remet à l'échelle les intervalles de chaque méthode sur des patients de calibration mis de côté, de sorte qu'en moyenne au plus 10 % des pixels tombent hors de l'intervalle. Les réseaux sans estimation d'incertitude reçoivent une bande de largeur constante autour de leur sortie. L'échelle calibrée est ensuite appliquée telle quelle aux patients de test et aux hôpitaux IXI. La largeur est la largeur moyenne de l'intervalle en unités d'intensité : à couverture égale, plus étroit est meilleur.</p></div>
+        <div class="switch" role="group" aria-label="Dataset" data-aria-fr="Jeu de données" id="conf-switch"></div>
+        <div class="switch" role="group" aria-label="Degradation" data-aria-fr="Dégradation" id="conf-task"></div>
         <div id="conf-table"></div>
       </section>
 
       <section id="shift" aria-labelledby="h-shift">
-        <p class="clause">Under shift</p>
-        <h2 id="h-shift">Trained at one site, tested at three others</h2>
-        <div class="prose"><p>Models trained and tuned on MSD BrainTumour scans are tested, untouched, on IXI scans from three London hospitals. Raw PSNR is not comparable across datasets, because even the degraded input scores differently, so this compares each method's gain over its own input.</p></div>
+        <p class="clause"><span lang="en">Under shift</span><span lang="fr">Autres hôpitaux</span></p>
+        <h2 id="h-shift"><span lang="en">Trained at one site, tested at three others</span><span lang="fr">Entraîné sur un site, testé sur trois autres</span></h2>
+        <div class="prose" lang="en"><p>Models trained and tuned on MSD BrainTumour scans are tested, untouched, on IXI scans from three London hospitals. Raw PSNR is not comparable across datasets, because even the degraded input scores differently, so this compares each method's gain over its own input.</p></div>
+        <div class="prose" lang="fr"><p>Les modèles entraînés et réglés sur les examens MSD BrainTumour sont testés, sans retouche, sur des examens IXI de trois hôpitaux londoniens. Le PSNR brut n'est pas comparable d'un jeu de données à l'autre, car même l'entrée dégradée n'obtient pas le même score ; on compare donc le gain de chaque méthode par rapport à sa propre entrée.</p></div>
         <div id="shift-root"></div>
       </section>
 
       <section id="why-shift" aria-labelledby="h-why">
-        <p class="clause">Why it shifts</p>
-        <h2 id="h-why">Noise, skull or site?</h2>
-        <div class="prose"><p>Three suspects, each tested with the same trained models. Noise: IXI images carry their own acquisition noise, MSD images do not, so MSD test scans are given noise at IXI's level. Skull: IXI is not skull-stripped, so every method is also scored on the brain interior only. Site: IXI results per hospital, and how many patients of a new hospital it takes to recalibrate the intervals.</p></div>
+        <p class="clause"><span lang="en">Why it shifts</span><span lang="fr">Causes de l'écart</span></p>
+        <h2 id="h-why"><span lang="en">Noise, skull or site?</span><span lang="fr">Bruit, crâne ou site ?</span></h2>
+        <div class="prose" lang="en"><p>Three suspects, each tested with the same trained models. Noise: IXI images carry their own acquisition noise, MSD images do not, so MSD test scans are given noise at IXI's level. Skull: IXI is not skull-stripped, so every method is also scored on the brain interior only. Site: IXI results per hospital, and how many patients of a new hospital it takes to recalibrate the intervals.</p></div>
+        <div class="prose" lang="fr"><p>Trois suspects, chacun testé avec les mêmes modèles entraînés. Le bruit : les images IXI portent leur propre bruit d'acquisition, pas les images MSD ; on ajoute donc aux examens de test MSD un bruit au niveau d'IXI. Le crâne : IXI n'est pas débarrassé du crâne, donc chaque méthode est aussi évaluée sur l'intérieur du cerveau seulement. Le site : les résultats IXI par hôpital, et le nombre de patients d'un nouvel hôpital nécessaires pour recalibrer les intervalles.</p></div>
         <div id="why-root"></div>
       </section>
 
       <section id="method" aria-labelledby="h-method">
-        <p class="clause">Method</p>
-        <h2 id="h-method">Instruments and test conditions</h2>
-        <h3>Methods under test</h3>
-        <dl class="deflist">
+        <p class="clause"><span lang="en">Method</span><span lang="fr">Méthode</span></p>
+        <h2 id="h-method"><span lang="en">Instruments and test conditions</span><span lang="fr">Instruments et conditions d'essai</span></h2>
+        <h3><span lang="en">Methods under test</span><span lang="fr">Méthodes testées</span></h3>
+        <dl class="deflist" lang="en">
           <div><dt>Classical</dt><dd>Total variation, wavelet-L1, BM3D and biharmonic inpainting, each with its weight tuned on validation patients only.</dd></div>
           <div><dt>U-Net</dt><dd>One network per degradation type, all severities, conditioned on the noise level, acceleration or mask. L1 loss.</dd></div>
           <div><dt>MC-dropout</dt><dd>The same U-Net with dropout left on, 16 samples; spread of the samples as uncertainty.</dd></div>
@@ -404,48 +444,84 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
           <div><dt>Diffusion</dt><dd>Conditional diffusion model (SR3-style) sampled with 25 DDIM steps; eight samples per image give the mean and a per-pixel spread. "1 sample" is a single draw, what a user of a generative model would see. "+ DC" (MRI and inpainting): at every sampling step the predicted image is pulled halfway towards the measured data (k-space lines, known pixels); the strength was chosen on validation patients.</dd></div>
           <div><dt>GAN</dt><dd>pix2pix: U-Net generator and patch discriminator, L1 plus adversarial loss. No uncertainty.</dd></div>
         </dl>
-        <h3>Analyses</h3>
-        <dl class="deflist">
+        <dl class="deflist" lang="fr">
+          <div><dt>Classiques</dt><dd>Variation totale, ondelettes-L1, BM3D et inpainting biharmonique, chacun avec son poids réglé sur les seuls patients de validation.</dd></div>
+          <div><dt>U-Net</dt><dd>Un réseau par type de dégradation, toutes intensités confondues, conditionné par le niveau de bruit, l'accélération ou le masque. Perte L1.</dd></div>
+          <div><dt>MC-dropout</dt><dd>Le même U-Net avec le dropout laissé actif, 16 tirages ; la dispersion des tirages sert d'incertitude.</dd></div>
+          <div><dt>Hétéroscédastique</dt><dd>Moyenne du U-Net plus une tête de variance séparée, entraînée sur des caractéristiques figées (la construction fidèle de Stirn et al. 2023), de sorte que l'incertitude ne peut pas dégrader la moyenne.</dd></div>
+          <div><dt>Ensemble profond</dt><dd>Cinq réseaux hétéroscédastiques ; la variance totale est la variance moyenne plus la variance des moyennes.</dd></div>
+          <div><dt>Quantiles</dt><dd>U-Net qui prédit les quantiles à 5, 50 et 95 % avec la perte pinball ; la médiane donne l'image.</dd></div>
+          <div><dt>Déroulé</dt><dd>IRM seulement : cinq cascades d'un petit U-Net et d'une étape apprise de cohérence avec les données, qui conserve l'espace k mesuré.</dd></div>
+          <div><dt>Diffusion</dt><dd>Modèle de diffusion conditionnel (type SR3) échantillonné en 25 pas DDIM ; huit tirages par image donnent la moyenne et une dispersion par pixel. « 1 tirage » est un tirage unique, ce que verrait l'utilisateur d'un modèle génératif. « + CD » (IRM et inpainting) : à chaque pas d'échantillonnage, l'image prédite est ramenée à mi-chemin vers les données mesurées (lignes de l'espace k, pixels connus) ; la force a été choisie sur les patients de validation.</dd></div>
+          <div><dt>GAN</dt><dd>pix2pix : générateur U-Net et discriminateur par blocs, perte L1 plus perte adverse. Pas d'incertitude.</dd></div>
+        </dl>
+        <h3><span lang="en">Analyses</span><span lang="fr">Analyses</span></h3>
+        <dl class="deflist" lang="en">
           <div><dt>Lesion test</dt><dd>Phantoms only, where the truth is exact: each lesion phantom against its lesion-free copy under identical damage, for every method.</dd></div>
           <div><dt>Tumour test</dt><dd>MSD test patients, using the dataset's tumour outlines: contrast against a 5-pixel ring of surrounding brain, error and interval coverage inside the tumour against the rest of the brain, by tumour size.</dd></div>
           <div><dt>Conformal</dt><dd>Conformal risk control (Angelopoulos et al. 2024) and RCPS (Bates et al. 2021) on the calibration patients, target 10 % of pixels outside.</dd></div>
         </dl>
-        <h3>Degradations</h3>
-        <dl class="deflist">
+        <dl class="deflist" lang="fr">
+          <div><dt>Test des lésions</dt><dd>Fantômes seulement, là où la vérité est exacte : chaque fantôme avec lésions face à sa copie sans lésion sous une dégradation identique, pour chaque méthode.</dd></div>
+          <div><dt>Test des tumeurs</dt><dd>Patients de test MSD, avec les contours de tumeur du jeu de données : contraste par rapport à un anneau de 5 pixels de cerveau environnant, erreur et couverture des intervalles dans la tumeur par rapport au reste du cerveau, selon la taille de la tumeur.</dd></div>
+          <div><dt>Conforme</dt><dd>Contrôle conforme du risque (Angelopoulos et al. 2024) et RCPS (Bates et al. 2021) sur les patients de calibration, avec pour cible 10 % de pixels hors de l'intervalle.</dd></div>
+        </dl>
+        <h3><span lang="en">Degradations</span><span lang="fr">Dégradations</span></h3>
+        <dl class="deflist" lang="en">
           <div><dt>Denoising</dt><dd>Rician noise, σ = 0.03, 0.06, 0.10, 0.15 of the intensity range.</dd></div>
           <div><dt>Accelerated MRI</dt><dd>Simulated single-coil Cartesian k-space, keeping 1/2, 1/4 or 1/8 of the phase-encode lines (R = 2, 4, 8), plus measurement noise.</dd></div>
           <div><dt>Inpainting</dt><dd>Mixed masks of missing blocks and lines.</dd></div>
         </dl>
-        <h3>Specimens</h3>
-        <dl class="deflist" id="specimen-list">
+        <dl class="deflist" lang="fr">
+          <div><dt>Débruitage</dt><dd>Bruit ricien, σ = 0,03, 0,06, 0,10, 0,15 de la plage d'intensité.</dd></div>
+          <div><dt>IRM accélérée</dt><dd>Espace k cartésien simulé à une seule bobine, en gardant 1/2, 1/4 ou 1/8 des lignes de codage de phase (R = 2, 4, 8), plus un bruit de mesure.</dd></div>
+          <div><dt>Inpainting</dt><dd>Masques mixtes de blocs et de lignes manquants.</dd></div>
+        </dl>
+        <h3><span lang="en">Specimens</span><span lang="fr">Échantillons</span></h3>
+        <dl class="deflist" id="specimen-list" lang="en">
           <div><dt>Phantoms</dt><dd>600 synthetic brain phantoms (modified Shepp–Logan) with 0–4 lesions of known position and contrast. The only data with exact ground truth for erased or invented lesions.</dd></div>
           <div><dt>MSD Task01</dt><dd>484 BrainTumour patients, T2 channel, 8 axial slices each; split by patient 60 / 10 / 15 / 15 into train, validation, calibration and test. CC BY-SA 4.0 (Antonelli et al. 2022).</dd></div>
           <div><dt>IXI T2</dt><dd>120 healthy subjects, 40 from each of three hospitals; never used for training or tuning. CC BY-SA 3.0, IXI dataset, brain-development.org.</dd></div>
         </dl>
-        <h3>Rules that keep the comparison fair</h3>
-        <div class="prose"><p>Patients, not slices, are split, so no patient appears on both sides. Every method restores the same degraded test images. Weights and checkpoints are chosen on validation patients; test, calibration and IXI data are never used for training or selection. Confidence intervals resample patients, because slices of one patient are correlated.</p></div>
+        <dl class="deflist" lang="fr">
+          <div><dt>Fantômes</dt><dd>600 fantômes cérébraux synthétiques (Shepp–Logan modifié) avec 0 à 4 lésions de position et de contraste connus. Les seules données où la vérité terrain est exacte pour les lésions effacées ou inventées.</dd></div>
+          <div><dt>MSD Task01</dt><dd>484 patients BrainTumour, séquence T2, 8 coupes axiales chacun ; répartis par patient 60 / 10 / 15 / 15 en entraînement, validation, calibration et test. CC BY-SA 4.0 (Antonelli et al. 2022).</dd></div>
+          <div><dt>IXI T2</dt><dd>120 sujets sains, 40 dans chacun de trois hôpitaux ; jamais utilisés pour l'entraînement ni le réglage. CC BY-SA 3.0, jeu de données IXI, brain-development.org.</dd></div>
+        </dl>
+        <h3><span lang="en">Rules that keep the comparison fair</span><span lang="fr">Règles qui gardent la comparaison équitable</span></h3>
+        <div class="prose" lang="en"><p>Patients, not slices, are split, so no patient appears on both sides. Every method restores the same degraded test images. Weights and checkpoints are chosen on validation patients; test, calibration and IXI data are never used for training or selection. Confidence intervals resample patients, because slices of one patient are correlated.</p></div>
+        <div class="prose" lang="fr"><p>On répartit des patients, pas des coupes : aucun patient n'apparaît des deux côtés. Chaque méthode restaure les mêmes images de test dégradées. Les poids et les points de sauvegarde sont choisis sur les patients de validation ; les données de test, de calibration et IXI ne servent jamais à l'entraînement ni à la sélection. Les intervalles de confiance rééchantillonnent des patients, car les coupes d'un même patient sont corrélées.</p></div>
       </section>
 
       <section id="limits" aria-labelledby="h-limits">
-        <p class="clause">Limits and next</p>
-        <h2 id="h-limits">What this report does not show yet</h2>
-        <div class="prose">
+        <p class="clause"><span lang="en">Limits and next</span><span lang="fr">Limites et suite</span></p>
+        <h2 id="h-limits"><span lang="en">What this report does not show yet</span><span lang="fr">Ce que ce rapport ne montre pas encore</span></h2>
+        <div class="prose" lang="en">
           <p>The MRI acquisitions are simulated from magnitude images, single-coil, so they are cleaner than real scanner k-space. Results on fastMRI or raw multi-coil data may differ.</p>
           <p>The conformal guarantee is on average over pixels and patients. Individual images, and lesions in particular, can still be missed far more often, and the guarantee does not carry over to another hospital.</p>
           <p>The exact lesion test uses synthetic phantoms, because only there is the truth about every lesion known. The real-tumour test has no tumour-free twin, so it measures lost contrast, not invented structure, and MSD has few very small tumours (62 slices under 100 pixels). Whether methods invent lesions on real scans is not shown here.</p>
           <p>The GAN has no data-consistency step, which explains much of its weakness in MRI; the diffusion model is shown with and without one. Data consistency makes the diffusion draws agree with each other, so its stated uncertainty shrinks more than its error.</p>
           <p>This is research code. Nothing here is a clinical tool or has diagnostic value.</p>
         </div>
+        <div class="prose" lang="fr">
+          <p>Les acquisitions IRM sont simulées à partir d'images de magnitude, à une seule bobine : elles sont plus propres qu'un vrai espace k d'imageur. Les résultats sur fastMRI ou sur des données brutes multi-bobines peuvent différer.</p>
+          <p>La garantie conforme porte sur la moyenne des pixels et des patients. Des images particulières, et les lésions surtout, peuvent encore être manquées bien plus souvent, et la garantie ne se transpose pas à un autre hôpital.</p>
+          <p>Le test exact des lésions utilise des fantômes synthétiques, car c'est le seul cas où la vérité sur chaque lésion est connue. Le test des tumeurs réelles n'a pas de jumeau sans tumeur : il mesure le contraste perdu, pas les structures inventées, et MSD compte peu de très petites tumeurs (62 coupes sous 100 pixels). Ce rapport ne montre pas si les méthodes inventent des lésions sur de vrais examens.</p>
+          <p>Le GAN n'a pas d'étape de cohérence avec les données, ce qui explique une grande part de sa faiblesse en IRM ; le modèle de diffusion est montré avec et sans. La cohérence avec les données fait concorder les tirages de diffusion entre eux, si bien que son incertitude annoncée diminue plus que son erreur.</p>
+          <p>Ceci est du code de recherche. Rien ici n'est un outil clinique ni n'a de valeur diagnostique.</p>
+        </div>
       </section>
 
       <section id="reproduce" aria-labelledby="h-repro">
-        <p class="clause">Reproduce</p>
-        <h2 id="h-repro">Run it again</h2>
-        <div class="prose"><p>Data sources, sizes and checksums are in <code>DATA.md</code>. The full profile trains <span class="num" id="n-nets">96</span> networks; on a 6 GB laptop GPU this took about a day in total.</p></div>
+        <p class="clause"><span lang="en">Reproduce</span><span lang="fr">Reproduire</span></p>
+        <h2 id="h-repro"><span lang="en">Run it again</span><span lang="fr">Tout relancer</span></h2>
+        <div class="prose" lang="en"><p>Data sources, sizes and checksums are in <code>DATA.md</code>. The full profile trains <span class="num n-nets">96</span> networks; on a 6 GB laptop GPU this took about a day in total.</p></div>
+        <div class="prose" lang="fr"><p>Les sources des données, leurs tailles et sommes de contrôle sont dans <code>DATA.md</code>. Le profil complet entraîne <span class="num n-nets">96</span> réseaux ; sur le GPU de 6 Go d'un ordinateur portable, cela a pris environ une journée au total.</p></div>
         <pre><code>python -m experiments.pipeline data        # MSD + IXI slice sets from the public archives
 python -m experiments.pipeline reproduce   # tests, classical baselines, learned restorers, tables
 python -m experiments.m3_nets --config configs/m4_full_msd.yaml       # M4: diffusion, GAN
 python -m experiments.m5_hallucination --config configs/m5_full_phantom.yaml
+python -m experiments.m5_tumour --config configs/m5_tumour_msd.yaml
 python -m experiments.m6_conformal --config configs/m6_full_msd.yaml
 python -m experiments.m7_shift --config configs/m7_full.yaml
 python -m experiments.m3_demo --config configs/m3_full_msd.yaml
@@ -458,7 +534,7 @@ python -m experiments.site_data            # rebuilds this page's data</code></p
 
 <footer class="wrap">
   <div class="frame">
-    <span>Trustworthy Restoration · <a href="https://github.com/Lawl1et-1/trustworthy-restoration">source on GitHub</a></span>
+    <span><span lang="en">Trustworthy Restoration · <a href="https://github.com/Lawl1et-1/trustworthy-restoration">source on GitHub</a></span><span lang="fr">Restauration digne de confiance · <a href="https://github.com/Lawl1et-1/trustworthy-restoration">code source sur GitHub</a></span></span>
     <span id="foot-build" class="num"></span>
   </div>
 </footer>
@@ -466,14 +542,24 @@ python -m experiments.site_data            # rebuilds this page's data</code></p
 <script>
 (() => {
 "use strict";
-const METHOD = {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Heteroscedastic", ensemble:"Ensemble", quantile:"Quantile", unrolled:"Unrolled",
+const FR = document.documentElement.lang === "fr";  // set in <head> before first paint
+const tr = (en, fr) => FR ? fr : en;
+const dec = s => FR ? String(s).replace(/(\d)\.(\d)/g, "$1,$2") : String(s);  // French decimal comma
+const METHOD = FR ? {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Hétéroscédastique", ensemble:"Ensemble", quantile:"Quantiles", unrolled:"Déroulé",
+  diffusion:"Diffusion", diffusion_sample:"Diffusion, 1 tirage", diffusion_dc:"Diffusion + CD", diffusion_dc_sample:"Diffusion + CD, 1 tirage", gan:"GAN",
+  diffusion_dc_sample_const:"Tirage diffusion + CD + bande",
+  unet_const:"U-Net + bande", unrolled_const:"Déroulé + bande", gan_const:"GAN + bande", diffusion_sample_const:"Tirage diffusion + bande",
+  bm3d:"BM3D", tv:"TV", biharmonic:"Biharmonique", wavelet:"Ondelettes", noisy:"Entrée", zero_filled:"Entrée", masked:"Entrée", input:"Entrée"}
+ : {unet:"U-Net", mcdropout:"MC-dropout", hetero:"Heteroscedastic", ensemble:"Ensemble", quantile:"Quantile", unrolled:"Unrolled",
   diffusion:"Diffusion", diffusion_sample:"Diffusion, 1 sample", diffusion_dc:"Diffusion + DC", diffusion_dc_sample:"Diffusion + DC, 1 sample", gan:"GAN",
   diffusion_dc_sample_const:"Diffusion + DC sample + band",
   unet_const:"U-Net + band", unrolled_const:"Unrolled + band", gan_const:"GAN + band", diffusion_sample_const:"Diffusion sample + band",
   bm3d:"BM3D", tv:"TV", biharmonic:"Biharmonic", wavelet:"Wavelet", noisy:"Input", zero_filled:"Input", masked:"Input", input:"Input"};
-const TASK = {"denoise_s0.03":"Denoising σ 0.03","denoise_s0.06":"Denoising σ 0.06","denoise_s0.10":"Denoising σ 0.10","denoise_s0.15":"Denoising σ 0.15",
+const TASK = FR ? {"denoise_s0.03":"Débruitage σ 0,03","denoise_s0.06":"Débruitage σ 0,06","denoise_s0.10":"Débruitage σ 0,10","denoise_s0.15":"Débruitage σ 0,15",
+  mri_R2:"IRM, R = 2", mri_R4:"IRM, R = 4", mri_R8:"IRM, R = 8", inpaint_mixed:"Inpainting"}
+ : {"denoise_s0.03":"Denoising σ 0.03","denoise_s0.06":"Denoising σ 0.06","denoise_s0.10":"Denoising σ 0.10","denoise_s0.15":"Denoising σ 0.15",
   mri_R2:"MRI, R = 2", mri_R4:"MRI, R = 4", mri_R8:"MRI, R = 8", inpaint_mixed:"Inpainting"};
-const DSNAME = {phantom:"Phantoms", msd:"MSD BrainTumour", ixi:"IXI (other sites)"};
+const DSNAME = FR ? {phantom:"Fantômes", msd:"MSD BrainTumour", ixi:"IXI (autres sites)"} : {phantom:"Phantoms", msd:"MSD BrainTumour", ixi:"IXI (other sites)"};
 const LEARNED = ["unet","mcdropout","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","diffusion_dc","diffusion_dc_sample","gan"];
 const UNCERT = ["mcdropout","hetero","ensemble","quantile","diffusion","diffusion_dc"];
 const TASKORDER = Object.keys(TASK);
@@ -482,10 +568,11 @@ const el = (tag, attrs={}, ...kids) => { const e = document.createElement(tag);
   for (const [k,v] of Object.entries(attrs)) { if (k === "class") e.className = v; else if (k === "html") e.innerHTML = v; else if (v !== null && v !== undefined) e.setAttribute(k, v); }
   for (const k of kids.flat()) if (k !== null && k !== undefined) e.append(k.nodeType ? k : document.createTextNode(k));
   return e; };
-const f1 = v => (v == null || isNaN(v)) ? "–" : v.toFixed(1);
-const f2 = v => (v == null || isNaN(v)) ? "–" : v.toFixed(2);
-const sgn = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(2);
-const pct = v => (v*100).toFixed(1) + " %";
+const f1 = v => (v == null || isNaN(v)) ? "–" : dec(v.toFixed(1));
+const f2 = v => (v == null || isNaN(v)) ? "–" : dec(v.toFixed(2));
+const f3 = v => (v == null || isNaN(v)) ? "–" : dec(v.toFixed(3));
+const sgn = v => (v > 0 ? "+" : v < 0 ? "−" : "±") + dec(Math.abs(v).toFixed(2));
+const pct = v => dec((v*100).toFixed(1)) + " %";
 const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch(e){} } };
 
 /* guilloche: the certificate's security line, drawn once */
@@ -504,22 +591,24 @@ function guilloche(){
 
 function switcher(root, options, current, onPick){
   root.replaceChildren(...options.map(o => { const b = el("button", {type:"button", "aria-pressed": String(o.id === current)}, o.label);
-    if (o.disabled) { b.disabled = true; b.title = "Results pending"; }
+    if (o.disabled) { b.disabled = true; b.title = tr("Results pending", "Résultats en attente"); }
     b.addEventListener("click", () => { root.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(x === b))); onPick(o.id); });
     return b; }));
 }
 
-const phantomCaveat = () => el("p",{class:"small", style:"max-width:72ch;margin:0"}, "Caveat for the phantom heteroscedastic and ensemble rows: their loss was chosen in a pilot on phantom denoising that also printed phantom test numbers. The choice followed validation PSNR, but the phantom test set was seen. MSD results are not affected.");
-function verdict(cov, band){ if (cov < band.lo) return ["fail","Overconfident"]; if (cov > band.hi) return ["warn","Conservative"]; return ["hold","Holds"]; }
+const phantomCaveat = () => el("p",{class:"small", style:"max-width:72ch;margin:0"}, tr("Caveat for the phantom heteroscedastic and ensemble rows: their loss was chosen in a pilot on phantom denoising that also printed phantom test numbers. The choice followed validation PSNR, but the phantom test set was seen. MSD results are not affected.",
+  "Réserve pour les lignes hétéroscédastique et ensemble sur fantômes : leur perte a été choisie lors d'un essai pilote de débruitage de fantômes qui affichait aussi des scores de test sur fantômes. Le choix a suivi le PSNR de validation, mais le jeu de test des fantômes a été vu. Les résultats MSD ne sont pas concernés."));
+function verdict(cov, band){ if (cov < band.lo) return ["fail",tr("Overconfident","Trop sûr")]; if (cov > band.hi) return ["warn",tr("Conservative","Prudent")]; return ["hold",tr("Holds","Tient")]; }
+const pending = (en, fr) => el("p",{class:"pending"}, tr(en, fr));
 
 /* ---------- accuracy ---------- */
 function accuracy(data, ds){
   const root = $("#acc-table"); const d = data.datasets[ds];
-  if (!d || d.status !== "done") { root.replaceChildren(el("p",{class:"pending"},"Results for "+DSNAME[ds]+" are still being computed.")); return; }
+  if (!d || d.status !== "done") { root.replaceChildren(pending("Results for "+DSNAME[ds]+" are still being computed.", "Les résultats pour "+DSNAME[ds]+" sont encore en calcul.")); return; }
   const rows = d.comparison.filter(r => r.split === "test");
   const tasks = TASKORDER.filter(t => rows.some(r => r.task === t));
   const methods = LEARNED.filter(m => rows.some(r => r.method === m));
-  const thead = el("tr", {}, el("th",{scope:"col"},"Task"), el("th",{scope:"col"},"Input"), el("th",{scope:"col"},"Best classical"), methods.map(m => el("th",{scope:"col"},METHOD[m])));
+  const thead = el("tr", {}, el("th",{scope:"col"},tr("Task","Tâche")), el("th",{scope:"col"},tr("Input","Entrée")), el("th",{scope:"col"},tr("Best classical","Meilleure classique")), methods.map(m => el("th",{scope:"col"},METHOD[m])));
   const body = tasks.map(t => {
     const tr = rows.filter(r => r.task === t); const ref = tr.find(r => r.method.endsWith("(M2)"));
     const vals = [ref, ...methods.map(m => tr.find(r => r.method === m))].filter(Boolean).map(r => r.psnr);
@@ -534,13 +623,14 @@ function accuracy(data, ds){
   const n = d.n_patients && d.n_patients.test;
   root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"acc-cap"}, el("thead",{},thead), el("tbody",{},body))),
     ...(ds === "phantom" ? [phantomCaveat()] : []),
-    el("p",{class:"small", id:"acc-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `${DSNAME[ds]} test set, ${n} patients. Dot: best in the row. Below each learned method: paired difference to the best classical method in dB, with its 95 % interval; green where the whole interval is above zero, red where it is below.`));
+    el("p",{class:"small", id:"acc-cap", style:"margin:.5rem 0 0;max-width:72ch"}, tr(`${DSNAME[ds]} test set, ${n} patients. Dot: best in the row. Below each learned method: paired difference to the best classical method in dB, with its 95 % interval; green where the whole interval is above zero, red where it is below.`,
+      `Jeu de test ${DSNAME[ds]}, ${n} patients. Point : meilleur de la ligne. Sous chaque méthode apprise : différence appariée avec la meilleure méthode classique en dB, avec son intervalle à 95 % ; en vert quand tout l'intervalle est au-dessus de zéro, en rouge quand il est en dessous.`)));
 }
 
 /* ---------- calibration scales ---------- */
 function calibration(data, ds){
   const root = $("#cal-scales"); const d = data.datasets[ds]; const band = data.verdict_band;
-  if (!d || d.status !== "done") { root.replaceChildren(el("p",{class:"pending"},"Results for "+DSNAME[ds]+" are still being computed.")); return; }
+  if (!d || d.status !== "done") { root.replaceChildren(pending("Results for "+DSNAME[ds]+" are still being computed.", "Les résultats pour "+DSNAME[ds]+" sont encore en calcul.")); return; }
   // piecewise axis, marked with a break: 0-80 % takes the left 35 %, 80-100 % the rest, so the band around 90 % is readable
   const P = v => { v = Math.min(1, Math.max(0, v)); return v <= .8 ? v / .8 * 35 : 35 + (v - .8) / .2 * 65; };
   const X = v => P(v) + "%"; const lo = 0;
@@ -554,7 +644,7 @@ function calibration(data, ds){
       UNCERT.map(m => rs.find(r => r.method === m)).filter(Boolean).map(r => {
         const [cls, word] = verdict(r.cov90, band);
         return el("div",{class:"scale-row"}, el("span",{class:"m"}, METHOD[r.method]),
-          el("div",{class:"track", role:"img", "aria-label": `${METHOD[r.method]}: measured coverage ${pct(r.cov90)} against nominal 90 %`},
+          el("div",{class:"track", role:"img", "aria-label": tr(`${METHOD[r.method]}: measured coverage ${pct(r.cov90)} against nominal 90 %`, `${METHOD[r.method]} : couverture mesurée ${pct(r.cov90)} pour 90 % annoncés`)},
             el("i",{class:"base"}), el("i",{class:"brk", style:"left:35%"}), el("i",{class:"band", style:`left:${X(band.lo)};width:calc(${X(band.hi)} - ${X(band.lo)})`}),
             el("i",{class:"nominal", style:`left:${X(.9)}`}),
             el("i",{class:"mark "+cls, style:`left:${X(r.cov90)};color:var(--${cls})`}),
@@ -569,15 +659,15 @@ function calibration(data, ds){
 /* ---------- shift ---------- */
 function shift(data){
   const root = $("#shift-root"); const d = data.datasets.msd;
-  if (!d || d.status !== "done" || !d.shift) { root.replaceChildren(el("p",{class:"pending"},"The MSD → IXI comparison appears here when the MSD run has finished.")); return; }
+  if (!d || d.status !== "done" || !d.shift) { root.replaceChildren(pending("The MSD → IXI comparison appears here when the MSD run has finished.", "La comparaison MSD → IXI apparaîtra ici une fois le calcul MSD terminé.")); return; }
   const tasks = TASKORDER.filter(t => d.shift.some(r => r.task === t));
   const mx = Math.max(...d.shift.map(r => Math.max(r.gain_db_test, r.gain_db_ood, 0)));
   const W = v => Math.max(0, v) / mx * 100 + "%";
-  root.replaceChildren(el("div",{class:"key"}, el("span",{}, el("i",{style:"background:var(--ink)"}), "MSD test (same site as training)"), el("span",{}, el("i",{style:"background:var(--fail)"}), "IXI (other hospitals)")),
+  root.replaceChildren(el("div",{class:"key"}, el("span",{}, el("i",{style:"background:var(--ink)"}), tr("MSD test (same site as training)", "Test MSD (même site que l'entraînement)")), el("span",{}, el("i",{style:"background:var(--fail)"}), tr("IXI (other hospitals)", "IXI (autres hôpitaux)"))),
     ...tasks.map(t => el("div",{}, el("h3",{}, TASK[t]), el("div",{class:"shift"},
       d.shift.filter(r => r.task === t).sort((a,b) => b.gain_db_test - a.gain_db_test).map(r => el("div",{class:"shift-row"},
-        el("span",{class:"m"}, METHOD[r.method.replace(" (M2)","")] + (r.method.endsWith("(M2)") ? " (classical)" : "")),
-        el("div",{class:"bars", role:"img", "aria-label": `${r.method}: gain ${f2(r.gain_db_test)} dB in distribution, ${f2(r.gain_db_ood)} dB on IXI`},
+        el("span",{class:"m"}, METHOD[r.method.replace(" (M2)","")] + (r.method.endsWith("(M2)") ? tr(" (classical)", " (classique)") : "")),
+        el("div",{class:"bars", role:"img", "aria-label": tr(`${r.method}: gain ${f2(r.gain_db_test)} dB in distribution, ${f2(r.gain_db_ood)} dB on IXI`, `${r.method} : gain de ${f2(r.gain_db_test)} dB sur la distribution d'entraînement, ${f2(r.gain_db_ood)} dB sur IXI`)},
           el("div",{class:"bar", style:`width:${W(r.gain_db_test)}`}, el("span",{}, sgn(r.gain_db_test)+" dB")),
           el("div",{class:"bar ood", style:`width:${W(r.gain_db_ood)}`}, el("span",{}, sgn(r.gain_db_ood)+" dB")))))))));
 }
@@ -587,31 +677,35 @@ const LES_TASKS = ["denoise_s0.06","denoise_s0.10","mri_R2","mri_R4","inpaint_mi
 const LES_METHODS = ["bm3d","tv","biharmonic","unet","hetero","ensemble","quantile","unrolled","diffusion","diffusion_sample","diffusion_dc","diffusion_dc_sample","gan","input"];
 function lesions(data, task){
   const root = $("#les-table"); const d = data.datasets.phantom;
-  if (!d || !d.lesions) { root.replaceChildren(el("p",{class:"pending"},"The lesion test appears here when its run has finished.")); return; }
+  if (!d || !d.lesions) { root.replaceChildren(pending("The lesion test appears here when its run has finished.", "Le test des lésions apparaîtra ici une fois son calcul terminé.")); return; }
   const rows = LES_METHODS.map(m => d.lesions.find(r => r.task === task && r.method === m)).filter(Boolean);
   const learned = rows.filter(r => !["input"].includes(r.method));
   const minE = Math.min(...learned.map(r => r.erased_frac));
-  const head = el("tr",{}, ["Method","Erased","Contrast kept","Invented / image","Covers lesion","Flags erasures"].map((h,i) => el("th",{scope:"col"}, h)));
+  const head = el("tr",{}, (FR ? ["Méthode","Effacées","Contraste conservé","Inventées / image","Couvre la lésion","Signale l'effacement"]
+    : ["Method","Erased","Contrast kept","Invented / image","Covers lesion","Flags erasures"]).map(h => el("th",{scope:"col"}, h)));
   const body = rows.map(r => el("tr",{}, el("th",{scope:"row"}, METHOD[r.method] || r.method),
     el("td",{class: r.erased_frac === minE ? "best" : null}, pct(r.erased_frac)),
     el("td",{}, pct(r.recovery)), el("td",{}, f2(r.fab_absent)),
     el("td",{}, r.core_cov90 == null ? "–" : pct(r.core_cov90)),
     el("td",{class: r.erased_flag_auroc == null ? null : (r.erased_flag_auroc < .5 ? "neg" : "")}, r.erased_flag_auroc == null ? "–" : f2(r.erased_flag_auroc))));
   root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"les-cap"}, el("thead",{},head), el("tbody",{},body))),
-    el("p",{class:"small", id:"les-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `Phantom test set, ${d.n_lesions} lesions in ${d.n_lesion_images} phantoms, 3 damage draws each. Dot: fewest erased lesions. "Input" is the damaged image itself. The blob counter also fires on leftover noise, so compare blob counts within one degradation, not across. Erased: lesions with less than half their contrast left. Invented: lesion-like blobs per lesion-free image. Covers lesion: share of lesion pixels inside the 90 % interval. Flags erasures: area under the ROC curve of the method's stated spread at the lesion, erased against kept lesions.`));
+    el("p",{class:"small", id:"les-cap", style:"margin:.5rem 0 0;max-width:72ch"}, tr(`Phantom test set, ${d.n_lesions} lesions in ${d.n_lesion_images} phantoms, 3 damage draws each. Dot: fewest erased lesions. "Input" is the damaged image itself. The blob counter also fires on leftover noise, so compare blob counts within one degradation, not across. Erased: lesions with less than half their contrast left. Invented: lesion-like blobs per lesion-free image. Covers lesion: share of lesion pixels inside the 90 % interval. Flags erasures: area under the ROC curve of the method's stated spread at the lesion, erased against kept lesions.`,
+      `Jeu de test des fantômes, ${d.n_lesions} lésions dans ${d.n_lesion_images} fantômes, 3 tirages de dégradation chacun. Point : le moins de lésions effacées. « Entrée » est l'image dégradée elle-même. Le compteur de taches réagit aussi au bruit résiduel : comparez les nombres de taches au sein d'une même dégradation, pas d'une dégradation à l'autre. Effacées : lésions dont il reste moins de la moitié du contraste. Inventées : taches ressemblant à des lésions par image sans lésion. Couvre la lésion : part des pixels de la lésion dans l'intervalle à 90 %. Signale l'effacement : aire sous la courbe ROC de la dispersion annoncée par la méthode sur la lésion, lésions effacées contre lésions conservées.`)));
 }
 
 /* ---------- real tumours (M5b) ---------- */
 const TUM_TASKS = ["denoise_s0.10","mri_R4","inpaint_mixed"];
-const TUM_SIZES = {all:"All sizes", small:"Small (< 100 px)", medium:"Medium", large:"Large (> 600 px)"};
+const TUM_SIZES = FR ? {all:"Toutes tailles", small:"Petites (< 100 px)", medium:"Moyennes", large:"Grandes (> 600 px)"}
+  : {all:"All sizes", small:"Small (< 100 px)", medium:"Medium", large:"Large (> 600 px)"};
 function tumours(data, task, size){
   const root = $("#tum-table"); const d = data.datasets.msd;
-  if (!d || !d.tumours) { root.replaceChildren(el("p",{class:"pending"},"The real-tumour test is running; its results appear here when it finishes.")); return; }
+  if (!d || !d.tumours) { root.replaceChildren(pending("The real-tumour test is running; its results appear here when it finishes.", "Le test des tumeurs réelles est en cours ; ses résultats apparaîtront ici à la fin.")); return; }
   const rows = LES_METHODS.map(m => d.tumours.find(r => r.task === task && r.size === size && r.method === m)).filter(Boolean);
-  if (!rows.length) { root.replaceChildren(el("p",{class:"pending"},"No slices in this group.")); return; }
+  if (!rows.length) { root.replaceChildren(pending("No slices in this group.", "Aucune coupe dans ce groupe.")); return; }
   const learned = rows.filter(r => r.method !== "input" && r.contrast_kept != null);
   const bestC = learned.reduce((a, r) => Math.abs(1 - r.contrast_kept) < Math.abs(1 - a) ? r.contrast_kept : a, Infinity);
-  const head = el("tr",{}, ["Method","Contrast kept","Error ratio","Covers tumour","Covers rest","Spread ratio"].map(h => el("th",{scope:"col"}, h)));
+  const head = el("tr",{}, (FR ? ["Méthode","Contraste conservé","Rapport d'erreur","Couvre la tumeur","Couvre le reste","Rapport de dispersion"]
+    : ["Method","Contrast kept","Error ratio","Covers tumour","Covers rest","Spread ratio"]).map(h => el("th",{scope:"col"}, h)));
   const body = rows.map(r => el("tr",{}, el("th",{scope:"row"}, METHOD[r.method] || r.method),
     el("td",{class: r.method !== "input" && r.contrast_kept === bestC ? "best" : null}, r.contrast_kept == null ? "–" : pct(r.contrast_kept)),
     el("td",{class: r.err_ratio > 1 ? "neg" : null}, f2(r.err_ratio)),
@@ -619,7 +713,8 @@ function tumours(data, task, size){
     el("td",{}, r.spread_ratio == null ? "–" : f2(r.spread_ratio))));
   const n = rows[0];
   root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"tum-cap"}, el("thead",{},head), el("tbody",{},body))),
-    el("p",{class:"small", id:"tum-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `MSD test patients, ${TASK[task]}, ${TUM_SIZES[size].toLowerCase()}: ${n.n_slices} slices from ${n.n_patients} patients, one damage draw, every model seed. Dot: contrast closest to the truth. "Input" is the damaged image itself. Error ratio: RMSE inside the tumour over RMSE in the rest of the brain, red above 1. Covers: share of pixels inside the stated 90 % interval. Spread ratio: mean stated spread in the tumour over the rest of the brain; above 1, the method is less sure about the tumour.`));
+    el("p",{class:"small", id:"tum-cap", style:"margin:.5rem 0 0;max-width:72ch"}, tr(`MSD test patients, ${TASK[task]}, ${TUM_SIZES[size].toLowerCase()}: ${n.n_slices} slices from ${n.n_patients} patients, one damage draw, every model seed. Dot: contrast closest to the truth. "Input" is the damaged image itself. Error ratio: RMSE inside the tumour over RMSE in the rest of the brain, red above 1. Covers: share of pixels inside the stated 90 % interval. Spread ratio: mean stated spread in the tumour over the rest of the brain; above 1, the method is less sure about the tumour.`,
+      `Patients de test MSD, ${TASK[task]}, ${{all:"tumeurs de toutes tailles", small:"petites tumeurs (< 100 px)", medium:"tumeurs moyennes", large:"grandes tumeurs (> 600 px)"}[size]} :${n.n_slices} coupes de ${n.n_patients} patients, un tirage de dégradation, toutes les graines de modèle. Point : contraste le plus proche de la vérité. « Entrée » est l'image dégradée elle-même. Rapport d'erreur : RMSE dans la tumeur sur RMSE dans le reste du cerveau, en rouge au-dessus de 1. Couvre : part des pixels dans l'intervalle annoncé à 90 %. Rapport de dispersion : dispersion annoncée moyenne dans la tumeur sur celle du reste du cerveau ; au-dessus de 1, la méthode est moins sûre d'elle sur la tumeur.`)));
 }
 
 /* ---------- conformal (M6) ---------- */
@@ -627,56 +722,62 @@ const CONF_TASKS = ["denoise_s0.10","mri_R4","inpaint_mixed"];
 const CONF_METHODS = ["mcdropout","hetero","ensemble","quantile","diffusion","diffusion_dc","unet_const","unrolled_const","gan_const","diffusion_sample_const","diffusion_dc_sample_const"];
 function conformal(data, ds, task){
   const root = $("#conf-table"); const d = data.datasets[ds]; const band = data.verdict_band;
-  if (!d || !d.conformal) { root.replaceChildren(el("p",{class:"pending"},"Calibration results for "+DSNAME[ds]+" appear here when the run has finished.")); return; }
+  if (!d || !d.conformal) { root.replaceChildren(pending("Calibration results for "+DSNAME[ds]+" appear here when the run has finished.", "Les résultats de calibration pour "+DSNAME[ds]+" apparaîtront ici à la fin du calcul.")); return; }
   const C = d.conformal.filter(r => r.task === task);
   const get = (m, split, rule) => C.find(r => r.method === m && r.split === split && r.rule === rule);
   const hasOod = C.some(r => r.split === "ood");
   const methods = CONF_METHODS.filter(m => get(m, "test", "crc"));
   const minW = Math.min(...methods.map(m => get(m,"test","crc").width));
   const covCell = r => { if (!r) return el("td",{},"–"); const [cls] = verdict(r.coverage, band); return el("td",{class: cls === "fail" ? "neg" : (cls === "hold" ? "pos" : "")}, pct(r.coverage)); };
-  const head = el("tr",{}, el("th",{scope:"col"},"Method"), el("th",{scope:"col"},"Raw coverage"), el("th",{scope:"col"},"Calibrated coverage"), el("th",{scope:"col"},"Width"),
-    hasOod ? el("th",{scope:"col"},"Calibrated, at IXI") : null);
+  const head = el("tr",{}, el("th",{scope:"col"},tr("Method","Méthode")), el("th",{scope:"col"},tr("Raw coverage","Couverture brute")), el("th",{scope:"col"},tr("Calibrated coverage","Couverture calibrée")), el("th",{scope:"col"},tr("Width","Largeur")),
+    hasOod ? el("th",{scope:"col"},tr("Calibrated, at IXI","Calibrée, à IXI")) : null);
   const body = methods.map(m => { const c = get(m,"test","crc");
     return el("tr",{}, el("th",{scope:"row"}, METHOD[m] || m), covCell(get(m,"test","raw")), covCell(c),
-      el("td",{class: c.width === minW ? "best" : null}, c.width.toFixed(3)), hasOod ? covCell(get(m,"ood","crc")) : null); });
+      el("td",{class: c.width === minW ? "best" : null}, f3(c.width)), hasOod ? covCell(get(m,"ood","crc")) : null); });
   root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"conf-cap"}, el("thead",{},head), el("tbody",{},body))),
-    el("p",{class:"small", id:"conf-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `${DSNAME[ds]} test patients, ${TASK[task]}. Green: within ${Math.round(band.lo*100)}–${Math.round(band.hi*100)} %, red: below. Dot: narrowest calibrated band. "+ band": a constant-width band calibrated around a network that states no uncertainty.` + (hasOod ? " The IXI column keeps the scale calibrated on MSD patients." : "")));
+    el("p",{class:"small", id:"conf-cap", style:"margin:.5rem 0 0;max-width:72ch"}, tr(`${DSNAME[ds]} test patients, ${TASK[task]}. Green: within ${Math.round(band.lo*100)}–${Math.round(band.hi*100)} %, red: below. Dot: narrowest calibrated band. "+ band": a constant-width band calibrated around a network that states no uncertainty.` + (hasOod ? " The IXI column keeps the scale calibrated on MSD patients." : ""),
+      `Patients de test ${DSNAME[ds]}, ${TASK[task]}. En vert : entre ${Math.round(band.lo*100)} et ${Math.round(band.hi*100)} %, en rouge : en dessous. Point : bande calibrée la plus étroite. « + bande » : une bande de largeur constante calibrée autour d'un réseau qui n'annonce pas d'incertitude.` + (hasOod ? " La colonne IXI garde l'échelle calibrée sur les patients MSD." : ""))));
 }
 
 /* ---------- why it shifts (M7) ---------- */
 function whyShift(data){
   const root = $("#why-root"); const m = data.m7;
-  if (!m) { root.replaceChildren(el("p",{class:"pending"},"The shift study is running; its results appear here when it finishes.")); return; }
+  if (!m) { root.replaceChildren(pending("The shift study is running; its results appear here when it finishes.", "L'étude du changement de site est en cours ; ses résultats apparaîtront ici à la fin.")); return; }
   const R = m.region; const get = (sp, t, me) => R.find(r => r.split === sp && r.task === t && r.method === me);
   const ms = ["bm3d","tv","biharmonic","unet","ensemble","unrolled","diffusion","gan"];
   const blocks = CONF_TASKS.map(t => {
     const rows = ms.map(me => [me, get("msd",t,me), get("msd_acqnoise",t,me), get("ixi",t,me)]).filter(x => x[1]);
-    const head = el("tr",{}, ["Method","MSD","MSD + IXI noise","IXI, whole head","IXI, brain interior"].map(h => el("th",{scope:"col"},h)));
+    const head = el("tr",{}, (FR ? ["Méthode","MSD","MSD + bruit IXI","IXI, tête entière","IXI, intérieur du cerveau"]
+      : ["Method","MSD","MSD + IXI noise","IXI, whole head","IXI, brain interior"]).map(h => el("th",{scope:"col"},h)));
     const body = rows.map(([me,a,b,c]) => el("tr",{}, el("th",{scope:"row"}, METHOD[me] || me), el("td",{}, sgn(a.gain_full)), el("td",{}, b ? sgn(b.gain_full) : "–"),
       el("td",{}, c ? sgn(c.gain_full) : "–"), el("td",{}, c ? sgn(c.gain_interior) : "–")));
-    return el("div",{}, el("h3",{}, TASK[t] + ": gain over the input, dB"), el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},head), el("tbody",{},body))));
+    return el("div",{}, el("h3",{}, TASK[t] + tr(": gain over the input, dB", " : gain par rapport à l'entrée, dB")), el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},head), el("tbody",{},body))));
   });
   const ns = m.noise.ixi_background_sigma;
   const rc = m.recal.filter(r => r.task === "mri_R4" && ["ensemble","diffusion","unet_const","unrolled_const"].includes(r.method));
   const ncal = [...new Set(rc.map(r => r.n_cal))].sort((a,b) => a-b);
   const sites = [...new Set(rc.map(r => r.site))];
-  const rhead = el("tr",{}, el("th",{scope:"col"},"Method"), el("th",{scope:"col"},"Hospital"), ncal.map(n => el("th",{scope:"col"}, n + " patients")));
+  const rhead = el("tr",{}, el("th",{scope:"col"},tr("Method","Méthode")), el("th",{scope:"col"},tr("Hospital","Hôpital")), ncal.map(n => el("th",{scope:"col"}, n + " patients")));
   const rbody = [];
   for (const me of ["ensemble","diffusion","unet_const","unrolled_const"]) for (const s of sites) {
     const cells = ncal.map(n => { const r = rc.find(x => x.method === me && x.site === s && x.n_cal === n); return el("td",{}, r ? pct(r.coverage) + " (" + pct(r.coverage_p10) + ")" : "–"); });
     if (cells.length) rbody.push(el("tr",{}, el("th",{scope:"row"}, METHOD[me] || me), el("td",{}, s), cells));
   }
-  root.replaceChildren(el("p",{class:"small", style:"max-width:72ch"}, `IXI background noise per hospital: ${Object.entries(ns).map(([k,v]) => k + " σ ≈ " + v.toFixed(4)).join(", ")}; MSD test scans were given σ = ${m.noise.msd_added_sigma.toFixed(4)}.`),
-    ...blocks, el("h3",{}, "MRI, R = 4: coverage after recalibrating on a few patients of each hospital"),
+  const sig = Object.entries(ns).map(([k,v]) => k + " σ ≈ " + dec(v.toFixed(4))).join(", "), add = dec(m.noise.msd_added_sigma.toFixed(4));
+  root.replaceChildren(el("p",{class:"small", style:"max-width:72ch"}, tr(`IXI background noise per hospital: ${sig}; MSD test scans were given σ = ${add}.`, `Bruit de fond IXI par hôpital : ${sig} ; les examens de test MSD ont reçu σ = ${add}.`)),
+    ...blocks, el("h3",{}, tr("MRI, R = 4: coverage after recalibrating on a few patients of each hospital", "IRM, R = 4 : couverture après recalibration sur quelques patients de chaque hôpital")),
     el("div",{class:"tablewrap"}, el("table",{}, el("thead",{},rhead), el("tbody",{},rbody))),
-    el("p",{class:"small", style:"margin:.5rem 0 0;max-width:72ch"}, "Mean coverage over 50 random choices of calibration patients, with the 10th percentile in brackets. Target 90 %. This uses IXI patients for calibration, so it is an ablation, kept apart from every other result."));
+    el("p",{class:"small", style:"margin:.5rem 0 0;max-width:72ch"}, tr("Mean coverage over 50 random choices of calibration patients, with the 10th percentile in brackets. Target 90 %. This uses IXI patients for calibration, so it is an ablation, kept apart from every other result.",
+      "Couverture moyenne sur 50 tirages aléatoires des patients de calibration, avec le 10e centile entre parenthèses. Cible : 90 %. On calibre ici sur des patients IXI : c'est une ablation, tenue à part de tous les autres résultats.")));
 }
 
 /* ---------- findings (generated from the data) ---------- */
 function findings(data){
   const out = []; const band = data.verdict_band; const ms0 = data.datasets.msd;
+  const lo = Math.round(band.lo*100), hi = Math.round(band.hi*100);
+  const card = (title, text, cls, stamp) => el("div",{class:"finding"}, el("p",{}, el("strong",{}, title), text), el("span",{class:"stamp "+cls}, stamp));
   for (const ds of ["phantom","msd"]) {
-    const d = data.datasets[ds]; if (!d || d.status !== "done") { out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+": "), "learned restorers are still training; this row fills in when the run finishes."), el("span",{class:"stamp info"},"Pending"))); continue; }
+    const d = data.datasets[ds]; if (!d || d.status !== "done") { out.push(card(DSNAME[ds]+tr(": ", " : "), tr("learned restorers are still training; this row fills in when the run finishes.", "les restaurateurs appris sont encore en entraînement ; cette ligne se remplira à la fin du calcul."), "info", tr("Pending","En attente"))); continue; }
     const test = d.comparison.filter(r => r.split === "test");
     // accuracy: how many task rows the best learned method beats the classical reference with the whole CI above zero
     const tasks = [...new Set(test.map(r => r.task))];
@@ -685,26 +786,33 @@ function findings(data){
       const b = lr.reduce((a, r) => (!a || r.diff_vs_ref_db > a.diff_vs_ref_db) ? r : a, null); if (!b) continue;
       if (b.diff_lo > 0) wins++; else if (b.diff_hi < 0) losses++;
       if (b.diff_vs_ref_db > bestGap) { bestGap = b.diff_vs_ref_db; bestTask = t; bestM = b.method; } }
-    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+", accuracy. "),
-      `In ${wins} of ${tasks.length} task settings the best learned method beats the strongest classical method, with the whole 95 % interval above zero` + (losses ? `; in ${losses} it is worse.` : ".") +
-      ` The largest gain is ${sgn(bestGap)} dB (${METHOD[bestM]}, ${TASK[bestTask]}).`), el("span",{class:"stamp "+(wins === tasks.length ? "hold" : wins ? "warn" : "fail")}, `${wins} / ${tasks.length} better`)));
+    out.push(card(DSNAME[ds]+tr(", accuracy. ", ", exactitude. "),
+      tr(`In ${wins} of ${tasks.length} task settings the best learned method beats the strongest classical method, with the whole 95 % interval above zero` + (losses ? `; in ${losses} it is worse.` : ".") +
+         ` The largest gain is ${sgn(bestGap)} dB (${METHOD[bestM]}, ${TASK[bestTask]}).`,
+         `Dans ${wins} réglages sur ${tasks.length}, la meilleure méthode apprise bat la meilleure méthode classique, avec tout l'intervalle à 95 % au-dessus de zéro` + (losses ? ` ; dans ${losses}, elle fait moins bien.` : ".") +
+         ` Le plus grand gain est de ${sgn(bestGap)} dB (${METHOD[bestM]}, ${TASK[bestTask]}).`),
+      wins === tasks.length ? "hold" : wins ? "warn" : "fail", tr(`${wins} / ${tasks.length} better`, `${wins} / ${tasks.length} meilleures`)));
     // calibration: mean coverage per method across test tasks
     const u = d.uncertainty.filter(r => r.split === "test");
     const mean = m => { const v = u.filter(r => r.method === m).map(r => r.cov90); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : NaN; };
     const covs = ["mcdropout","hetero","ensemble","quantile"].map(m => [m, mean(m)]).filter(x => !isNaN(x[1]));
     const held = covs.filter(([,c]) => c >= band.lo && c <= band.hi).map(([m]) => METHOD[m]);
     const mc = covs.find(([m]) => m === "mcdropout");
-    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, DSNAME[ds]+", stated uncertainty. "),
-      (mc ? `MC-dropout's 90 % intervals cover on average ${pct(mc[1])} of pixels, far below what they state. ` : "") +
-      (held.length ? `${held.length > 1 ? held.slice(0,-1).join(", ") + " and " + held[held.length-1] : held[0]} ${held.length > 1 ? "stay" : "stays"} within ${Math.round(band.lo*100)}–${Math.round(band.hi*100)} % on average across tasks.` : "No method stays within the band on average.")),
-      el("span",{class:"stamp "+(mc && mc[1] < band.lo ? "fail" : "hold")}, mc && mc[1] < band.lo ? "MC-dropout fails" : "Holds")));
+    const names = held.length > 1 ? held.slice(0,-1).join(", ") + tr(" and ", " et ") + held[held.length-1] : held[0];
+    out.push(card(DSNAME[ds]+tr(", stated uncertainty. ", ", incertitude annoncée. "),
+      tr((mc ? `MC-dropout's 90 % intervals cover on average ${pct(mc[1])} of pixels, far below what they state. ` : "") +
+         (held.length ? `${names} ${held.length > 1 ? "stay" : "stays"} within ${lo}–${hi} % on average across tasks.` : "No method stays within the band on average."),
+         (mc ? `Les intervalles à 90 % de MC-dropout couvrent en moyenne ${pct(mc[1])} des pixels, bien moins que ce qu'ils annoncent. ` : "") +
+         (held.length ? `${names} ${held.length > 1 ? "restent" : "reste"} entre ${lo} et ${hi} % en moyenne sur les tâches.` : "Aucune méthode ne reste dans la bande en moyenne.")),
+      mc && mc[1] < band.lo ? "fail" : "hold", mc && mc[1] < band.lo ? tr("MC-dropout fails", "MC-dropout échoue") : tr("Holds", "Tient")));
     if (ds === "msd" && d.shift) {
       const cls = d.shift.filter(r => r.method.endsWith("(M2)") && r.task.startsWith("mri"));
       const lrn = d.shift.filter(r => LEARNED.includes(r.method) && r.task.startsWith("mri"));
       const avg = a => a.reduce((s,r) => s + r.gain_change_db, 0) / (a.length || 1);
-      out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Under site shift (MSD → IXI), MRI. "),
-        `Moving to other hospitals changes the classical gain over the input by ${sgn(avg(cls))} dB on average, and the learned methods' gain by ${sgn(avg(lrn))} dB.`),
-        el("span",{class:"stamp info"}, "Measured")));
+      out.push(card(tr("Under site shift (MSD → IXI), MRI. ", "Changement de site (MSD → IXI), IRM. "),
+        tr(`Moving to other hospitals changes the classical gain over the input by ${sgn(avg(cls))} dB on average, and the learned methods' gain by ${sgn(avg(lrn))} dB.`,
+           `Passer à d'autres hôpitaux change le gain des méthodes classiques par rapport à l'entrée de ${sgn(avg(cls))} dB en moyenne, et celui des méthodes apprises de ${sgn(avg(lrn))} dB.`),
+        "info", tr("Measured", "Mesuré")));
     }
   }
   const ph = data.datasets.phantom;
@@ -713,17 +821,19 @@ function findings(data){
     const net = ["unet","hetero","ensemble","quantile"].map(me => L("mri_R2", me)).filter(Boolean);
     const avgE = net.reduce((a,r) => a + r.erased_frac, 0) / (net.length || 1);
     const tv = L("mri_R2","tv"), un = L("mri_R2","unrolled");
-    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Phantoms, lesions. "),
-      `In MRI at R = 2, the plain networks erase ${pct(avgE)} of small lesions on average; TV erases ${pct(tv.erased_frac)} and the unrolled network, which keeps the measured data, ${pct(un.erased_frac)}. Their uncertainty does not flag the erasures: they are more confident on the lesions they erase.`),
-      el("span",{class:"stamp fail"}, "Lesions erased")));
+    out.push(card(tr("Phantoms, lesions. ", "Fantômes, lésions. "),
+      tr(`In MRI at R = 2, the plain networks erase ${pct(avgE)} of small lesions on average; TV erases ${pct(tv.erased_frac)} and the unrolled network, which keeps the measured data, ${pct(un.erased_frac)}. Their uncertainty does not flag the erasures: they are more confident on the lesions they erase.`,
+         `En IRM à R = 2, les réseaux simples effacent en moyenne ${pct(avgE)} des petites lésions ; TV en efface ${pct(tv.erased_frac)} et le réseau déroulé, qui conserve les données mesurées, ${pct(un.erased_frac)}. Leur incertitude ne signale pas ces effacements : ils sont plus sûrs d'eux sur les lésions qu'ils effacent.`),
+      "fail", tr("Lesions erased", "Lésions effacées")));
   }
   if (ms0 && ms0.tumours) {
     const T = (t, me, sz) => ms0.tumours.find(r => r.task === t && r.method === me && r.size === sz);
     const all = ["unet","ensemble","unrolled","diffusion_dc","tv"].map(me => T("mri_R4", me, "all")).filter(Boolean).map(r => r.contrast_kept);
     const sm = me => T("mri_R4", me, "small"), dn = me => T("denoise_s0.10", me, "small");
-    if (all.length && sm("unet") && sm("unrolled") && dn("ensemble") && dn("bm3d")) out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "MSD BrainTumour, real tumours. "),
-      `Real tumours are not erased the way small phantom lesions are: in MRI at R = 4 the methods keep ${pct(Math.min(...all))}–${pct(Math.max(...all))} of tumour contrast. Small tumours lose more: the U-Net keeps ${pct(sm("unet").contrast_kept)}, the unrolled network ${pct(sm("unrolled").contrast_kept)}, and in denoising the ensemble ${pct(dn("ensemble").contrast_kept)} against BM3D's ${pct(dn("bm3d").contrast_kept)}.`),
-      el("span",{class:"stamp warn"}, "Small tumours flattened")));
+    if (all.length && sm("unet") && sm("unrolled") && dn("ensemble") && dn("bm3d")) out.push(card(tr("MSD BrainTumour, real tumours. ", "MSD BrainTumour, tumeurs réelles. "),
+      tr(`Real tumours are not erased the way small phantom lesions are: in MRI at R = 4 the methods keep ${pct(Math.min(...all))}–${pct(Math.max(...all))} of tumour contrast. Small tumours lose more: the U-Net keeps ${pct(sm("unet").contrast_kept)}, the unrolled network ${pct(sm("unrolled").contrast_kept)}, and in denoising the ensemble ${pct(dn("ensemble").contrast_kept)} against BM3D's ${pct(dn("bm3d").contrast_kept)}.`,
+         `Les vraies tumeurs ne sont pas effacées comme les petites lésions des fantômes : en IRM à R = 4, les méthodes conservent de ${pct(Math.min(...all))} à ${pct(Math.max(...all))} du contraste tumoral. Les petites tumeurs en perdent davantage : le U-Net en conserve ${pct(sm("unet").contrast_kept)}, le réseau déroulé ${pct(sm("unrolled").contrast_kept)}, et en débruitage l'ensemble ${pct(dn("ensemble").contrast_kept)} contre ${pct(dn("bm3d").contrast_kept)} pour BM3D.`),
+      "warn", tr("Small tumours flattened", "Petites tumeurs aplaties")));
   }
   if (ms0 && ms0.comparison) {
     const C = ms0.comparison.filter(r => r.split === "test"); const g = (t, m) => C.find(r => r.task === t && r.method === m);
@@ -732,10 +842,12 @@ function findings(data){
       const fmt = m => ts.map(t => sgn(g(t,m).diff_vs_ref_db)).join(" / ");
       const O = ms0.comparison.filter(r => r.split === "ood"); const go = (t, m) => O.find(r => r.task === t && r.method === m);
       const bestOod = ts.every(t => go(t,"diffusion_dc") && go(t,"unrolled") && go(t,"diffusion_dc").diff_vs_ref_db > go(t,"unrolled").diff_vs_ref_db);
-      out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "MSD BrainTumour, diffusion with data consistency. "),
-        `Against TV at R = 2 / 4 / 8, diffusion goes from ${fmt("diffusion")} dB without data consistency to ${fmt("diffusion_dc")} dB with it` +
-        (bestOod ? ", and at the IXI hospitals it is the best MRI method, ahead of the unrolled network." : ".") +
-        " Its stated uncertainty becomes much too narrow, though."), el("span",{class:"stamp warn"}, "Accurate, overconfident")));
+      out.push(card(tr("MSD BrainTumour, diffusion with data consistency. ", "MSD BrainTumour, diffusion avec cohérence des données. "),
+        tr(`Against TV at R = 2 / 4 / 8, diffusion goes from ${fmt("diffusion")} dB without data consistency to ${fmt("diffusion_dc")} dB with it` +
+           (bestOod ? ", and at the IXI hospitals it is the best MRI method, ahead of the unrolled network." : ".") + " Its stated uncertainty becomes much too narrow, though.",
+           `Face à TV à R = 2 / 4 / 8, la diffusion passe de ${fmt("diffusion")} dB sans cohérence des données à ${fmt("diffusion_dc")} dB avec` +
+           (bestOod ? ", et dans les hôpitaux IXI c'est la meilleure méthode en IRM, devant le réseau déroulé." : ".") + " Son incertitude annoncée devient cependant bien trop étroite."),
+        "warn", tr("Accurate, overconfident", "Exacte, trop sûre")));
     }
   }
   if (data.m7) {
@@ -744,18 +856,20 @@ function findings(data){
     const noiseD = dn.reduce((a,[m,n]) => a + (n.gain_full - m.gain_full), 0) / (dn.length || 1);
     const skullD = dn.reduce((a,[,,i]) => a + (i.gain_interior - i.gain_full), 0) / (dn.length || 1);
     const rc = data.m7.recal.filter(r => r.n_cal === 5); const c5 = rc.reduce((a,r) => a + r.coverage, 0) / (rc.length || 1);
-    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Why it shifts (MSD → IXI). "),
-      `Adding IXI's own acquisition noise to MSD changes the networks' denoising gain by ${sgn(noiseD)} dB, so noise is not the cause. Scoring IXI on the brain interior only gives them back ${sgn(skullD)} dB: much of the loss is in skull and scalp, which the skull-stripped training scans never showed. Recalibrating on 5 patients of a new hospital restores ${pct(c5)} coverage.`),
-      el("span",{class:"stamp info"}, "Measured")));
+    out.push(card(tr("Why it shifts (MSD → IXI). ", "Causes de l'écart (MSD → IXI). "),
+      tr(`Adding IXI's own acquisition noise to MSD changes the networks' denoising gain by ${sgn(noiseD)} dB, so noise is not the cause. Scoring IXI on the brain interior only gives them back ${sgn(skullD)} dB: much of the loss is in skull and scalp, which the skull-stripped training scans never showed. Recalibrating on 5 patients of a new hospital restores ${pct(c5)} coverage.`,
+         `Ajouter à MSD le bruit d'acquisition propre à IXI change le gain de débruitage des réseaux de ${sgn(noiseD)} dB : le bruit n'est pas en cause. Évaluer IXI sur l'intérieur du cerveau seulement leur rend ${sgn(skullD)} dB : une grande part de la perte se trouve dans le crâne et le cuir chevelu, que les examens d'entraînement, sans crâne, ne leur ont jamais montrés. Recalibrer sur 5 patients d'un nouvel hôpital rétablit une couverture de ${pct(c5)}.`),
+      "info", tr("Measured", "Mesuré")));
   }
   const ms = data.datasets.msd;
   if (ms && ms.conformal) {
     const crc = ms.conformal.filter(r => r.rule === "crc");
-    const rng2 = a => [Math.min(...a), Math.max(...a)].map(v => (v*100).toFixed(0)).join("–") + " %";
+    const rng2 = a => [Math.min(...a), Math.max(...a)].map(v => (v*100).toFixed(0)).join(tr("–", " à ")) + " %";
     const t = crc.filter(r => r.split === "test").map(r => r.coverage), o = crc.filter(r => r.split === "ood").map(r => r.coverage);
-    out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "MSD, calibrated. "),
-      `After conformal calibration every method covers ${rng2(t)} of pixels on new MSD patients, close to the 90 % target. The same calibration gives ${rng2(o)} at the IXI hospitals.`),
-      el("span",{class:"stamp warn"}, "Holds at home only")));
+    out.push(card(tr("MSD, calibrated. ", "MSD, après calibration. "),
+      tr(`After conformal calibration every method covers ${rng2(t)} of pixels on new MSD patients, close to the 90 % target. The same calibration gives ${rng2(o)} at the IXI hospitals.`,
+         `Après calibration conforme, chaque méthode couvre de ${rng2(t)} des pixels chez de nouveaux patients MSD, près de la cible de 90 %. La même calibration donne de ${rng2(o)} dans les hôpitaux IXI.`),
+      "warn", tr("Holds at home only", "Tient à domicile seulement")));
   }
   $("#findings-list").replaceChildren(...out);
 }
@@ -773,36 +887,36 @@ async function viewer(data){
   const manifests = {};
   for (const ds of ["phantom","msd"]) { const p = data.datasets[ds] && data.datasets[ds].demo; if (!p) continue;
     try { manifests[ds] = await (await fetch(p)).json(); } catch(e) {} }
-  if (!Object.keys(manifests).length) { root.replaceChildren(el("p",{class:"pending"},"Demo images appear here once they have been exported from the trained checkpoints.")); return; }
+  if (!Object.keys(manifests).length) { root.replaceChildren(pending("Demo images appear here once they have been exported from the trained checkpoints.", "Les images de démonstration apparaîtront ici une fois exportées depuis les modèles entraînés.")); return; }
   // sources, real scans first: msd test, msd ood (IXI), phantom test
   const sources = [];
   if (manifests.msd) { sources.push({id:"msd", ds:"msd", split:"test", label:"MSD BrainTumour"});
-    if (manifests.msd.items.some(i => i.split === "ood")) sources.push({id:"ixi", ds:"msd", split:"ood", label:"IXI (unseen sites)"}); }
-  if (manifests.phantom) sources.push({id:"phantom", ds:"phantom", split:"test", label:"Phantoms"});
+    if (manifests.msd.items.some(i => i.split === "ood")) sources.push({id:"ixi", ds:"msd", split:"ood", label:tr("IXI (unseen sites)", "IXI (sites jamais vus)")}); }
+  if (manifests.phantom) sources.push({id:"phantom", ds:"phantom", split:"test", label:DSNAME.phantom});
   const st = {src: store.get("tr.src") || sources[0].id, task:"mri_R4", img:0, method:"unrolled", cut:50};
   if (!sources.some(s => s.id === st.src)) st.src = sources[0].id;
   const imgCache = new Map();
   const loadImg = src => { if (!imgCache.has(src)) imgCache.set(src, new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; })); return imgCache.get(src); };
 
-  const ctlSrc = el("div",{class:"switch", role:"group", "aria-label":"Specimen set"});
-  const ctlTask = el("div",{class:"switch", role:"group", "aria-label":"Degradation"});
-  const ctlImg = el("div",{class:"gallery", role:"group", "aria-label":"Test scan"});
-  const ctlM = el("div",{class:"switch", role:"group", "aria-label":"Method"});
+  const ctlSrc = el("div",{class:"switch", role:"group", "aria-label":tr("Specimen set","Jeu d'échantillons")});
+  const ctlTask = el("div",{class:"switch", role:"group", "aria-label":tr("Degradation","Dégradation")});
+  const ctlImg = el("div",{class:"gallery", role:"group", "aria-label":tr("Test scan","Examen de test")});
+  const ctlM = el("div",{class:"switch", role:"group", "aria-label":tr("Method","Méthode")});
   const before = el("canvas",{width:128,height:128,"aria-hidden":"true"}), after = el("canvas",{class:"after",width:128,height:128,"aria-hidden":"true"});
-  const range = el("input",{type:"range", min:0, max:100, value:50, id:"cmp-range", "aria-label":"Comparison position"});
-  const labL = el("span",{class:"lab l"},"Input"), labR = el("span",{class:"lab r"},"Restored");
+  const range = el("input",{type:"range", min:0, max:100, value:50, id:"cmp-range", "aria-label":tr("Comparison position","Position de la comparaison")});
+  const labL = el("span",{class:"lab l"},tr("Input","Entrée")), labR = el("span",{class:"lab r"},tr("Restored","Restauré"));
   const compare = el("div",{class:"compare"}, before, after, el("i",{class:"handle"}), labL, labR, range);
   const mk = (cap) => { const c = el("canvas",{width:128,height:128}); const fc = el("figcaption",{html:cap}); return [c, el("figure",{class:"map"}, c, fc), fc]; };
-  const [cClean, fClean] = mk("<b>Truth</b> (clean image)");
-  const [cErr, fErr, capErr] = mk("<b>|Error|</b> of the restoration");
-  const [cHw, fHw, capHw] = mk("<b>Stated 90 % half-width</b>");
-  const [cMiss, fMiss, capMiss] = mk("<b>Misses</b>: truth outside the interval");
-  const legend = el("div",{class:"legend"}, el("span",{class:"num"},"0"), el("i",{style:"background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"}), el("span",{class:"num", id:"emax"},"≥ 0.15"), el("span",{}, "of the intensity range"));
+  const [cClean, fClean] = mk(tr("<b>Truth</b> (clean image)", "<b>Vérité</b> (image propre)"));
+  const [cErr, fErr, capErr] = mk(tr("<b>|Error|</b> of the restoration", "<b>|Erreur|</b> de la restauration"));
+  const [cHw, fHw, capHw] = mk(tr("<b>Stated 90 % half-width</b>", "<b>Demi-largeur annoncée à 90 %</b>"));
+  const [cMiss, fMiss, capMiss] = mk(tr("<b>Misses</b>: truth outside the interval", "<b>Manqués</b> : vérité hors de l'intervalle"));
+  const legend = el("div",{class:"legend"}, el("span",{class:"num"},"0"), el("i",{style:"background:linear-gradient(90deg,rgb(11,26,20),rgb(18,74,62),rgb(38,128,98),rgb(110,176,104),rgb(196,222,140),rgb(240,249,212))"}), el("span",{class:"num", id:"emax"},"≥ " + dec("0.15")), el("span",{}, tr("of the intensity range", "de la plage d'intensité")));
   const readout = el("dl",{class:"readout"});
   const note = el("p",{class:"small"});
   root.replaceChildren(el("div",{class:"controls"},
-      el("div",{class:"ctl"}, el("span",{},"Specimens"), ctlSrc), el("div",{class:"ctl"}, el("span",{},"Damage"), ctlTask),
-      el("div",{class:"ctl"}, el("span",{},"Test scan"), ctlImg), el("div",{class:"ctl"}, el("span",{},"Method"), ctlM)),
+      el("div",{class:"ctl"}, el("span",{},tr("Specimens","Échantillons")), ctlSrc), el("div",{class:"ctl"}, el("span",{},tr("Damage","Dégradation")), ctlTask),
+      el("div",{class:"ctl"}, el("span",{},tr("Test scan","Examen de test")), ctlImg), el("div",{class:"ctl"}, el("span",{},tr("Method","Méthode")), ctlM)),
     el("div",{class:"stage"}, el("div",{style:"display:grid;gap:.75rem;min-width:0"}, compare, readout, note),
       el("div",{style:"display:grid;gap:.75rem;min-width:0;align-content:start"}, el("div",{class:"maps"}, fClean, fErr, fHw, fMiss), legend)));
 
@@ -816,8 +930,8 @@ async function viewer(data){
         if (sprite) c.getContext("2d").drawImage(sprite, k*man.tile, 0, man.tile, man.tile, 0, 0, man.tile, man.tile);
         const pid = th ? th.pid[k] : String(idx), site = th ? th.site[k] : "";
         const m = pid.match(/^IXI(\d+)/);
-        const lab = m ? site + " " + m[1] : pid.replace(/^ph0*/, "phantom ").replace(/^BRATS_/, "BraTS ");
-        const b = el("button",{type:"button", "aria-pressed":"false", "aria-label":"Test scan " + (k+1) + ", " + pid + (site && site !== "phantom" ? ", " + site : "")}, c, el("span",{}, lab));
+        const lab = m ? site + " " + m[1] : pid.replace(/^ph0*/, tr("phantom ", "fantôme ")).replace(/^BRATS_/, "BraTS ");
+        const b = el("button",{type:"button", "aria-pressed":"false", "aria-label":tr("Test scan ", "Examen de test ") + (k+1) + ", " + pid + (site && site !== "phantom" ? ", " + site : "")}, c, el("span",{}, lab));
         b.addEventListener("click", () => { st.img = k; render(); });
         return b; }));
     }
@@ -851,7 +965,7 @@ async function viewer(data){
     switcher(ctlSrc, sources.map(s => ({id:s.id, label:s.label})), st.src, v => { st.src = v; st.img = 0; render(); });
     switcher(ctlTask, tasks.map(t => ({id:t, label:TASK[t]})), st.task, v => { st.task = v; render(); });
     await gallery(ctlImg, man0, th, order, its);
-    switcher(ctlM, [...avail.map(m => ({id:m, label:METHOD[m]})), {id:it.reference, label:METHOD[it.reference]+" (classical)"}], st.method, v => { st.method = v; render(); });
+    switcher(ctlM, [...avail.map(m => ({id:m, label:METHOD[m]})), {id:it.reference, label:METHOD[it.reference]+tr(" (classical)", " (classique)")}], st.method, v => { st.method = v; render(); });
     const man = manifests[sources.find(s => s.id === st.src).ds];
     const img = await loadImg("demo/" + man.dataset + "/" + it.file);
     const k = n => it.tiles.indexOf(n);
@@ -864,16 +978,16 @@ async function viewer(data){
     if (hasU) { tileDraw(img, k(st.method + "_halfwidth"), cHw, "map");
       const g = cClean.getContext("2d"); const base = g.getImageData(0,0,cClean.width,cClean.height);
       tileDraw(img, k(st.method + "_miss"), cMiss, "miss", base); }
-    $("#emax").textContent = "≥ " + man.emax;
+    $("#emax").textContent = "≥ " + dec(man.emax);
     labR.textContent = METHOD[st.method] || st.method;
     const s = it.stats; const ms = s[st.method] || {};
     const dd = (t, v) => el("div",{}, el("dt",{},t), el("dd",{},v));
-    readout.replaceChildren(dd("Input PSNR", f2(s.input.psnr)+" dB"), dd(METHOD[it.reference]+" PSNR", f2(s[it.reference].psnr)+" dB"),
-      ...(LEARNED.includes(st.method) ? [dd(METHOD[st.method]+" PSNR", f2(ms.psnr)+" dB")] : []),
-      ...(ms.cov90 != null ? [dd("90 % coverage here", pct(ms.cov90))] : []));
+    readout.replaceChildren(dd(tr("Input PSNR", "PSNR de l'entrée"), f2(s.input.psnr)+" dB"), dd(tr(METHOD[it.reference]+" PSNR", "PSNR "+METHOD[it.reference]), f2(s[it.reference].psnr)+" dB"),
+      ...(LEARNED.includes(st.method) ? [dd(tr(METHOD[st.method]+" PSNR", "PSNR "+METHOD[st.method]), f2(ms.psnr)+" dB")] : []),
+      ...(ms.cov90 != null ? [dd(tr("90 % coverage here", "Couverture à 90 % ici"), pct(ms.cov90))] : []));
     note.textContent = `${it.pid}${it.site && it.site !== "phantom" ? ", " + it.site : ""}, ${TASK[it.task]}. ` +
-      (hasU ? "" : (LEARNED.includes(st.method) ? "This method reports no uncertainty." : "Classical methods report no uncertainty.")) +
-      (man.checks && man.checks.length ? " Export check flagged: " + man.checks.length + " item(s)." : "");
+      (hasU ? "" : (LEARNED.includes(st.method) ? tr("This method reports no uncertainty.", "Cette méthode n'annonce pas d'incertitude.") : tr("Classical methods report no uncertainty.", "Les méthodes classiques n'annoncent pas d'incertitude."))) +
+      (man.checks && man.checks.length ? tr(" Export check flagged: " + man.checks.length + " item(s).", " Contrôle d'export : " + man.checks.length + " élément(s) signalé(s).") : "");
   }
   const setCut = v => { st.cut = v; compare.style.setProperty("--cut", v + "%"); };
   range.addEventListener("input", e => setCut(+e.target.value));
@@ -929,11 +1043,11 @@ const lut = v => { const q = Math.round(Math.min(1, Math.max(0, v))*255); return
 
 async function tryDemo(data){
   const T = {}; ["file","name","task","level","net","again","compare","before","after","lab","range","readout","status","clean","err","hw","miss","fhw","fmiss"].forEach(k => T[k] = document.getElementById("try-" + k));
-  const set = data.models; if (!set) { T.status.textContent = "The in-browser networks have not been exported yet."; return; }
-  let man; try { man = await (await fetch(set)).json(); } catch (e) { T.status.textContent = "The network list could not be loaded."; return; }
+  const set = data.models; if (!set) { T.status.textContent = tr("The in-browser networks have not been exported yet.", "Les réseaux pour le navigateur n'ont pas encore été exportés."); return; }
+  let man; try { man = await (await fetch(set)).json(); } catch (e) { T.status.textContent = tr("The network list could not be loaded.", "La liste des réseaux n'a pas pu être chargée."); return; }
   const base = set.replace(/models\.json$/, ""), n = man.size, D = man.degradations;
-  const TYPES = [{id:"denoise", label:"Noise"}, {id:"mri", label:"MRI, missing k-space"}, {id:"inpaint", label:"Holes"}].filter(t => man.models[t.id + "_hetero"]);
-  const LEVELS = {denoise: D.denoise_sigmas.map(s => ({id:s, label:"σ " + s.toFixed(2)})), mri: D.mri_R.map(R => ({id:R, label:"R = " + R})), inpaint: [{id:0, label:"Random mask"}]};
+  const TYPES = [{id:"denoise", label:tr("Noise","Bruit")}, {id:"mri", label:tr("MRI, missing k-space","IRM, espace k incomplet")}, {id:"inpaint", label:tr("Holes","Trous")}].filter(t => man.models[t.id + "_hetero"]);
+  const LEVELS = {denoise: D.denoise_sigmas.map(s => ({id:s, label:"σ " + f2(s)})), mri: D.mri_R.map(R => ({id:R, label:"R = " + R})), inpaint: [{id:0, label:tr("Random mask","Masque aléatoire")}]};
   const st = {type: TYPES.some(t => t.id === "mri") ? "mri" : TYPES[0].id, level: null, net: "hetero", seed: 1, x: null};
   const sessions = {}; let ortReady = null;
   function loadOrt(){
@@ -975,7 +1089,7 @@ async function tryDemo(data){
     if (!st.x) return;
     T.again.disabled = true;
     const key = st.type + "_" + (st.type === "mri" ? st.net : "hetero");
-    T.status.textContent = sessions[key] ? "Restoring…" : "Loading the network…";
+    T.status.textContent = sessions[key] ? tr("Restoring…", "Restauration…") : tr("Loading the network…", "Chargement du réseau…");
     try {
       await loadOrt();
       const d = degradeJS(st.x), shape = [1, 1, n, n], feeds = {inp: new ort.Tensor("float32", d.inp, shape), cond: new ort.Tensor("float32", d.cond, shape)};
@@ -990,22 +1104,24 @@ async function tryDemo(data){
         const red = getComputedStyle(document.documentElement).getPropertyValue("--fail").trim() || "#ad3219"; const rr = parseInt(red.slice(1,3),16), gg = parseInt(red.slice(3,5),16), bb = parseInt(red.slice(5,7),16);
         paint(T.miss, n, i => miss[i] ? [rr, gg, bb] : grey(x[i]*0.55)); }
       const dd = (t, v) => el("div",{}, el("dt",{},t), el("dd",{},v));
-      T.readout.replaceChildren(dd("Damaged PSNR", f2(psnr(x, d.inp)) + " dB"), dd("Restored PSNR", f2(psnr(x, mean)) + " dB"), ...(cov != null ? [dd("90 % coverage", pct(cov))] : []));
+      T.readout.replaceChildren(dd(tr("Damaged PSNR", "PSNR dégradé"), f2(psnr(x, d.inp)) + " dB"), dd(tr("Restored PSNR", "PSNR restauré"), f2(psnr(x, mean)) + " dB"), ...(cov != null ? [dd(tr("90 % coverage", "Couverture à 90 %"), pct(cov))] : []));
       T.lab.textContent = METHOD[st.type === "mri" ? st.net : "hetero"];
-      const what = st.type === "mri" ? `${d.extra.lines} of ${n} k-space lines kept` : st.type === "inpaint" ? `${Math.round(d.extra.missing*100)} % of pixels missing` : `Rician noise, σ ${st.level}`;
-      T.status.textContent = `${what}. Restored in ${Math.round(ms)} ms on your device by the ${METHOD[st.type === "mri" ? st.net : "hetero"].toLowerCase()} network trained on ${man.dataset === "msd" ? "MSD brain MRI" : "phantoms"}. Coverage here counts every pixel of the image.`;
-    } catch (e) { T.status.textContent = "The network could not run in this browser (" + (e.message || e) + "). It needs WebAssembly."; }
+      const what = st.type === "mri" ? tr(`${d.extra.lines} of ${n} k-space lines kept`, `${d.extra.lines} lignes de l'espace k gardées sur ${n}`) : st.type === "inpaint" ? tr(`${Math.round(d.extra.missing*100)} % of pixels missing`, `${Math.round(d.extra.missing*100)} % des pixels manquants`) : tr(`Rician noise, σ ${st.level}`, `Bruit ricien, σ ${dec(st.level)}`);
+      const netName = METHOD[st.type === "mri" ? st.net : "hetero"].toLowerCase();
+      T.status.textContent = tr(`${what}. Restored in ${Math.round(ms)} ms on your device by the ${netName} network trained on ${man.dataset === "msd" ? "MSD brain MRI" : "phantoms"}. Coverage here counts every pixel of the image.`,
+        `${what}. Restauré en ${Math.round(ms)} ms sur votre appareil par le réseau ${netName} entraîné sur ${man.dataset === "msd" ? "les IRM cérébrales MSD" : "les fantômes"}. La couverture compte ici tous les pixels de l'image.`);
+    } catch (e) { T.status.textContent = tr("The network could not run in this browser (", "Le réseau n'a pas pu tourner dans ce navigateur (") + (e.message || e) + tr("). It needs WebAssembly.", "). Il lui faut WebAssembly."); }
     T.again.disabled = false; }
   function controls(){
     switcher(T.task, TYPES, st.type, v => { st.type = v; st.level = null; controls(); run(); });
     const lv = LEVELS[st.type]; if (!lv.some(l => l.id === st.level)) st.level = st.type === "denoise" ? 0.10 : st.type === "mri" ? 4 : 0;
     switcher(T.level, lv, st.level, v => { st.level = v; run(); });
-    const nets = [{id:"hetero", label:"Heteroscedastic"}, ...(st.type === "mri" && man.models.mri_unrolled ? [{id:"unrolled", label:"Unrolled"}] : [])];
+    const nets = [{id:"hetero", label:METHOD.hetero}, ...(st.type === "mri" && man.models.mri_unrolled ? [{id:"unrolled", label:METHOD.unrolled}] : [])];
     if (!nets.some(x => x.id === st.net)) st.net = "hetero";
     switcher(T.net, nets, st.net, v => { st.net = v; run(); }); }
   const useImage = (img, label) => { st.x = toImage(img, n); T.name.textContent = label; run(); };
   T.file.addEventListener("change", () => { const f = T.file.files && T.file.files[0]; if (!f) return; const u = URL.createObjectURL(f); const im = new Image();
-    im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); }; im.onerror = () => { T.status.textContent = "That file could not be read as an image. Try a PNG or JPEG."; }; im.src = u; });
+    im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); }; im.onerror = () => { T.status.textContent = tr("That file could not be read as an image. Try a PNG or JPEG.", "Ce fichier n'a pas pu être lu comme une image. Essayez un PNG ou un JPEG."); }; im.src = u; });
   const root = document.getElementById("try-root");
   ["dragenter","dragover"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.add("dropping"); }));
   ["dragleave","drop"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.remove("dropping"); }));
@@ -1014,8 +1130,8 @@ async function tryDemo(data){
   T.range.addEventListener("input", e => T.compare.style.setProperty("--cut", e.target.value + "%"));
   controls();
   // example image: the first IXI test scan when available (healthy volunteer, a site the models never saw), else a phantom
-  const ex = data.example; T.name.textContent = ex ? ex.label : "";
-  const start = () => { if (!ex) return; const im = new Image(); im.onload = () => useImage(im, ex.label); im.src = ex.src; };
+  const ex = data.example, exLabel = ex ? tr(ex.label, ex.label_fr || ex.label) : ""; T.name.textContent = exLabel;
+  const start = () => { if (!ex) return; const im = new Image(); im.onload = () => useImage(im, exLabel); im.src = ex.src; };
   const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, {rootMargin:"400px"});
   io.observe(root);
 }
@@ -1108,12 +1224,12 @@ function noiseSigma(x, w, h){
 
 async function enhanceDemo(data){
   const E = {}; ["file","name","level","save","compare","before","after","range","readout","status","removed","unc"].forEach(k => E[k] = document.getElementById("enh-" + k));
-  const set = data.models; if (!set) { E.status.textContent = "The in-browser network has not been exported yet."; return; }
-  let man; try { man = await (await fetch(set)).json(); } catch (e) { E.status.textContent = "The network list could not be loaded."; return; }
-  if (!man.models.denoise_hetero) { E.status.textContent = "No denoising network is available."; return; }
+  const set = data.models; if (!set) { E.status.textContent = tr("The in-browser network has not been exported yet.", "Le réseau pour le navigateur n'a pas encore été exporté."); return; }
+  let man; try { man = await (await fetch(set)).json(); } catch (e) { E.status.textContent = tr("The network list could not be loaded.", "La liste des réseaux n'a pas pu être chargée."); return; }
+  if (!man.models.denoise_hetero) { E.status.textContent = tr("No denoising network is available.", "Aucun réseau de débruitage n'est disponible."); return; }
   const n = man.size, base = set.replace(/models\.json$/, ""), MAXSIDE = 512, STRIDE = 96;
-  const LEVELS = [{id:"auto", label:"Auto"}, {id:0.03, label:"Light"}, {id:0.06, label:"Medium"}, {id:0.10, label:"Strong"}, {id:0.15, label:"Very strong"}];
-  const fmtS = v => v == null ? "–" : v < 0.005 ? "below 0.005" : "≈ " + v.toFixed(3);
+  const LEVELS = [{id:"auto", label:"Auto"}, {id:0.03, label:tr("Light","Légère")}, {id:0.06, label:tr("Medium","Moyenne")}, {id:0.10, label:tr("Strong","Forte")}, {id:0.15, label:tr("Very strong","Très forte")}];
+  const fmtS = v => v == null ? "–" : v < 0.005 ? tr("below 0.005", "sous 0,005") : "≈ " + f3(v);
   const LOW = 0.015; // below this the scan is essentially clean for this network (trained on sigma 0.03-0.15)
   const st = {level: "auto", img: null, est: null, busy: false, url: null};
   let sess = null;
@@ -1137,12 +1253,13 @@ async function enhanceDemo(data){
     if (st.level === "auto" && st.est != null && st.est < LOW) { // clean scan: say so instead of smoothing it
       paintWH(E.before, w, h, i => grey(x[i])); paintWH(E.after, w, h, i => grey(x[i]));
       paintWH(E.removed, w, h, () => [128, 128, 128]); paintWH(E.unc, w, h, () => [0, 0, 0]);
-      E.readout.replaceChildren(dd("Size", `${w} × ${h} px`), dd("Estimated noise σ", fmtS(st.est)), dd("Strength used", "none"));
+      E.readout.replaceChildren(dd(tr("Size","Taille"), `${w} × ${h} px`), dd(tr("Estimated noise σ","Bruit estimé σ"), fmtS(st.est)), dd(tr("Strength used","Force appliquée"), tr("none","aucune")));
       E.save.setAttribute("aria-disabled", "true"); E.save.href = "#";
-      E.status.textContent = `This scan has very little noise (σ ${fmtS(st.est)}), far below the noise the network was trained on (σ 0.03–0.15). Denoising it would mostly remove real detail, so nothing was changed. Pick a strength above to see what that would do, and watch the Removed map.`;
+      E.status.textContent = tr(`This scan has very little noise (σ ${fmtS(st.est)}), far below the noise the network was trained on (σ 0.03–0.15). Denoising it would mostly remove real detail, so nothing was changed. Pick a strength above to see what that would do, and watch the Removed map.`,
+        `Cet examen est très peu bruité (σ ${fmtS(st.est)}), bien en dessous du bruit sur lequel le réseau a été entraîné (σ 0,03–0,15). Le débruiter retirerait surtout du vrai détail : rien n'a donc été modifié. Choisissez une force ci-dessus pour voir ce que cela donnerait, et regardez la carte « Retiré ».`);
       st.busy = false; return; }
     const sigma = st.level === "auto" ? Math.min(0.15, Math.max(0.02, st.est ?? 0.03)) : st.level;
-    E.status.textContent = sess ? "Enhancing…" : "Loading the network…";
+    E.status.textContent = sess ? tr("Enhancing…", "Amélioration…") : tr("Loading the network…", "Chargement du réseau…");
     try {
       const s = await session(); const t0 = performance.now();
       // pad to at least one patch in each direction
@@ -1157,7 +1274,7 @@ async function enhanceDemo(data){
         const m = out.mean.data, sd = out.sd.data;
         for (let y = 0; y < n; y++) for (let c = 0; c < n; c++) { const i = (oy+y)*W + ox + c, q = y*n + c, ww = win[q];
           acc[i] += ww * m[q]; accS[i] += ww * sd[q]; accW[i] += ww; }
-        if (++k % 8 === 0) { E.status.textContent = `Enhancing… ${k} of ${ys.length * xs.length} patches`; await new Promise(r => setTimeout(r)); }
+        if (++k % 8 === 0) { E.status.textContent = tr(`Enhancing… ${k} of ${ys.length * xs.length} patches`, `Amélioration… bloc ${k} sur ${ys.length * xs.length}`); await new Promise(r => setTimeout(r)); }
       }
       const mean = new Float32Array(w*h), sd = new Float32Array(w*h);
       for (let y = 0; y < h; y++) for (let c = 0; c < w; c++) { const i = y*W + c; mean[y*w+c] = Math.min(1, Math.max(0, acc[i] / accW[i])); sd[y*w+c] = accS[i] / accW[i]; }
@@ -1166,20 +1283,20 @@ async function enhanceDemo(data){
       let rms = 0; for (let i = 0; i < w*h; i++) { const r = x[i] - mean[i]; rms += r*r; } rms = Math.sqrt(rms / (w*h));
       const rs = Math.max(1e-6, 3 * rms); paintWH(E.removed, w, h, i => grey(0.5 + (x[i] - mean[i]) / (2 * rs)));
       paintWH(E.unc, w, h, i => lut(Z90 * sd[i] / 0.15));
-      E.readout.replaceChildren(dd("Size", `${w} × ${h} px`), dd("Estimated noise σ", fmtS(st.est)),
-        dd("Strength used", "σ " + sigma.toFixed(3)), dd("Removed (RMS)", rms.toFixed(3)));
+      E.readout.replaceChildren(dd(tr("Size","Taille"), `${w} × ${h} px`), dd(tr("Estimated noise σ","Bruit estimé σ"), fmtS(st.est)),
+        dd(tr("Strength used","Force appliquée"), "σ " + f3(sigma)), dd(tr("Removed (RMS)","Retiré (RMS)"), f3(rms)));
       E.after.toBlob(b => { if (st.url) URL.revokeObjectURL(st.url); st.url = URL.createObjectURL(b); E.save.href = st.url; E.save.removeAttribute("aria-disabled"); });
-      E.status.textContent = `Enhanced in ${(ms/1000).toFixed(1)} s on your device, ${ys.length * xs.length} patches of ${n} × ${n}.` +
-        (st.est != null && st.est < LOW && st.level !== "auto" ? " This scan has very little noise: the Removed map shows how much real structure was taken out." : "") +
-        (st.est != null && st.est >= LOW && st.est < 0.03 ? " The noise is below the range the network was trained on (σ 0.03–0.15); check the Removed map for structure." : "") +
-        (st.est != null && st.est > 0.15 ? " The noise is above anything the network was trained on; expect over-smoothing." : "");
-    } catch (e) { E.status.textContent = "The network could not run in this browser (" + (e.message || e) + "). It needs WebAssembly."; }
+      E.status.textContent = tr(`Enhanced in ${f1(ms/1000)} s on your device, ${ys.length * xs.length} patches of ${n} × ${n}.`, `Amélioré en ${f1(ms/1000)} s sur votre appareil, ${ys.length * xs.length} blocs de ${n} × ${n}.`) +
+        (st.est != null && st.est < LOW && st.level !== "auto" ? tr(" This scan has very little noise: the Removed map shows how much real structure was taken out.", " Cet examen est très peu bruité : la carte « Retiré » montre combien de vraie structure a été enlevée.") : "") +
+        (st.est != null && st.est >= LOW && st.est < 0.03 ? tr(" The noise is below the range the network was trained on (σ 0.03–0.15); check the Removed map for structure.", " Le bruit est sous la plage d'entraînement du réseau (σ 0,03–0,15) ; cherchez de la structure dans la carte « Retiré ».") : "") +
+        (st.est != null && st.est > 0.15 ? tr(" The noise is above anything the network was trained on; expect over-smoothing.", " Le bruit dépasse tout ce que le réseau a vu à l'entraînement ; attendez-vous à un lissage excessif.") : "");
+    } catch (e) { E.status.textContent = tr("The network could not run in this browser (", "Le réseau n'a pas pu tourner dans ce navigateur (") + (e.message || e) + tr("). It needs WebAssembly.", "). Il lui faut WebAssembly."); }
     st.busy = false; }
   function useArray(a, w, h, label){
     let W = w, H = h; const big = Math.max(w, h); if (big > MAXSIDE) { W = Math.round(w * MAXSIDE / big); H = Math.round(h * MAXSIDE / big); }
     const x = scaleUnit(resizeTo(a, w, h, W, H));
     st.img = {w: W, h: H, x}; st.est = noiseSigma(x, W, H);
-    E.name.textContent = label + (big > MAXSIDE ? ` (scaled from ${w} × ${h})` : ""); run(); }
+    E.name.textContent = label + (big > MAXSIDE ? tr(` (scaled from ${w} × ${h})`, ` (réduit depuis ${w} × ${h})`) : ""); run(); }
   function useImage(im, label){
     const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
     const g = c.getContext("2d"); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data;
@@ -1189,11 +1306,11 @@ async function enhanceDemo(data){
     if (!f) return;
     const isDicom = /\.dcm$/i.test(f.name) || f.type === "application/dicom" || !f.type;
     if (isDicom) { f.arrayBuffer().then(buf => { try { const d = readDicom(buf); useArray(d.data, d.w, d.h, f.name); }
-        catch (e) { if (f.type.startsWith("image/")) imgFile(f); else E.status.textContent = "That file could not be read: " + e.message + "."; } }); return; }
+        catch (e) { if (f.type.startsWith("image/")) imgFile(f); else E.status.textContent = tr("That file could not be read: ", "Ce fichier n'a pas pu être lu : ") + e.message + "."; } }); return; }
     imgFile(f); }
   function imgFile(f){ const u = URL.createObjectURL(f), im = new Image();
     im.onload = () => { useImage(im, f.name); URL.revokeObjectURL(u); };
-    im.onerror = () => { E.status.textContent = "That file could not be read as an image. Use PNG, JPEG or an uncompressed DICOM file."; }; im.src = u; }
+    im.onerror = () => { E.status.textContent = tr("That file could not be read as an image. Use PNG, JPEG or an uncompressed DICOM file.", "Ce fichier n'a pas pu être lu comme une image. Utilisez un PNG, un JPEG ou un fichier DICOM non compressé."); }; im.src = u; }
   E.file.addEventListener("change", () => useFile(E.file.files && E.file.files[0]));
   const root = document.getElementById("enh-root");
   ["dragenter","dragover"].forEach(ev => root.addEventListener(ev, e => { e.preventDefault(); root.classList.add("dropping"); }));
@@ -1202,20 +1319,20 @@ async function enhanceDemo(data){
   E.save.addEventListener("click", e => { if (E.save.getAttribute("aria-disabled")) e.preventDefault(); });
   switcher(E.level, LEVELS, st.level, v => { st.level = v; run(); });
   E.range.addEventListener("input", e => E.compare.style.setProperty("--cut", e.target.value + "%"));
-  const ex = data.enhance_example;
+  const ex = data.enhance_example, exLabel = ex ? tr(ex.label, ex.label_fr || ex.label) : "";
   function example(noisy){
-    if (!ex) { E.status.textContent = "Choose a scan to start."; return; }
+    if (!ex) { E.status.textContent = tr("Choose a scan to start.", "Choisissez un examen pour commencer."); return; }
     const im = new Image();
     im.onload = () => {
-      if (!noisy) { useImage(im, ex.label + ", as acquired"); return; }
+      if (!noisy) { useImage(im, exLabel + tr(", as acquired", ", tel qu'acquis")); return; }
       const c = document.createElement("canvas"); c.width = im.naturalWidth; c.height = im.naturalHeight;
       const g = c.getContext("2d"); g.drawImage(im, 0, 0); const d = g.getImageData(0, 0, c.width, c.height).data;
       const r = rng(20261023), sgm = 0.06, a = new Float32Array(c.width * c.height);
       for (let i = 0; i < a.length; i++) { const u = d[4*i] / 255 + sgm * r.g(), v = sgm * r.g(); a[i] = Math.min(1, Math.sqrt(u*u + v*v)) * 255; }
-      useArray(a, c.width, c.height, ex.label + ", with added noise σ 0.06"); };
+      useArray(a, c.width, c.height, exLabel + tr(", with added noise σ 0.06", ", avec un bruit ajouté σ 0,06")); };
     im.src = ex.src; }
   const exSw = document.getElementById("enh-example");
-  if (exSw && ex) switcher(exSw, [{id:"noisy", label:"Noisy example"}, {id:"clean", label:"As acquired"}], "noisy", v => example(v === "noisy"));
+  if (exSw && ex) switcher(exSw, [{id:"noisy", label:tr("Noisy example","Exemple bruité")}, {id:"clean", label:tr("As acquired","Tel qu'acquis")}], "noisy", v => example(v === "noisy"));
   const start = () => example(true);
   const io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { io.disconnect(); start(); } }, {rootMargin:"400px"});
   io.observe(root);
@@ -1223,15 +1340,35 @@ async function enhanceDemo(data){
 function paintWH(canvas, w, h, f){ const g = canvas.getContext("2d"); canvas.width = w; canvas.height = h; const id = g.createImageData(w, h);
   for (let i = 0; i < w*h; i++) { const [r, gg, b] = f(i); id.data[4*i] = r; id.data[4*i+1] = gg; id.data[4*i+2] = b; id.data[4*i+3] = 255; } g.putImageData(id, 0, 0); }
 
+/* ---------- language ---------- */
+function frenchSpacing(){ // narrow no-break space before ; : ! ? % » and after «, as French typography wants
+  const fix = n => { if (n.nodeType === 3) { if (n.parentElement && n.parentElement.closest("code,pre,script,style")) return;
+      const v = n.data.replace(/ ([;:!?%»])/g, " $1").replace(/« /g, "« "); if (v !== n.data) n.data = v; }
+    else if (n.nodeType === 1) n.childNodes.forEach(fix); };
+  fix(document.body);
+  new MutationObserver(ms => ms.forEach(m => m.type === "characterData" ? fix(m.target) : m.addedNodes.forEach(fix)))
+    .observe(document.body, {childList:true, subtree:true, characterData:true});
+}
+function langSwitch(){
+  const cur = document.documentElement.lang;
+  const here = () => { let id = ""; for (const s of document.querySelectorAll("main section")) if (s.getBoundingClientRect().top < innerHeight * .3) id = s.id; return id; };
+  document.querySelectorAll(".lang a").forEach(a => { const l = a.getAttribute("hreflang");
+    a.setAttribute("aria-current", String(l === cur));
+    a.addEventListener("click", e => { e.preventDefault(); if (l === cur) return; store.set("tr.lang", l);
+      const u = new URL(location.href); u.searchParams.set("lang", l); const id = here(); u.hash = id ? "#" + id : ""; location.href = u.href; }); });
+  if (FR) { document.querySelectorAll("[data-aria-fr]").forEach(e => e.setAttribute("aria-label", e.dataset.ariaFr)); frenchSpacing(); }
+}
+
 async function boot(){
   guilloche();
+  langSwitch();
   let data;
   try { data = await (await fetch("data/results.json", {cache:"no-cache"})).json(); }
-  catch(e) { $("#findings-list").replaceChildren(el("p",{class:"pending"},"The results file could not be loaded. Open this page through a web server (GitHub Pages, or python -m http.server in docs/).")); return; }
+  catch(e) { $("#findings-list").replaceChildren(pending("The results file could not be loaded. Open this page through a web server (GitHub Pages, or python -m http.server in docs/).", "Le fichier de résultats n'a pas pu être chargé. Ouvrez cette page via un serveur web (GitHub Pages, ou python -m http.server dans docs/).")); return; }
   $("#f-issued").textContent = data.generated;
   $("#report-no").textContent = "TR-M7-" + (data.git || "").toUpperCase();
-  $("#band-text").textContent = Math.round(data.verdict_band.lo*100) + "–" + Math.round(data.verdict_band.hi*100) + " %";
-  $("#foot-build").textContent = "Built from commit " + data.git + " on " + data.generated;
+  document.querySelectorAll(".band-text").forEach(e => e.textContent = Math.round(data.verdict_band.lo*100) + "–" + Math.round(data.verdict_band.hi*100) + " %");
+  $("#foot-build").textContent = tr("Built from commit " + data.git + " on " + data.generated, "Construit à partir du commit " + data.git + " le " + data.generated);
   const done = ds => data.datasets[ds] && data.datasets[ds].status === "done";
   const dsOpts = ["phantom","msd"].map(ds => ({id:ds, label:DSNAME[ds], disabled: !done(ds)}));
   let accDs = store.get("tr.acc") || "msd"; if (!done(accDs)) accDs = done("phantom") ? "phantom" : "msd";
@@ -1240,7 +1377,7 @@ async function boot(){
   const syncCal = v => $("#cal-switch").querySelectorAll("button").forEach((b,i) => b.setAttribute("aria-pressed", String(dsOpts[i].id === v)));
   switcher($("#cal-switch"), dsOpts, calDs, v => { calibration(data, v); });
   accuracy(data, accDs); calibration(data, calDs); shift(data); findings(data); whyShift(data);
-  const nn = ["phantom","msd"].reduce((a, ds) => a + ((data.datasets[ds] || {}).n_networks || 0), 0); if (nn) $("#n-nets").textContent = nn;
+  const nn = ["phantom","msd"].reduce((a, ds) => a + ((data.datasets[ds] || {}).n_networks || 0), 0); if (nn) document.querySelectorAll(".n-nets").forEach(e => e.textContent = nn);
   let lesT = store.get("tr.les") || "mri_R2"; if (!LES_TASKS.includes(lesT)) lesT = "mri_R2";
   switcher($("#les-switch"), LES_TASKS.map(t => ({id:t, label:TASK[t]})), lesT, v => { store.set("tr.les", v); lesions(data, v); });
   lesions(data, lesT);
@@ -1253,9 +1390,11 @@ async function boot(){
   switcher($("#conf-task"), CONF_TASKS.map(t => ({id:t, label:TASK[t]})), confT, v => { confT = v; conformal(data, confDs, confT); });
   conformal(data, confDs, confT);
   const s = done("phantom") + done("msd");
-  viewer(data);
+  const shown = viewer(data);
   tryDemo(data);
   enhanceDemo(data);
+  // after a language switch the URL names the section that was in view; return there once the viewer above has its height
+  if (location.hash) shown.finally(() => { const t = document.getElementById(location.hash.slice(1)); if (t) t.scrollIntoView({behavior:"instant"}); });
   // rail: mark the section in view
   const links = [...document.querySelectorAll(".rail a")];
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(a => a.setAttribute("aria-current", String(a.getAttribute("href") === "#" + e.target.id))); }), {rootMargin:"-30% 0px -60% 0px"});

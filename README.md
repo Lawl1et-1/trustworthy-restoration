@@ -9,7 +9,8 @@ models, and measures three things for each method:
 3. **Honest uncertainty**: whether a stated 90 % interval covers 90 % of pixels, before and after
    conformal calibration, at the training hospital and at three others.
 
-Project page with interactive results: `docs/index.html` (GitHub Pages from `/docs`). It also lets you
+Project page with interactive results, in English and French (switch at the top right, or `?lang=fr`): `docs/index.html`
+(GitHub Pages from `/docs`). It also lets you
 **enhance a scan of your own** (PNG, JPEG or uncompressed DICOM): the MSD-trained denoising network runs in the
 browser, patch by patch at the scan's resolution, with a before/after slider, a map of what was removed and the
 network's uncertainty. The scan never leaves the device. It only removes noise (no sharpening, which would invent
