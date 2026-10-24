@@ -178,7 +178,7 @@ tr.ref td{color:var(--ink-2)}
 .shift{display:grid;gap:.4rem}
 .shift-row{display:grid;grid-template-columns:8rem minmax(0,1fr);gap:var(--s3);align-items:center}
 .shift-row .m{font:600 .84rem/1.2 var(--f-data)}
-.bars{display:grid;gap:3px}
+.bars{display:grid;gap:3px;padding-right:3.75rem}
 .bar{height:12px;background:var(--ink);border-radius:1px;min-width:1px;position:relative}
 .bar.ood{background:var(--fail)}
 .bar span{position:absolute;left:calc(100% + 6px);top:-2px;font:500 .72rem/1 var(--f-data);font-variant-numeric:tabular-nums;color:var(--ink-2);white-space:nowrap}
@@ -225,6 +225,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <li><a href="#try">Your own image</a></li>
         <li><a href="#accuracy">Accuracy</a></li>
         <li><a href="#lesions">Lesions</a></li>
+        <li><a href="#tumours">Real tumours</a></li>
         <li><a href="#calibration">Stated vs measured</a></li>
         <li><a href="#conformal">Calibrated</a></li>
         <li><a href="#shift">Under shift</a></li>
@@ -348,6 +349,15 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <div id="les-table"></div>
       </section>
 
+      <section id="tumours" aria-labelledby="h-tumours">
+        <p class="clause">Real tumours</p>
+        <h2 id="h-tumours">Does a tumour survive restoration?</h2>
+        <div class="prose"><p>Real scans have no tumour-free twin, so here the MSD tumour outlines are used instead, on every test slice that shows tumour. Contrast kept compares how much the restored tumour stands out from the brain just around it with how much it does in the truth: 100 % is preserved, lower means flattened towards normal tissue. The error ratio is the error inside the tumour divided by the error in the rest of the brain: above 1, the method does worse exactly where the pathology is. The last three columns ask whether the stated uncertainty notices.</p></div>
+        <div class="switch" role="group" aria-label="Degradation" id="tum-switch"></div>
+        <div class="switch" role="group" aria-label="Tumour size" id="tum-size"></div>
+        <div id="tum-table"></div>
+      </section>
+
       <section id="calibration" aria-labelledby="h-cal">
         <p class="clause">Stated vs measured</p>
         <h2 id="h-cal">Does a 90 % interval cover 90 % of pixels?</h2>
@@ -397,6 +407,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <h3>Analyses</h3>
         <dl class="deflist">
           <div><dt>Lesion test</dt><dd>Phantoms only, where the truth is exact: each lesion phantom against its lesion-free copy under identical damage, for every method.</dd></div>
+          <div><dt>Tumour test</dt><dd>MSD test patients, using the dataset's tumour outlines: contrast against a 5-pixel ring of surrounding brain, error and interval coverage inside the tumour against the rest of the brain, by tumour size.</dd></div>
           <div><dt>Conformal</dt><dd>Conformal risk control (Angelopoulos et al. 2024) and RCPS (Bates et al. 2021) on the calibration patients, target 10 % of pixels outside.</dd></div>
         </dl>
         <h3>Degradations</h3>
@@ -421,7 +432,7 @@ footer .frame{padding-block:var(--s5) var(--s6);display:flex;flex-wrap:wrap;gap:
         <div class="prose">
           <p>The MRI acquisitions are simulated from magnitude images, single-coil, so they are cleaner than real scanner k-space. Results on fastMRI or raw multi-coil data may differ.</p>
           <p>The conformal guarantee is on average over pixels and patients. Individual images, and lesions in particular, can still be missed far more often, and the guarantee does not carry over to another hospital.</p>
-          <p>The lesion test uses synthetic phantoms, because only there is the truth about every lesion exact. Real tumours are larger and more varied; whether the same erasure rates hold for small real lesions is not shown here.</p>
+          <p>The exact lesion test uses synthetic phantoms, because only there is the truth about every lesion known. The real-tumour test has no tumour-free twin, so it measures lost contrast, not invented structure, and MSD has few very small tumours (62 slices under 100 pixels). Whether methods invent lesions on real scans is not shown here.</p>
           <p>The GAN has no data-consistency step, which explains much of its weakness in MRI; the diffusion model is shown with and without one. Data consistency makes the diffusion draws agree with each other, so its stated uncertainty shrinks more than its error.</p>
           <p>This is research code. Nothing here is a clinical tool or has diagnostic value.</p>
         </div>
@@ -561,7 +572,7 @@ function shift(data){
   if (!d || d.status !== "done" || !d.shift) { root.replaceChildren(el("p",{class:"pending"},"The MSD → IXI comparison appears here when the MSD run has finished.")); return; }
   const tasks = TASKORDER.filter(t => d.shift.some(r => r.task === t));
   const mx = Math.max(...d.shift.map(r => Math.max(r.gain_db_test, r.gain_db_ood, 0)));
-  const W = v => Math.max(0, v) / mx * 85 + "%";
+  const W = v => Math.max(0, v) / mx * 100 + "%";
   root.replaceChildren(el("div",{class:"key"}, el("span",{}, el("i",{style:"background:var(--ink)"}), "MSD test (same site as training)"), el("span",{}, el("i",{style:"background:var(--fail)"}), "IXI (other hospitals)")),
     ...tasks.map(t => el("div",{}, el("h3",{}, TASK[t]), el("div",{class:"shift"},
       d.shift.filter(r => r.task === t).sort((a,b) => b.gain_db_test - a.gain_db_test).map(r => el("div",{class:"shift-row"},
@@ -588,6 +599,27 @@ function lesions(data, task){
     el("td",{class: r.erased_flag_auroc == null ? null : (r.erased_flag_auroc < .5 ? "neg" : "")}, r.erased_flag_auroc == null ? "–" : f2(r.erased_flag_auroc))));
   root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"les-cap"}, el("thead",{},head), el("tbody",{},body))),
     el("p",{class:"small", id:"les-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `Phantom test set, ${d.n_lesions} lesions in ${d.n_lesion_images} phantoms, 3 damage draws each. Dot: fewest erased lesions. "Input" is the damaged image itself. The blob counter also fires on leftover noise, so compare blob counts within one degradation, not across. Erased: lesions with less than half their contrast left. Invented: lesion-like blobs per lesion-free image. Covers lesion: share of lesion pixels inside the 90 % interval. Flags erasures: area under the ROC curve of the method's stated spread at the lesion, erased against kept lesions.`));
+}
+
+/* ---------- real tumours (M5b) ---------- */
+const TUM_TASKS = ["denoise_s0.10","mri_R4","inpaint_mixed"];
+const TUM_SIZES = {all:"All sizes", small:"Small (< 100 px)", medium:"Medium", large:"Large (> 600 px)"};
+function tumours(data, task, size){
+  const root = $("#tum-table"); const d = data.datasets.msd;
+  if (!d || !d.tumours) { root.replaceChildren(el("p",{class:"pending"},"The real-tumour test is running; its results appear here when it finishes.")); return; }
+  const rows = LES_METHODS.map(m => d.tumours.find(r => r.task === task && r.size === size && r.method === m)).filter(Boolean);
+  if (!rows.length) { root.replaceChildren(el("p",{class:"pending"},"No slices in this group.")); return; }
+  const learned = rows.filter(r => r.method !== "input" && r.contrast_kept != null);
+  const bestC = learned.reduce((a, r) => Math.abs(1 - r.contrast_kept) < Math.abs(1 - a) ? r.contrast_kept : a, Infinity);
+  const head = el("tr",{}, ["Method","Contrast kept","Error ratio","Covers tumour","Covers rest","Spread ratio"].map(h => el("th",{scope:"col"}, h)));
+  const body = rows.map(r => el("tr",{}, el("th",{scope:"row"}, METHOD[r.method] || r.method),
+    el("td",{class: r.method !== "input" && r.contrast_kept === bestC ? "best" : null}, r.contrast_kept == null ? "–" : pct(r.contrast_kept)),
+    el("td",{class: r.err_ratio > 1 ? "neg" : null}, f2(r.err_ratio)),
+    el("td",{}, r.cov_tumour == null ? "–" : pct(r.cov_tumour)), el("td",{}, r.cov_rest == null ? "–" : pct(r.cov_rest)),
+    el("td",{}, r.spread_ratio == null ? "–" : f2(r.spread_ratio))));
+  const n = rows[0];
+  root.replaceChildren(el("div",{class:"tablewrap"}, el("table",{"aria-describedby":"tum-cap"}, el("thead",{},head), el("tbody",{},body))),
+    el("p",{class:"small", id:"tum-cap", style:"margin:.5rem 0 0;max-width:72ch"}, `MSD test patients, ${TASK[task]}, ${TUM_SIZES[size].toLowerCase()}: ${n.n_slices} slices from ${n.n_patients} patients, one damage draw, every model seed. Dot: contrast closest to the truth. "Input" is the damaged image itself. Error ratio: RMSE inside the tumour over RMSE in the rest of the brain, red above 1. Covers: share of pixels inside the stated 90 % interval. Spread ratio: mean stated spread in the tumour over the rest of the brain; above 1, the method is less sure about the tumour.`));
 }
 
 /* ---------- conformal (M6) ---------- */
@@ -684,6 +716,14 @@ function findings(data){
     out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "Phantoms, lesions. "),
       `In MRI at R = 2, the plain networks erase ${pct(avgE)} of small lesions on average; TV erases ${pct(tv.erased_frac)} and the unrolled network, which keeps the measured data, ${pct(un.erased_frac)}. Their uncertainty does not flag the erasures: they are more confident on the lesions they erase.`),
       el("span",{class:"stamp fail"}, "Lesions erased")));
+  }
+  if (ms0 && ms0.tumours) {
+    const T = (t, me, sz) => ms0.tumours.find(r => r.task === t && r.method === me && r.size === sz);
+    const all = ["unet","ensemble","unrolled","diffusion_dc","tv"].map(me => T("mri_R4", me, "all")).filter(Boolean).map(r => r.contrast_kept);
+    const sm = me => T("mri_R4", me, "small"), dn = me => T("denoise_s0.10", me, "small");
+    if (all.length && sm("unet") && sm("unrolled") && dn("ensemble") && dn("bm3d")) out.push(el("div",{class:"finding"}, el("p",{}, el("strong",{}, "MSD BrainTumour, real tumours. "),
+      `Real tumours are not erased the way small phantom lesions are: in MRI at R = 4 the methods keep ${pct(Math.min(...all))}–${pct(Math.max(...all))} of tumour contrast. Small tumours lose more: the U-Net keeps ${pct(sm("unet").contrast_kept)}, the unrolled network ${pct(sm("unrolled").contrast_kept)}, and in denoising the ensemble ${pct(dn("ensemble").contrast_kept)} against BM3D's ${pct(dn("bm3d").contrast_kept)}.`),
+      el("span",{class:"stamp warn"}, "Small tumours flattened")));
   }
   if (ms0 && ms0.comparison) {
     const C = ms0.comparison.filter(r => r.split === "test"); const g = (t, m) => C.find(r => r.task === t && r.method === m);
@@ -1204,6 +1244,10 @@ async function boot(){
   let lesT = store.get("tr.les") || "mri_R2"; if (!LES_TASKS.includes(lesT)) lesT = "mri_R2";
   switcher($("#les-switch"), LES_TASKS.map(t => ({id:t, label:TASK[t]})), lesT, v => { store.set("tr.les", v); lesions(data, v); });
   lesions(data, lesT);
+  let tumT = "mri_R4", tumS = "all";
+  switcher($("#tum-switch"), TUM_TASKS.map(t => ({id:t, label:TASK[t]})), tumT, v => { tumT = v; tumours(data, tumT, tumS); });
+  switcher($("#tum-size"), Object.entries(TUM_SIZES).map(([id, label]) => ({id, label})), tumS, v => { tumS = v; tumours(data, tumT, tumS); });
+  tumours(data, tumT, tumS);
   let confDs = done("msd") ? "msd" : "phantom", confT = "mri_R4";
   switcher($("#conf-switch"), dsOpts, confDs, v => { confDs = v; conformal(data, confDs, confT); });
   switcher($("#conf-task"), CONF_TASKS.map(t => ({id:t, label:TASK[t]})), confT, v => { confT = v; conformal(data, confDs, confT); });

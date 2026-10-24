@@ -5,7 +5,7 @@
 Nothing on the page is typed in by hand: every number comes from results/<profile>/... through this script.
 Datasets whose M3 tables are missing are written as {"status": "pending"} so the page says so.
 M4 (generative restorers) rows are merged into the M3 comparison / uncertainty / shift tables; M5 (lesions),
-M6 (conformal) and M7 (shift study) are added when their result files exist.
+M5b (real tumours), M6 (conformal) and M7 (shift study) are added when their result files exist.
 """
 import argparse
 import datetime as dt
@@ -85,6 +85,13 @@ def collect(profile):
                 if m5meta.exists():
                     mm = json.loads(m5meta.read_text())
                     entry["n_lesions"], entry["n_lesion_images"] = mm["n_lesions"], mm["n_images"]
+            m5t = ROOT / "results" / profile / "m5_tumour" / ds / "summary.csv"  # real tumours (MSD only)
+            if m5t.exists():
+                entry["tumours"] = _records(pd.read_csv(m5t)[["task", "method", "size", "n_slices", "n_patients",
+                                                              "contrast_kept", "err_ratio", "cov_tumour", "cov_rest",
+                                                              "spread_ratio"]])
+                mt = json.loads((m5t.parent / "meta.json").read_text())
+                entry["n_tumour_slices"], entry["n_tumour_patients"] = mt["n_slices"], mt["n_patients"]
             m6 = ROOT / "results" / profile / "m6_conformal" / ds / "summary.csv"
             if m6.exists():
                 entry["conformal"] = _records(pd.read_csv(m6)[["split", "task", "method", "rule", "coverage", "width",

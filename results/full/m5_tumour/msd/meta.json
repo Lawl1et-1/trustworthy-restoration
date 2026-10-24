@@ -1,0 +1,54 @@
+{
+ "config": {
+  "profile": "full",
+  "data": {
+   "name": "msd",
+   "path": "data/processed/msd_t2_128.npz"
+  },
+  "classical": {
+   "denoise": [
+    "bm3d"
+   ],
+   "mri": [
+    "tv"
+   ],
+   "inpaint": [
+    "biharmonic"
+   ]
+  },
+  "nets": [
+   "configs/m3_full_msd.yaml",
+   "configs/m4_full_msd.yaml"
+  ],
+  "eval_dseeds": [
+   0
+  ],
+  "min_area": 10,
+  "ring": 5,
+  "eval_batch": 32,
+  "tasks": {
+   "denoise_s0.10": {
+    "type": "denoise",
+    "sigma": 0.1
+   },
+   "mri_R4": {
+    "type": "mri",
+    "R": 4,
+    "mask": "mixed",
+    "sigma": 0.02
+   },
+   "inpaint_mixed": {
+    "type": "inpaint",
+    "mask": "mixed",
+    "sigma": 0.01
+   }
+  }
+ },
+ "git": "104c02a",
+ "python": "3.12.9",
+ "torch": "2.11.0+cu126",
+ "device": "NVIDIA GeForce GTX 1660 Ti with Max-Q Design",
+ "wall_seconds": 1767.6,
+ "n_slices": 385,
+ "n_patients": 73
+}
